@@ -178,7 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (textColor ?? Colors.blue).withOpacity(0.1),
+          color: (textColor ?? Colors.blue).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -221,7 +221,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.1),
+          color: Colors.blue.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -376,7 +376,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatRow('Total Files', '${stats['audio'] ?? 0 + stats['video'] ?? 0}'),
+                _buildStatRow('Total Files', '${(stats['audio'] ?? 0) + (stats['video'] ?? 0)}'),
                 _buildStatRow('Audio Files', '${stats['audio'] ?? 0}'),
                 _buildStatRow('Video Files', '${stats['video'] ?? 0}'),
                 _buildStatRow('Favorites', '${stats['favorites'] ?? 0}'),
