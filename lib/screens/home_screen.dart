@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/media_provider.dart';
 import '../models/media_file.dart';
 import '../models/playlist.dart';
@@ -60,14 +59,19 @@ class _HomeScreenState extends State<HomeScreen>
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     await mediaProvider.initialize();
     
-    setState(() {
-      _isInitialized = true;
-    });
+    // تحقق من أن الـ widget لا يزال موجوداً قبل استدعاء setState
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
 
-    // Start animations
-    _headerAnimationController.forward();
-    await Future.delayed(const Duration(milliseconds: 300));
-    _statsAnimationController.forward();
+      // Start animations
+      _headerAnimationController.forward();
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) {
+        _statsAnimationController.forward();
+      }
+    }
   }
 
   @override
@@ -148,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen>
           return Transform.translate(
             offset: Offset(0, 50 * (1 - _headerAnimation.value)),
             child: Opacity(
-              opacity: _headerAnimation.value,
+              opacity: _headerAnimation.value.clamp(0.0, 1.0),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -228,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen>
             animation: _statsAnimation,
             builder: (context, child) {
               return Transform.scale(
-                scale: _statsAnimation.value,
+                scale: _statsAnimation.value.clamp(0.0, 1.0),
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   padding: const EdgeInsets.all(20),
@@ -314,47 +318,38 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildStatCard(String title, int count, IconData icon, Color color, int index) {
-    return AnimationConfiguration.staggeredList(
-      position: index,
-      duration: const Duration(milliseconds: 375),
-      child: SlideAnimation(
-        verticalOffset: 50.0,
-        child: FadeInAnimation(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: color.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(icon, color: color, size: 32),
-                const SizedBox(height: 8),
-                Text(
-                  count.toString(),
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: color.withOpacity(0.8),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            count.toString(),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
-        ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: color.withOpacity(0.8),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -375,35 +370,26 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             const SizedBox(height: 16),
-            AnimationLimiter(
-              child: Row(
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: const Duration(milliseconds: 375),
-                  childAnimationBuilder: (widget) => SlideAnimation(
-                    horizontalOffset: 50.0,
-                    child: FadeInAnimation(child: widget),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    'Scan Files',
+                    Icons.refresh_rounded,
+                    Colors.blue,
+                    () => _scanForFiles(),
                   ),
-                  children: [
-                    Expanded(
-                      child: _buildActionCard(
-                        'Scan Files',
-                        Icons.refresh_rounded,
-                        Colors.blue,
-                        () => _scanForFiles(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildActionCard(
-                        'Create Playlist',
-                        Icons.add_rounded,
-                        Colors.green,
-                        () => _createPlaylist(),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    'Create Playlist',
+                    Icons.add_rounded,
+                    Colors.green,
+                    () => _createPlaylist(),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -479,25 +465,14 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 16),
               SizedBox(
                 height: 140,
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: mediaProvider.recentFiles.length,
-                    itemBuilder: (context, index) {
-                      final file = mediaProvider.recentFiles[index];
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          horizontalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: _buildMediaCard(file, index),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: mediaProvider.recentFiles.length,
+                  itemBuilder: (context, index) {
+                    final file = mediaProvider.recentFiles[index];
+                    return _buildMediaCard(file, index);
+                  },
                 ),
               ),
             ],
@@ -532,25 +507,14 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 16),
               SizedBox(
                 height: 140,
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: mediaProvider.favoriteFiles.length,
-                    itemBuilder: (context, index) {
-                      final file = mediaProvider.favoriteFiles[index];
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          horizontalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: _buildMediaCard(file, index),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: mediaProvider.favoriteFiles.length,
+                  itemBuilder: (context, index) {
+                    final file = mediaProvider.favoriteFiles[index];
+                    return _buildMediaCard(file, index);
+                  },
                 ),
               ),
             ],
@@ -583,26 +547,15 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
               const SizedBox(height: 16),
-              AnimationLimiter(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: mediaProvider.playlists.length,
-                  itemBuilder: (context, index) {
-                    final playlist = mediaProvider.playlists[index];
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: _buildPlaylistCard(playlist),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                itemCount: mediaProvider.playlists.length,
+                itemBuilder: (context, index) {
+                  final playlist = mediaProvider.playlists[index];
+                  return _buildPlaylistCard(playlist);
+                },
               ),
               const SizedBox(height: 100), // Bottom padding for FAB
             ],
@@ -871,23 +824,29 @@ class _SearchDialogState extends State<_SearchDialog> {
 
   void _performSearch(String query) async {
     if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-      });
+      if (mounted) {
+        setState(() {
+          _searchResults = [];
+        });
+      }
       return;
     }
 
-    setState(() {
-      _isSearching = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isSearching = true;
+      });
+    }
 
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     final results = await mediaProvider.searchMediaFiles(query);
 
-    setState(() {
-      _searchResults = results;
-      _isSearching = false;
-    });
+    if (mounted) {
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/media_provider.dart';
 import 'home_screen.dart';
 import 'library_screen.dart';
@@ -144,16 +143,11 @@ class _MainNavigationState extends State<MainNavigation>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                for (int i = 0; i < _navigationItems.length; i++)
-                  if (i < 2)
-                    _buildNavItem(i)
-                  else if (i == 2)
-                    ...[
-                      const SizedBox(width: 60), // Space for FAB
-                      _buildNavItem(i),
-                    ]
-                  else
-                    _buildNavItem(i),
+                _buildNavItem(0), // Home
+                _buildNavItem(1), // Library
+                const SizedBox(width: 60), // Space for FAB
+                _buildNavItem(2), // Playlists
+                _buildNavItem(3), // Settings
               ],
             ),
           ),
@@ -168,44 +162,36 @@ class _MainNavigationState extends State<MainNavigation>
 
     return GestureDetector(
       onTap: () => _onItemTapped(index),
-      child: AnimationConfiguration.staggeredList(
-        position: index,
-        duration: const Duration(milliseconds: 375),
-        child: SlideAnimation(
-          verticalOffset: 50.0,
-          child: FadeInAnimation(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: isActive ? item.color.withOpacity(0.1) : Colors.transparent,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      isActive ? item.activeIcon : item.icon,
-                      key: ValueKey(isActive),
-                      color: isActive ? item.color : Colors.grey,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                      color: isActive ? item.color : Colors.grey,
-                    ),
-                    child: Text(item.label),
-                  ),
-                ],
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: isActive ? item.color.withOpacity(0.1) : Colors.transparent,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                isActive ? item.activeIcon : item.icon,
+                key: ValueKey(isActive),
+                color: isActive ? item.color : Colors.grey,
+                size: 24,
               ),
             ),
-          ),
+            const SizedBox(height: 4),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                color: isActive ? item.color : Colors.grey,
+              ),
+              child: Text(item.label),
+            ),
+          ],
         ),
       ),
     );

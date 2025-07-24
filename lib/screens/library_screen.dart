@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/media_provider.dart';
 import '../models/media_file.dart';
 import 'audio_player_screen.dart';
@@ -112,23 +111,12 @@ class _LibraryScreenState extends State<LibraryScreen>
           return _buildEmptyState('No media files found', Icons.library_music);
         }
 
-        return AnimationLimiter(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: files.length,
-            itemBuilder: (context, index) {
-              return AnimationConfiguration.staggeredList(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                child: SlideAnimation(
-                  verticalOffset: 50.0,
-                  child: FadeInAnimation(
-                    child: _buildMediaListTile(files[index], index),
-                  ),
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: files.length,
+          itemBuilder: (context, index) {
+            return _buildMediaListTile(files[index], index);
+          },
         );
       },
     );
@@ -143,23 +131,12 @@ class _LibraryScreenState extends State<LibraryScreen>
           return _buildEmptyState('No audio files found', Icons.music_note);
         }
 
-        return AnimationLimiter(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: files.length,
-            itemBuilder: (context, index) {
-              return AnimationConfiguration.staggeredList(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                child: SlideAnimation(
-                  verticalOffset: 50.0,
-                  child: FadeInAnimation(
-                    child: _buildMediaListTile(files[index], index),
-                  ),
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: files.length,
+          itemBuilder: (context, index) {
+            return _buildMediaListTile(files[index], index);
+          },
         );
       },
     );
@@ -174,23 +151,12 @@ class _LibraryScreenState extends State<LibraryScreen>
           return _buildEmptyState('No video files found', Icons.video_library);
         }
 
-        return AnimationLimiter(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: files.length,
-            itemBuilder: (context, index) {
-              return AnimationConfiguration.staggeredList(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                child: SlideAnimation(
-                  verticalOffset: 50.0,
-                  child: FadeInAnimation(
-                    child: _buildMediaListTile(files[index], index),
-                  ),
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: files.length,
+          itemBuilder: (context, index) {
+            return _buildMediaListTile(files[index], index);
+          },
         );
       },
     );
