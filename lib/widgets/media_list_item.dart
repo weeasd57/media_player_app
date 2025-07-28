@@ -18,87 +18,54 @@ class MediaListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      elevation: isPlaying ? 8 : 2,
-      color: isPlaying ? Colors.blue.shade50 : null,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: _getTypeColor().withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            _getTypeIcon(),
-            color: _getTypeColor(),
-            size: 24,
+        leading: Hero(
+          tag: 'media_list_item_${mediaItem.id}',
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: mediaItem.type == MediaType.audio
+                  ? Colors.purple.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              mediaItem.type == MediaType.audio
+                  ? Icons.music_note_rounded
+                  : Icons.video_library_rounded,
+              color: mediaItem.type == MediaType.audio
+                  ? Colors.purple
+                  : Colors.orange,
+              size: 32,
+            ),
           ),
         ),
         title: Text(
           mediaItem.displayName,
-          style: TextStyle(
-            fontWeight: isPlaying ? FontWeight.bold : FontWeight.normal,
-            color: isPlaying ? Colors.blue.shade700 : null,
-          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${mediaItem.fileExtension} • ${mediaItem.formattedFileSize}',
-              style: const TextStyle(fontSize: 12),
-            ),
-            if (mediaItem.duration != null)
-              Text(
-                'المدة: ${mediaItem.formattedDuration}',
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
+        subtitle: Text(
+          mediaItem.formattedDuration,
+          style: TextStyle(color: Colors.grey[600]),
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isPlaying)
-              Icon(
-                Icons.volume_up,
-                color: Colors.blue.shade600,
-                size: 20,
-              ),
-            if (onDelete != null) ...[
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red.shade400,
-                onPressed: onDelete,
-                iconSize: 20,
-              ),
-            ],
-          ],
+        trailing: IconButton(
+          icon: Icon(
+            mediaItem.isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: mediaItem.isFavorite ? Colors.red : Colors.grey[400],
+          ),
+          onPressed: () {
+            // Provider.of<MediaProvider>(context, listen: false).toggleFavorite(mediaFile); // Fixed: Pass object
+          },
         ),
         onTap: onTap,
       ),
     );
   }
 
-  IconData _getTypeIcon() {
-    switch (mediaItem.type) {
-      case MediaType.audio:
-        return Icons.music_note;
-      case MediaType.video:
-        return Icons.video_file;
-    }
-  }
-
-  Color _getTypeColor() {
-    switch (mediaItem.type) {
-      case MediaType.audio:
-        return Colors.purple;
-      case MediaType.video:
-        return Colors.orange;
-    }
-  }
 }
-

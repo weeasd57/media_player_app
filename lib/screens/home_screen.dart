@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import '../providers/media_provider.dart';
 import '../models/media_file.dart';
 import '../models/playlist.dart';
+import 'package:media_player_app/generated/app_localizations.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
 import 'playlist_screen.dart';
@@ -15,8 +16,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _headerAnimationController;
   late AnimationController _statsAnimationController;
   late Animation<double> _headerAnimation;
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen>
     _statsAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _statsAnimationController,
-        curve: Curves.elasticOut,
+        curve: const Interval(0.2, 0.8, curve: Curves.elasticOut),
       ),
     );
   }
@@ -58,14 +58,12 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _initializeApp() async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     await mediaProvider.initialize();
-    
-    // تحقق من أن الـ widget لا يزال موجوداً قبل استدعاء setState
+
     if (mounted) {
       setState(() {
         _isInitialized = true;
       });
 
-      // Start animations
       _headerAnimationController.forward();
       await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) {
@@ -83,68 +81,60 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _isInitialized ? _buildMainContent() : _buildLoadingScreen(),
+    return Consumer<MediaProvider>(
+      builder: (context, mediaProvider, child) {
+        return Scaffold(
+          body: _isInitialized ? _buildMainContent() : _buildLoadingScreen(),
+        );
+      },
     );
   }
 
   Widget _buildLoadingScreen() {
-    return Container(
-      decoration: _buildGradientDecoration(),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 20),
-            Text(
-              'Loading your media library...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 20),
+          Text(
+            localizations.loadingLibrary,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMainContent() {
-    return Container(
-      decoration: _buildGradientDecoration(),
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            _buildHeader(),
-            _buildStatsSection(),
-            _buildQuickActions(),
-            _buildRecentSection(),
-            _buildFavoritesSection(),
-            _buildPlaylistsSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  BoxDecoration _buildGradientDecoration() {
-    return const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color(0xFF667eea),
-          Color(0xFF764ba2),
-          Color(0xFF6B73FF),
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          _buildHeader(),
+          _buildStatsSection(),
+          _buildQuickActions(),
+          _buildRecentSection(),
+          _buildFavoritesSection(),
+          _buildPlaylistsSection(),
         ],
-        stops: [0.0, 0.5, 1.0],
       ),
     );
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final iconBgColor = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.grey.withValues(alpha: 0.1);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: AnimatedBuilder(
         animation: _headerAnimation,
@@ -163,12 +153,12 @@ class _HomeScreenState extends State<HomeScreen>
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: iconBgColor,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Icon(
-                            Icons.music_note_rounded,
-                            color: Colors.white,
+                          child: Icon(
+                            Icons.graphic_eq,
+                            color: Theme.of(context).primaryColor,
                             size: 32,
                           ),
                         ),
@@ -178,17 +168,17 @@ class _HomeScreenState extends State<HomeScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Good ${_getTimeOfDay()}!',
-                                style: const TextStyle(
-                                  color: Colors.white70,
+                                _getTimeOfDay(),
+                                style: TextStyle(
+                                  color: textColor.withValues(alpha: 0.7),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              const Text(
-                                'Media Player',
+                              Text(
+                                localizations.appTitle,
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: textColor,
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -201,13 +191,10 @@ class _HomeScreenState extends State<HomeScreen>
                           icon: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: iconBgColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(
-                              Icons.search_rounded,
-                              color: Colors.white,
-                            ),
+                            child: Icon(Icons.search, color: textColor),
                           ),
                         ),
                       ],
@@ -223,39 +210,50 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildStatsSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final cardBgColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.grey.withValues(alpha: 0.05);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.grey.withValues(alpha: 0.2);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: Consumer<MediaProvider>(
         builder: (context, mediaProvider, child) {
           final stats = mediaProvider.statistics;
-          
+
           return AnimatedBuilder(
             animation: _statsAnimation,
             builder: (context, child) {
               return Transform.scale(
                 scale: _statsAnimation.value.clamp(0.0, 1.0),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  padding: const EdgeInsets.all(20),
+                  margin: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width < 600
+                        ? 16
+                        : 24,
+                  ),
+                  padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width < 600 ? 16 : 20,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: cardBgColor,
                     borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    border: Border.all(color: borderColor, width: 1),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Your Library',
+                      Text(
+                        localizations.yourLibrary,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -263,9 +261,9 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           Expanded(
                             child: _buildStatCard(
-                              'Audio Files',
+                              localizations.audioFiles,
                               stats['audio'] ?? 0,
-                              Icons.music_note_rounded,
+                              Icons.headphones,
                               Colors.purple,
                               0,
                             ),
@@ -273,9 +271,9 @@ class _HomeScreenState extends State<HomeScreen>
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildStatCard(
-                              'Video Files',
+                              localizations.videoFiles,
                               stats['video'] ?? 0,
-                              Icons.video_library_rounded,
+                              Icons.movie_creation_outlined,
                               Colors.orange,
                               1,
                             ),
@@ -287,9 +285,9 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           Expanded(
                             child: _buildStatCard(
-                              'Favorites',
+                              localizations.favorites,
                               stats['favorites'] ?? 0,
-                              Icons.favorite_rounded,
+                              Icons.favorite,
                               Colors.red,
                               2,
                             ),
@@ -297,9 +295,9 @@ class _HomeScreenState extends State<HomeScreen>
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildStatCard(
-                              'Playlists',
+                              localizations.playlists,
                               stats['playlists'] ?? 0,
-                              Icons.playlist_play_rounded,
+                              Icons.queue_music,
                               Colors.indigo,
                               3,
                             ),
@@ -317,16 +315,19 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildStatCard(String title, int count, IconData icon, Color color, int index) {
+  Widget _buildStatCard(
+    String title,
+    int count,
+    IconData icon,
+    Color color,
+    int index,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: Column(
         children: [
@@ -344,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen>
             title,
             style: TextStyle(
               fontSize: 12,
-              color: color.withOpacity(0.8),
+              color: color.withValues(alpha: 0.8),
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -355,16 +356,22 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildQuickActions() {
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.all(24),
+        margin: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 600 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Quick Actions',
+            Text(
+              localizations.quickActions,
               style: TextStyle(
-                color: Colors.white,
+                color: textColor,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -374,8 +381,8 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 Expanded(
                   child: _buildActionCard(
-                    'Scan Files',
-                    Icons.refresh_rounded,
+                    localizations.scanFiles,
+                    Icons.sync,
                     Colors.blue,
                     () => _scanForFiles(),
                   ),
@@ -383,8 +390,8 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildActionCard(
-                    'Create Playlist',
-                    Icons.add_rounded,
+                    localizations.createPlaylist,
+                    Icons.playlist_add,
                     Colors.green,
                     () => _createPlaylist(),
                   ),
@@ -397,7 +404,22 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionCard(
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final cardBgColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.grey.withValues(alpha: 0.05);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.grey.withValues(alpha: 0.2);
+
     return OpenContainer(
       transitionDuration: const Duration(milliseconds: 500),
       openBuilder: (context, action) => Container(), // Placeholder
@@ -406,19 +428,16 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: cardBgColor,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1,
-            ),
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(icon, color: color, size: 32),
@@ -426,8 +445,8 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 12),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
@@ -441,6 +460,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildRecentSection() {
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         if (mediaProvider.recentFiles.isEmpty) {
@@ -451,12 +474,12 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  'Recently Played',
+                  localizations.recentlyPlayed,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -464,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               const SizedBox(height: 16),
               SizedBox(
-                height: 140,
+                height: MediaQuery.of(context).size.width < 600 ? 120 : 140,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -483,6 +506,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildFavoritesSection() {
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         if (mediaProvider.favoriteFiles.isEmpty) {
@@ -493,12 +520,12 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Text(
-                  'Your Favorites',
+                  localizations.yourFavorites,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -506,10 +533,14 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               const SizedBox(height: 16),
               SizedBox(
-                height: 140,
+                height: MediaQuery.of(context).size.width < 600 ? 120 : 140,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width < 600
+                        ? 16
+                        : 24,
+                  ),
                   itemCount: mediaProvider.favoriteFiles.length,
                   itemBuilder: (context, index) {
                     final file = mediaProvider.favoriteFiles[index];
@@ -525,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildPlaylistsSection() {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         if (mediaProvider.playlists.isEmpty) {
@@ -535,11 +567,11 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Text(
-                  'Your Playlists',
-                  style: TextStyle(
+                  localizations.yourPlaylists,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -566,9 +598,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMediaCard(MediaFile file, int index) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth < 600 ? 120.0 : 150.0;
+
     return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 16),
+      width: cardWidth,
+      margin: EdgeInsets.only(right: screenWidth < 600 ? 12 : 16),
       child: OpenContainer(
         transitionDuration: const Duration(milliseconds: 500),
         openBuilder: (context, action) => file.type == 'audio'
@@ -576,10 +611,10 @@ class _HomeScreenState extends State<HomeScreen>
             : const VideoPlayerScreen(),
         closedBuilder: (context, action) => Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -589,8 +624,8 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Container(
                   decoration: BoxDecoration(
                     color: file.type == 'audio'
-                        ? Colors.purple.withOpacity(0.3)
-                        : Colors.orange.withOpacity(0.3),
+                        ? Colors.purple.withValues(alpha: 0.3)
+                        : Colors.orange.withValues(alpha: 0.3),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
@@ -598,8 +633,8 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Center(
                     child: Icon(
                       file.type == 'audio'
-                          ? Icons.music_note_rounded
-                          : Icons.video_library_rounded,
+                          ? Icons.graphic_eq
+                          : Icons.movie_filter,
                       size: 40,
                       color: Colors.white,
                     ),
@@ -625,7 +660,7 @@ class _HomeScreenState extends State<HomeScreen>
                     Text(
                       file.formattedDuration,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 10,
                       ),
                     ),
@@ -648,10 +683,10 @@ class _HomeScreenState extends State<HomeScreen>
         closedBuilder: (context, action) => Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -661,11 +696,11 @@ class _HomeScreenState extends State<HomeScreen>
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.indigo.withOpacity(0.3),
+                  color: Colors.indigo.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
-                  Icons.playlist_play_rounded,
+                  Icons.library_music,
                   color: Colors.white,
                   size: 32,
                 ),
@@ -684,9 +719,9 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                     Text(
-                      '${playlist.mediaCount} files',
+                      AppLocalizations.of(context)!.filesCount(playlist.mediaCount),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 14,
                       ),
                     ),
@@ -695,7 +730,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: 16,
               ),
             ],
@@ -706,55 +741,40 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   String _getTimeOfDay() {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Morning';
-    if (hour < 17) return 'Afternoon';
-    return 'Evening';
+    if (hour < 12) return localizations.goodMorning;
+    if (hour < 17) return localizations.goodAfternoon;
+    return localizations.goodEvening;
   }
 
   void _showSearchDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const _SearchDialog(),
-    );
+    showDialog(context: context, builder: (context) => const _SearchDialog());
   }
 
   void _scanForFiles() async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-    final result = await mediaProvider.scanForMediaFiles();
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            result.hasError
-                ? 'Scan error: ${result.error}'
-                : 'Found ${result.totalFilesFound} files, added ${result.filesAdded} new files',
-          ),
-          backgroundColor: result.hasError ? Colors.red : Colors.green,
-        ),
-      );
-    }
+    await mediaProvider.scanForMediaFiles();
   }
 
   void _createPlaylist() async {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final result = await showDialog<String>(
       context: context,
-      builder: (context) => const _CreatePlaylistDialog(),
+      builder: (context) => _CreatePlaylistDialog(localizations: localizations),
     );
-    
+
     if (result != null && result.isNotEmpty) {
       final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
       await mediaProvider.createPlaylist(result);
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Playlist created successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.playlistCreated),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 }
@@ -772,19 +792,29 @@ class _SearchDialogState extends State<_SearchDialog> {
   bool _isSearching = false;
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        width: double.maxFinite,
-        height: 500,
-        padding: const EdgeInsets.all(20),
+        width: isSmallScreen ? screenSize.width * 0.9 : 500,
+        height: isSmallScreen ? screenSize.height * 0.7 : 500,
+        padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
         child: Column(
           children: [
             TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: 'Search media files',
+                labelText: localizations.searchMediaFiles,
                 prefixIcon: const Icon(Icons.search_rounded),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -796,6 +826,17 @@ class _SearchDialogState extends State<_SearchDialog> {
             Expanded(
               child: _isSearching
                   ? const Center(child: CircularProgressIndicator())
+                  : _searchResults.isEmpty
+                  ? Center(
+                      child: Text(
+                        localizations.noMediaFound,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.color?.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: _searchResults.length,
                       itemBuilder: (context, index) {
@@ -824,34 +865,32 @@ class _SearchDialogState extends State<_SearchDialog> {
 
   void _performSearch(String query) async {
     if (query.isEmpty) {
-      if (mounted) {
-        setState(() {
-          _searchResults = [];
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _searchResults = [];
+      });
       return;
     }
 
-    if (mounted) {
-      setState(() {
-        _isSearching = true;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _isSearching = true;
+    });
 
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     final results = await mediaProvider.searchMediaFiles(query);
 
-    if (mounted) {
-      setState(() {
-        _searchResults = results;
-        _isSearching = false;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _searchResults = results;
+      _isSearching = false;
+    });
   }
 }
 
 class _CreatePlaylistDialog extends StatefulWidget {
-  const _CreatePlaylistDialog();
+  final AppLocalizations localizations;
+  const _CreatePlaylistDialog({required this.localizations});
 
   @override
   State<_CreatePlaylistDialog> createState() => _CreatePlaylistDialogState();
@@ -861,28 +900,45 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
   final _controller = TextEditingController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text('Create New Playlist'),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          labelText: 'Playlist name',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+      contentPadding: EdgeInsets.all(isSmallScreen ? 16 : 24),
+      title: Text(
+        widget.localizations.createNewPlaylist,
+        style: TextStyle(
+          fontSize: isSmallScreen ? 18 : 20,
+          fontWeight: FontWeight.bold,
         ),
-        autofocus: true,
+      ),
+      content: SizedBox(
+        width: isSmallScreen ? screenSize.width * 0.8 : 300,
+        child: TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            labelText: widget.localizations.playlistName,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          autofocus: true,
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(widget.localizations.cancel),
         ),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Create'),
+          child: Text(widget.localizations.create),
         ),
       ],
     );

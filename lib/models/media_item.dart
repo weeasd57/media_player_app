@@ -1,18 +1,22 @@
 class MediaItem {
+  final int? id; // إضافة ID
   final String path;
   final String name;
   final MediaType type;
   final DateTime dateAdded;
   final int? duration; // بالثواني
   final int? fileSize; // بالبايت
+  final bool isFavorite; // إضافة isFavorite
 
   MediaItem({
+    this.id,
     required this.path,
     required this.name,
     required this.type,
     required this.dateAdded,
     this.duration,
     this.fileSize,
+    this.isFavorite = false,
   });
 
   String get displayName {

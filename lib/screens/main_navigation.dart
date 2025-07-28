@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:animations/animations.dart';
 import '../providers/media_provider.dart';
+import '../providers/theme_provider.dart';
+import '../providers/text_provider.dart';
 import 'home_screen.dart';
 import 'library_screen.dart';
 import 'playlists_screen.dart';
@@ -57,10 +58,7 @@ class _MainNavigationState extends State<MainNavigation>
       vsync: this,
     );
     _fabAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _fabAnimationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _fabAnimationController, curve: Curves.easeInOut),
     );
     _fabAnimationController.forward();
   }
@@ -80,51 +78,61 @@ class _MainNavigationState extends State<MainNavigation>
       _pageController.animateToPage(
         index,
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        curve: Curves.easeIn,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageTransitionSwitcher(
-        duration: const Duration(milliseconds: 300),
-        transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-          return FadeThroughTransition(
-            animation: primaryAnimation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          );
-        },
-        child: PageView(
-          key: ValueKey(_currentIndex),
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          children: const [
-            HomeScreen(),
-            LibraryScreen(),
-            PlaylistsScreen(),
-            SettingsScreen(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: _buildFloatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    return Consumer2<ThemeProvider, TextProvider>(
+      builder: (context, themeProvider, textProvider, child) {
+        return Scaffold(
+          backgroundColor: themeProvider.primaryBackgroundColor,
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            children: [
+              HomeScreen(),
+              LibraryScreen(),
+              PlaylistsScreen(),
+              SettingsScreen(),
+            ],
+          ),
+          bottomNavigationBar: _buildBottomNavigationBar(
+            themeProvider,
+            textProvider,
+          ),
+          floatingActionButton: _buildFloatingActionButton(
+            themeProvider,
+            textProvider,
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked, // Moved to a new line
+        );
+      },
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(
+    ThemeProvider themeProvider,
+    TextProvider textProvider,
+  ) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+    final navHeight = isSmallScreen ? 65.0 : 70.0;
+    final horizontalPadding = isSmallScreen ? 16.0 : 20.0;
+    final fabSpaceWidth = isSmallScreen ? 50.0 : 60.0;
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -136,18 +144,18 @@ class _MainNavigationState extends State<MainNavigation>
           shape: const CircularNotchedRectangle(),
           notchMargin: 8,
           elevation: 0,
-          color: Colors.white,
+          color: themeProvider.secondaryBackgroundColor,
           child: Container(
-            height: 70,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            height: navHeight,
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0), // Home
-                _buildNavItem(1), // Library
-                const SizedBox(width: 60), // Space for FAB
-                _buildNavItem(2), // Playlists
-                _buildNavItem(3), // Settings
+                _buildNavItem(0, themeProvider, textProvider), // Home
+                _buildNavItem(1, themeProvider, textProvider), // Library
+                SizedBox(width: fabSpaceWidth), // Space for FAB
+                _buildNavItem(2, themeProvider, textProvider), // Playlists
+                _buildNavItem(3, themeProvider, textProvider), // Settings
               ],
             ),
           ),
@@ -156,18 +164,42 @@ class _MainNavigationState extends State<MainNavigation>
     );
   }
 
-  Widget _buildNavItem(int index) {
+  Widget _buildNavItem(
+    int index,
+    ThemeProvider themeProvider,
+    TextProvider textProvider,
+  ) {
     final item = _navigationItems[index];
     final isActive = _currentIndex == index;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+
+    final iconSize = isSmallScreen ? 22.0 : 24.0;
+    final fontSize = isSmallScreen ? 11.0 : 12.0;
+    final verticalPadding = isSmallScreen ? 6.0 : 8.0;
+    final horizontalPadding = isSmallScreen ? 8.0 : 12.0;
+
+    // النصوص المترجمة
+    final List<String> translatedLabels = [
+      textProvider.getText('home'),
+      textProvider.getText('library'),
+      textProvider.getText('playlists'),
+      textProvider.getText('settings'),
+    ];
 
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        padding: EdgeInsets.symmetric(
+          vertical: verticalPadding,
+          horizontal: horizontalPadding,
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: isActive ? item.color.withOpacity(0.1) : Colors.transparent,
+          color: isActive
+              ? item.color.withValues(alpha: 0.1)
+              : Colors.transparent,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -177,19 +209,19 @@ class _MainNavigationState extends State<MainNavigation>
               child: Icon(
                 isActive ? item.activeIcon : item.icon,
                 key: ValueKey(isActive),
-                color: isActive ? item.color : Colors.grey,
-                size: 24,
+                color: isActive ? item.color : themeProvider.iconColor,
+                size: iconSize,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: isSmallScreen ? 3 : 4),
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: fontSize,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? item.color : Colors.grey,
+                color: isActive ? item.color : themeProvider.secondaryTextColor,
               ),
-              child: Text(item.label),
+              child: Text(translatedLabels[index]),
             ),
           ],
         ),
@@ -197,7 +229,10 @@ class _MainNavigationState extends State<MainNavigation>
     );
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton(
+    ThemeProvider themeProvider,
+    TextProvider textProvider,
+  ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         return ScaleTransition(

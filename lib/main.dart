@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'screens/main_navigation.dart';
 import 'providers/media_provider.dart';
+import 'providers/theme_provider.dart';
+import 'package:media_player_app/generated/app_localizations.dart';
 
 void main() {
   runApp(const MediaPlayerApp());
@@ -13,37 +16,27 @@ class MediaPlayerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MediaProvider(),
-      child: MaterialApp(
-        title: 'Media Player',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            centerTitle: true,
-          ),
-          cardTheme: const CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-            ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-        home: const PermissionHandler(),
-        debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => MediaProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Media Player',
+            theme: themeProvider.currentTheme,
+            home: const PermissionHandler(),
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en'), Locale('ar')],
+          );
+        },
       ),
     );
   }
@@ -96,36 +89,36 @@ class _PermissionHandlerState extends State<PermissionHandler>
     try {
       // Request file access permissions
       final storageStatus = await Permission.storage.request();
-      final manageStorageStatus = await Permission.manageExternalStorage.request();
-      
+      final manageStorageStatus = await Permission.manageExternalStorage
+          .request();
+
       // Check if permissions were granted
       if (storageStatus.isDenied || manageStorageStatus.isDenied) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Storage permissions are required to access media files'),
-              duration: Duration(seconds: 3),
+            SnackBar(
+              content: Text(l10n.storagePermissionRequired),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
         return;
       }
-      
+
       // Add a delay for better UX
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Navigate to main screen
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 const MainNavigation(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
             transitionDuration: const Duration(milliseconds: 800),
           ),
         );
@@ -133,9 +126,10 @@ class _PermissionHandlerState extends State<PermissionHandler>
     } catch (e) {
       // Handle permission errors
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error requesting permissions: $e'),
+            content: Text(l10n.permissionError(e.toString())),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -151,17 +145,15 @@ class _PermissionHandlerState extends State<PermissionHandler>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-              Color(0xFF6B73FF),
-            ],
+            colors: [Color(0xFF667eea), Color(0xFF764ba2), Color(0xFF6B73FF)],
           ),
         ),
         child: Center(
@@ -179,11 +171,11 @@ class _PermissionHandlerState extends State<PermissionHandler>
                         width: 120,
                         height: 120,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withValues(alpha: 0.2), // إصلاح withOpacity
                           borderRadius: BorderRadius.circular(60),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
+                              color: Colors.black.withValues(alpha: 0.1), // إصلاح withOpacity
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -196,18 +188,18 @@ class _PermissionHandlerState extends State<PermissionHandler>
                         ),
                       ),
                       const SizedBox(height: 32),
-                      const Text(
-                        'Media Player',
-                        style: TextStyle(
+                      Text(
+                        l10n.appTitle,
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Your ultimate media companion',
-                        style: TextStyle(
+                      Text(
+                        l10n.appDescription, // Using localization
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white70,
                         ),
@@ -222,9 +214,9 @@ class _PermissionHandlerState extends State<PermissionHandler>
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Setting up your library...',
-                        style: TextStyle(
+                      Text(
+                        l10n.loadingLibrary,
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white70,
                         ),

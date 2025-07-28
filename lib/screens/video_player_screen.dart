@@ -68,7 +68,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         playedColor: Colors.orange,
         handleColor: Colors.orange,
         backgroundColor: Colors.grey,
-        bufferedColor: Colors.orange.withOpacity(0.3),
+        bufferedColor: Colors.orange.withValues(alpha: 0.3),
       ),
       placeholder: Container(
         color: Colors.black,
@@ -300,7 +300,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.orange.shade600.withOpacity(0.2),
+              color: Colors.orange.shade600.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(40),
             ),
             child: Icon(

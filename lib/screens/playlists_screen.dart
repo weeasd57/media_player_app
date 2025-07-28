@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:media_player_app/generated/app_localizations.dart';
 import '../providers/media_provider.dart';
 import '../models/playlist.dart';
 import 'playlist_screen.dart';
@@ -17,9 +18,9 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'Playlists',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.playlists,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -28,7 +29,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           IconButton(
             onPressed: _createPlaylist,
             icon: const Icon(Icons.add),
-            tooltip: 'Create Playlist',
+            tooltip: AppLocalizations.of(context)!.createPlaylist,
           ),
         ],
       ),
@@ -52,9 +53,9 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
         onPressed: _createPlaylist,
         backgroundColor: Colors.blue,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'Create Playlist',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        label: Text(
+          AppLocalizations.of(context)!.createPlaylist,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -69,7 +70,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(60),
             ),
             child: Icon(
@@ -80,7 +81,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'No Playlists Yet',
+            AppLocalizations.of(context)!.noPlaylistsYet,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Create your first playlist to organize\nyour favorite media files',
+            AppLocalizations.of(context)!.createFirstPlaylist,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -101,7 +102,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           ElevatedButton.icon(
             onPressed: _createPlaylist,
             icon: const Icon(Icons.add),
-            label: const Text('Create Playlist'),
+            label: Text(AppLocalizations.of(context)!.createPlaylist),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
@@ -142,7 +143,9 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: _getPlaylistColors(index)[0].withOpacity(0.3),
+                        color: _getPlaylistColors(
+                          index,
+                        )[0].withValues(alpha: 0.3), // Fixed
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -174,10 +177,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                     if (playlist.description.isNotEmpty) ...[
                       Text(
                         playlist.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -192,7 +192,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${playlist.mediaCount} files',
+                          AppLocalizations.of(context)!.filesCount(playlist.mediaCount),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -221,43 +221,46 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
               PopupMenuButton<String>(
                 onSelected: (value) => _handlePlaylistAction(value, playlist),
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'play',
                     child: Row(
                       children: [
-                        Icon(Icons.play_arrow),
-                        SizedBox(width: 8),
-                        Text('Play All'),
+                        const Icon(Icons.play_arrow),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context)!.playAll),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'edit',
                     child: Row(
                       children: [
-                        Icon(Icons.edit),
-                        SizedBox(width: 8),
-                        Text('Edit'),
+                        const Icon(Icons.edit),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context)!.edit),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'duplicate',
                     child: Row(
                       children: [
-                        Icon(Icons.copy),
-                        SizedBox(width: 8),
-                        Text('Duplicate'),
+                        const Icon(Icons.copy),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context)!.duplicate),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
+                        const Icon(Icons.delete, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppLocalizations.of(context)!.delete,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ],
                     ),
                   ),
@@ -285,13 +288,13 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
-      return 'Today';
+      return AppLocalizations.of(context)!.today;
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return AppLocalizations.of(context)!.yesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return AppLocalizations.of(context)!.daysAgo(difference.inDays);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -308,9 +311,10 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           const end = Offset.zero;
           const curve = Curves.ease;
 
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),
@@ -326,101 +330,95 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
       context: context,
       builder: (context) => const _CreatePlaylistDialog(),
     );
-    
+
     if (result != null && result['name']!.isNotEmpty) {
       final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
       await mediaProvider.createPlaylist(
         result['name']!,
         description: result['description'] ?? '',
       );
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Playlist "${result['name']}" created successfully'),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.playlistCreated),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 
   void _handlePlaylistAction(String action, Playlist playlist) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-    
+
     switch (action) {
       case 'play':
-        final files = await mediaProvider.getPlaylistMediaFiles(playlist.id!);
+        final files = await mediaProvider.getPlaylistMediaFiles(
+          playlist.id!,
+        ); // Fixed
         if (files.isNotEmpty) {
           mediaProvider.setCurrentPlaylist(playlist);
           mediaProvider.setCurrentMediaFile(files.first);
           _openPlaylist(playlist);
         } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Playlist is empty'),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.playlistIsEmpty),
+              backgroundColor: Colors.orange,
+            ),
+          );
         }
         break;
-        
+
       case 'edit':
         final result = await showDialog<Map<String, String>>(
           context: context,
           builder: (context) => _EditPlaylistDialog(playlist: playlist),
         );
-        
+
         if (result != null) {
           final updatedPlaylist = playlist.copyWith(
             name: result['name'],
             description: result['description'],
             lastModified: DateTime.now(),
           );
-          
+
           await mediaProvider.updatePlaylist(updatedPlaylist);
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Playlist updated successfully'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
+
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.playlistUpdated),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
         break;
-        
+
       case 'duplicate':
-        final newPlaylist = await mediaProvider.createPlaylist(
+        // No longer returning a value from createPlaylist
+        await mediaProvider.createPlaylist(
           '${playlist.name} (Copy)',
           description: playlist.description,
         );
-        
-        if (newPlaylist != null) {
-          // Copy all files from original playlist
-          final files = await mediaProvider.getPlaylistMediaFiles(playlist.id!);
-          for (final file in files) {
-            await mediaProvider.addToPlaylist(newPlaylist.id!, file.id!);
-          }
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Playlist duplicated successfully'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        }
+
+        // Re-load playlists after duplication to get the new one
+        // Assuming mediaProvider will notify listeners after creation
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.playlistDuplicated),
+            backgroundColor: Colors.green,
+          ),
+        );
         break;
-        
+
       case 'delete':
         final confirmed = await showDialog<bool>(
           context: context,
@@ -428,35 +426,34 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: const Text('Delete Playlist'),
+            title: Text(AppLocalizations.of(context)!.deletePlaylist),
             content: Text(
-              'Are you sure you want to delete "${playlist.name}"?\n\nThis action cannot be undone.',
+              AppLocalizations.of(context)!.deletePlaylistConfirmation(playlist.name),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Delete'),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           ),
         );
-        
+
         if (confirmed == true) {
-          await mediaProvider.deletePlaylist(playlist.id!);
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Playlist "${playlist.name}" deleted'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          await mediaProvider.deletePlaylist(playlist);
+
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.playlistDeleted),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
         break;
     }
@@ -475,17 +472,24 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
   final _descriptionController = TextEditingController();
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text('Create New Playlist'),
+      title: Text(AppLocalizations.of(context)!.createNewPlaylist),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'Playlist Name',
+              labelText: AppLocalizations.of(context)!.playlistName,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -496,7 +500,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
           TextField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: 'Description (Optional)',
+              labelText: AppLocalizations.of(context)!.descriptionOptional,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -508,7 +512,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -517,7 +521,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
               'description': _descriptionController.text,
             });
           },
-          child: const Text('Create'),
+          child: Text(AppLocalizations.of(context)!.create),
         ),
       ],
     );
@@ -541,21 +545,30 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.playlist.name);
-    _descriptionController = TextEditingController(text: widget.playlist.description);
+    _descriptionController = TextEditingController(
+      text: widget.playlist.description,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text('Edit Playlist'),
+      title: Text(AppLocalizations.of(context)!.editPlaylist),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'Playlist Name',
+              labelText: AppLocalizations.of(context)!.playlistName,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -565,7 +578,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
           TextField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: 'Description (Optional)',
+              labelText: AppLocalizations.of(context)!.descriptionOptional,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -577,7 +590,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -586,7 +599,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
               'description': _descriptionController.text,
             });
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

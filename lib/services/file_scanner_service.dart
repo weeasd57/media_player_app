@@ -1,5 +1,9 @@
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:mime/mime.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart'; // Import foundation for debugPrint
+import 'package:just_audio/just_audio.dart'; // Added for audio duration
+import 'package:video_player/video_player.dart'; // Added for video duration
 import '../models/media_file.dart';
 import 'database_service.dart';
 
@@ -47,7 +51,7 @@ class FileScannerService {
 
   // Get file extension
   String getFileExtension(String filePath) {
-    return '.' + filePath.split('.').last.toLowerCase();
+    return '.${filePath.split('.').last.toLowerCase()}';
   }
 
   // Determine media type from file extension
@@ -87,7 +91,7 @@ class FileScannerService {
       final documentsDir = await getApplicationDocumentsDirectory();
       directories.add(documentsDir);
     } catch (e) {
-      print('Error getting media directories: $e');
+      debugPrint('Error getting media directories: $e');
     }
 
     return directories;
@@ -104,7 +108,7 @@ class FileScannerService {
         }
       }
     } catch (e) {
-      print('Error scanning directory ${directory.path}: $e');
+      debugPrint('Error scanning directory ${directory.path}: $e');
     }
 
     return mediaFiles;
@@ -144,11 +148,16 @@ class FileScannerService {
         return existingFile;
       }
 
+      final duration = await _getMediaDuration(file.path); // Get duration
+
       return MediaFile(
+        id: null,
         name: fileName,
         path: file.path,
         type: mediaType,
-        duration: 0, // Will be updated when file is played
+        duration:
+            duration?.inMilliseconds ??
+            0, // Use duration from _getMediaDuration
         size: stat.size,
         dateAdded: DateTime.now(),
         lastPlayed: DateTime.now(),
@@ -156,7 +165,7 @@ class FileScannerService {
         isFavorite: false,
       );
     } catch (e) {
-      print('Error creating MediaFile from ${file.path}: $e');
+      debugPrint('Error creating MediaFile from ${file.path}: $e');
       return null;
     }
   }
@@ -177,7 +186,7 @@ class FileScannerService {
             addedFiles.add(mediaFile.copyWith(id: id));
           } catch (e) {
             // File might already exist, skip it
-            print('Skipping duplicate file: ${mediaFile.path}');
+            debugPrint('Skipping duplicate file: ${mediaFile.path}');
           }
         }
       }
@@ -212,7 +221,7 @@ class FileScannerService {
         addedFiles: addedFiles,
       );
     } catch (e) {
-      print('Error during full scan: $e');
+      debugPrint('Error during full scan: $e');
       return ScanResult(
         totalFilesFound: 0,
         filesAdded: 0,
@@ -245,7 +254,7 @@ class FileScannerService {
         addedFiles: addedFiles,
       );
     } catch (e) {
-      print('Error scanning directory $directoryPath: $e');
+      debugPrint('Error scanning directory $directoryPath: $e');
       return ScanResult(
         totalFilesFound: 0,
         filesAdded: 0,
@@ -269,6 +278,102 @@ class FileScannerService {
     }
 
     return removedCount;
+  }
+
+  // Helper method to get media duration
+  Future<Duration?> _getMediaDuration(String filePath) async {
+    final mediaType = getMediaType(filePath);
+    if (mediaType == 'audio') {
+      try {
+        final audioPlayer = AudioPlayer();
+        final duration = await audioPlayer.setFilePath(filePath);
+        await audioPlayer.dispose();
+        return duration;
+      } catch (e) {
+        debugPrint('Error getting audio duration for $filePath: $e');
+        return null;
+      }
+    } else if (mediaType == 'video') {
+      try {
+        final videoController = VideoPlayerController.file(File(filePath));
+        await videoController.initialize();
+        final duration = videoController.value.duration;
+        await videoController.dispose();
+        return duration;
+      } catch (e) {
+        debugPrint('Error getting video duration for $filePath: $e');
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Old scanDevice method (re-added)
+  Future<List<MediaFile>> scanDevice(Function(String) onProgress) async {
+    List<MediaFile> foundFiles = [];
+    try {
+      onProgress('Scanning directories...');
+      final directories = await getCommonMediaDirectories();
+      debugPrint('Directories to scan: $directories');
+
+      for (Directory directory in directories) {
+        if (await directory.exists()) {
+          await for (var entity in directory.list(recursive: true)) {
+            if (entity is File) {
+              final file = entity;
+              final mimeType = lookupMimeType(file.path);
+              if (mimeType != null &&
+                  (mimeType.startsWith('audio/') ||
+                      mimeType.startsWith('video/'))) {
+                final duration = await _getMediaDuration(file.path);
+                if (duration != null) {
+                  final mediaFile = MediaFile(
+                    id: null,
+                    name: file.path.split('/').last,
+                    path: file.path,
+                    type: mimeType.split('/').first,
+                    duration: duration.inSeconds,
+                    size: (await file.stat()).size,
+                    dateAdded: (await file.stat())
+                        .changed, // or .modified or .accessed
+                    lastPlayed: DateTime.now(), // default to now or null
+                    playCount: 0,
+                    isFavorite: false,
+                  );
+                  foundFiles.add(mediaFile);
+                  debugPrint('Found media file: ${file.path}');
+                }
+              }
+            }
+          }
+        }
+      }
+      onProgress('Scan complete. Found ${foundFiles.length} files.');
+    } catch (e) {
+      debugPrint('Error during file scan: $e');
+      onProgress('Scan failed: $e');
+    }
+    return foundFiles;
+  }
+
+  // Old getAllFilePaths method (re-added)
+  Future<List<String>> getAllFilePaths() async {
+    List<String> filePaths = [];
+    try {
+      final directories = await getCommonMediaDirectories();
+      for (Directory directory in directories) {
+        if (await directory.exists()) {
+          await for (var entity in directory.list(recursive: true)) {
+            if (entity is File) {
+              filePaths.add(entity.path);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error getting all file paths: $e');
+    }
+    return filePaths;
   }
 }
 

@@ -93,11 +93,7 @@ class _LibraryScreenState extends State<LibraryScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildAllFilesTab(),
-          _buildAudioTab(),
-          _buildVideoTab(),
-        ],
+        children: [_buildAllFilesTab(), _buildAudioTab(), _buildVideoTab()],
       ),
     );
   }
@@ -106,7 +102,7 @@ class _LibraryScreenState extends State<LibraryScreen>
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         final files = _sortFiles(mediaProvider.allMediaFiles);
-        
+
         if (files.isEmpty) {
           return _buildEmptyState('No media files found', Icons.library_music);
         }
@@ -125,17 +121,25 @@ class _LibraryScreenState extends State<LibraryScreen>
   Widget _buildAudioTab() {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
-        final files = _sortFiles(mediaProvider.audioFiles);
-        
-        if (files.isEmpty) {
-          return _buildEmptyState('No audio files found', Icons.music_note);
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            return _buildMediaListTile(files[index], index);
+        return FutureBuilder<List<MediaFile>>(
+          future: mediaProvider.getMediaFilesByType('audio'),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return _buildEmptyState('Error loading audio files', Icons.error);
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return _buildEmptyState('No audio files found', Icons.music_note);
+            } else {
+              final files = _sortFiles(snapshot.data!); // Fixed
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: files.length,
+                itemBuilder: (context, index) {
+                  return _buildMediaListTile(files[index], index);
+                },
+              );
+            }
           },
         );
       },
@@ -145,17 +149,28 @@ class _LibraryScreenState extends State<LibraryScreen>
   Widget _buildVideoTab() {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
-        final files = _sortFiles(mediaProvider.videoFiles);
-        
-        if (files.isEmpty) {
-          return _buildEmptyState('No video files found', Icons.video_library);
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            return _buildMediaListTile(files[index], index);
+        return FutureBuilder<List<MediaFile>>(
+          future: mediaProvider.getMediaFilesByType('video'),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return _buildEmptyState('Error loading video files', Icons.error);
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return _buildEmptyState(
+                'No video files found',
+                Icons.video_library,
+              );
+            } else {
+              final files = _sortFiles(snapshot.data!); // Fixed
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: files.length,
+                itemBuilder: (context, index) {
+                  return _buildMediaListTile(files[index], index);
+                },
+              );
+            }
           },
         );
       },
@@ -210,8 +225,8 @@ class _LibraryScreenState extends State<LibraryScreen>
             height: 56,
             decoration: BoxDecoration(
               color: file.type == 'audio'
-                  ? Colors.purple.withOpacity(0.1)
-                  : Colors.orange.withOpacity(0.1),
+                  ? Colors.purple.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -225,10 +240,7 @@ class _LibraryScreenState extends State<LibraryScreen>
         ),
         title: Text(
           file.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -238,19 +250,13 @@ class _LibraryScreenState extends State<LibraryScreen>
             const SizedBox(height: 4),
             Text(
               '${file.formattedDuration} • ${file.formattedSize}',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
             if (file.playCount > 0) ...[
               const SizedBox(height: 2),
               Text(
                 'Played ${file.playCount} times',
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.grey[500], fontSize: 12),
               ),
             ],
           ],
@@ -259,11 +265,7 @@ class _LibraryScreenState extends State<LibraryScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             if (file.isFavorite)
-              const Icon(
-                Icons.favorite,
-                color: Colors.red,
-                size: 20,
-              ),
+              const Icon(Icons.favorite, color: Colors.red, size: 20),
             const SizedBox(width: 8),
             PopupMenuButton<String>(
               onSelected: (value) => _handleFileAction(value, file),
@@ -282,13 +284,17 @@ class _LibraryScreenState extends State<LibraryScreen>
                   value: 'favorite',
                   child: Row(
                     children: [
-                      Icon(file.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border),
+                      Icon(
+                        file.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                      ),
                       const SizedBox(width: 8),
-                      Text(file.isFavorite
-                          ? 'Remove from Favorites'
-                          : 'Add to Favorites'),
+                      Text(
+                        file.isFavorite
+                            ? 'Remove from Favorites'
+                            : 'Add to Favorites',
+                      ),
                     ],
                   ),
                 ),
@@ -323,25 +329,31 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   List<MediaFile> _sortFiles(List<MediaFile> files) {
     final sortedFiles = List<MediaFile>.from(files);
-    
+
     switch (_sortBy) {
       case 'name':
-        sortedFiles.sort((a, b) => _isAscending
-            ? a.name.compareTo(b.name)
-            : b.name.compareTo(a.name));
+        sortedFiles.sort(
+          (a, b) => _isAscending
+              ? a.name.compareTo(b.name)
+              : b.name.compareTo(a.name),
+        );
         break;
       case 'date':
-        sortedFiles.sort((a, b) => _isAscending
-            ? a.dateAdded.compareTo(b.dateAdded)
-            : b.dateAdded.compareTo(a.dateAdded));
+        sortedFiles.sort(
+          (a, b) => _isAscending
+              ? a.dateAdded.compareTo(b.dateAdded)
+              : b.dateAdded.compareTo(a.dateAdded),
+        );
         break;
       case 'size':
-        sortedFiles.sort((a, b) => _isAscending
-            ? a.size.compareTo(b.size)
-            : b.size.compareTo(a.size));
+        sortedFiles.sort(
+          (a, b) => _isAscending
+              ? a.size.compareTo(b.size)
+              : b.size.compareTo(a.size),
+        );
         break;
     }
-    
+
     return sortedFiles;
   }
 
@@ -359,40 +371,41 @@ class _LibraryScreenState extends State<LibraryScreen>
   void _playMediaFile(MediaFile file) {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     mediaProvider.setCurrentMediaFile(file);
-    
+
+    // Added for playcount update
+    mediaProvider.updatePlayCount(
+      file.id!,
+    ); // Fixed: Ensure updatePlayCount is called correctly
+
     if (file.type == 'audio') {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const AudioPlayerScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const AudioPlayerScreen()),
       );
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const VideoPlayerScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const VideoPlayerScreen()),
       );
     }
   }
 
   void _handleFileAction(String action, MediaFile file) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-    
+
     switch (action) {
       case 'play':
         _playMediaFile(file);
         break;
-        
+
       case 'favorite':
-        await mediaProvider.toggleFavorite(file.id!);
+        await mediaProvider.toggleFavorite(file);
         break;
-        
+
       case 'addToPlaylist':
         _showAddToPlaylistDialog(file);
         break;
-        
+
       case 'delete':
         _showDeleteConfirmation(file);
         break;
@@ -420,17 +433,19 @@ class _LibraryScreenState extends State<LibraryScreen>
           ),
           ElevatedButton(
             onPressed: () async {
-              final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-              await mediaProvider.deleteMediaFile(file.id!);
-              if (mounted) {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('File deleted successfully'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+              final mediaProvider = Provider.of<MediaProvider>(
+                context,
+                listen: false,
+              );
+              await mediaProvider.deleteMediaFile(file);
+              if (!mounted) return; // Add mounted check
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('File deleted successfully'),
+                  backgroundColor: Colors.red,
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Delete'),
@@ -442,20 +457,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   void _scanForFiles() async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-    final result = await mediaProvider.scanForMediaFiles();
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            result.hasError
-                ? 'Scan error: ${result.error}'
-                : 'Found ${result.totalFilesFound} files, added ${result.filesAdded} new files',
-          ),
-          backgroundColor: result.hasError ? Colors.red : Colors.green,
-        ),
-      );
-    }
+    await mediaProvider.scanForMediaFiles();
   }
 }
 
@@ -469,15 +471,15 @@ class _AddToPlaylistDialog extends StatelessWidget {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Text('Add to Playlist'),
           content: SizedBox(
             width: double.maxFinite,
             height: 300,
             child: mediaProvider.playlists.isEmpty
-                ? const Center(
-                    child: Text('No playlists available'),
-                  )
+                ? const Center(child: Text('No playlists available'))
                 : ListView.builder(
                     itemCount: mediaProvider.playlists.length,
                     itemBuilder: (context, index) {
@@ -487,16 +489,15 @@ class _AddToPlaylistDialog extends StatelessWidget {
                         title: Text(playlist.name),
                         subtitle: Text('${playlist.mediaCount} files'),
                         onTap: () async {
-                          await mediaProvider.addToPlaylist(playlist.id!, file.id!);
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added to ${playlist.name}'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          }
+                          await mediaProvider.addToPlaylist(playlist, file);
+                          if (!context.mounted) return; // Add mounted check
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Added to ${playlist.name}'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
                         },
                       );
                     },

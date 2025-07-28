@@ -1,409 +1,310 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/media_file.dart';
 import '../models/playlist.dart';
 import '../services/database_service.dart';
 import '../services/file_scanner_service.dart';
+import 'package:flutter/foundation.dart';
 
-class MediaProvider with ChangeNotifier {
+class MediaProvider extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
   final FileScannerService _fileScannerService = FileScannerService();
 
-  // Media files
   List<MediaFile> _allMediaFiles = [];
-  List<MediaFile> _audioFiles = [];
-  List<MediaFile> _videoFiles = [];
-  List<MediaFile> _favoriteFiles = [];
   List<MediaFile> _recentFiles = [];
-
-  // Playlists
+  List<MediaFile> _favoriteFiles = [];
   List<Playlist> _playlists = [];
-
-  // Current playing
-  MediaFile? _currentMediaFile;
-  Playlist? _currentPlaylist;
-  int _currentIndex = 0;
-
-  // Loading states
-  bool _isLoading = false;
+  Map<String, int> _statistics = {};
   bool _isScanning = false;
   String _scanningStatus = '';
 
-  // Statistics
-  Map<String, int> _statistics = {};
+  Playlist? _currentPlaylist;
+  MediaFile? _currentMediaFile;
 
-  // Getters
+  bool _autoRepeat = false;
+  bool _shuffleMode = false;
+
   List<MediaFile> get allMediaFiles => _allMediaFiles;
-  List<MediaFile> get audioFiles => _audioFiles;
-  List<MediaFile> get videoFiles => _videoFiles;
-  List<MediaFile> get favoriteFiles => _favoriteFiles;
   List<MediaFile> get recentFiles => _recentFiles;
+  List<MediaFile> get favoriteFiles => _favoriteFiles;
   List<Playlist> get playlists => _playlists;
-  
-  MediaFile? get currentMediaFile => _currentMediaFile;
-  Playlist? get currentPlaylist => _currentPlaylist;
-  int get currentIndex => _currentIndex;
-  
-  bool get isLoading => _isLoading;
+  Map<String, int> get statistics => _statistics;
   bool get isScanning => _isScanning;
   String get scanningStatus => _scanningStatus;
-  Map<String, int> get statistics => _statistics;
 
-  // Initialize provider
+  Playlist? get currentPlaylist => _currentPlaylist;
+  MediaFile? get currentMediaFile => _currentMediaFile;
+
+  bool get autoRepeat => _autoRepeat;
+  bool get shuffleMode => _shuffleMode;
+
   Future<void> initialize() async {
-    _setLoading(true);
-    try {
-      await loadAllData();
-    } catch (e) {
-      print('Error initializing MediaProvider: $e');
-    } finally {
-      _setLoading(false);
-    }
+    await _databaseService.database;
+    debugPrint('MediaProvider initialized: Database and media loaded.');
+    await _loadMediaFiles();
+    await _loadPlaylists();
+    await _loadSettings();
   }
 
-  // Load all data from database
-  Future<void> loadAllData() async {
-    await Future.wait([
-      loadMediaFiles(),
-      loadPlaylists(),
-      loadStatistics(),
-    ]);
-  }
-
-  // Load media files
-  Future<void> loadMediaFiles() async {
-    try {
-      _allMediaFiles = await _databaseService.getAllMediaFiles();
-      _audioFiles = await _databaseService.getMediaFilesByType('audio');
-      _videoFiles = await _databaseService.getMediaFilesByType('video');
-      _favoriteFiles = await _databaseService.getFavoriteMediaFiles();
-      _recentFiles = await _databaseService.getRecentlyPlayedFiles();
-      notifyListeners();
-    } catch (e) {
-      print('Error loading media files: $e');
-    }
-  }
-
-  // Load playlists
-  Future<void> loadPlaylists() async {
-    try {
-      _playlists = await _databaseService.getAllPlaylists();
-      notifyListeners();
-    } catch (e) {
-      print('Error loading playlists: $e');
-    }
-  }
-
-  // Load statistics
-  Future<void> loadStatistics() async {
-    try {
-      _statistics = await _databaseService.getMediaStatistics();
-      notifyListeners();
-    } catch (e) {
-      print('Error loading statistics: $e');
-    }
-  }
-
-  // Scan for media files
-  Future<ScanResult> scanForMediaFiles() async {
-    _setScanning(true);
-    try {
-      final result = await _fileScannerService.performFullScan(
-        onDirectoryChanged: (directory) {
-          _scanningStatus = 'Scanning: $directory';
-          notifyListeners();
-        },
-        onScanProgress: (current, total) {
-          _scanningStatus = 'Scanning directories: $current/$total';
-          notifyListeners();
-        },
-        onImportProgress: (current, total) {
-          _scanningStatus = 'Importing files: $current/$total';
-          notifyListeners();
-        },
-      );
-
-      if (result.hasNewFiles) {
-        await loadAllData();
-      }
-
-      return result;
-    } catch (e) {
-      print('Error scanning for media files: $e');
-      return ScanResult(
-        totalFilesFound: 0,
-        filesAdded: 0,
-        addedFiles: [],
-        error: e.toString(),
-      );
-    } finally {
-      _setScanning(false);
-    }
-  }
-
-  // Add media file
-  Future<MediaFile?> addMediaFile(MediaFile mediaFile) async {
-    try {
-      final id = await _databaseService.insertMediaFile(mediaFile);
-      final newFile = mediaFile.copyWith(id: id);
-      await loadMediaFiles();
-      await loadStatistics();
-      return newFile;
-    } catch (e) {
-      print('Error adding media file: $e');
-      return null;
-    }
-  }
-
-  // Update media file
-  Future<bool> updateMediaFile(MediaFile mediaFile) async {
-    try {
-      await _databaseService.updateMediaFile(mediaFile);
-      await loadMediaFiles();
-      return true;
-    } catch (e) {
-      print('Error updating media file: $e');
-      return false;
-    }
-  }
-
-  // Delete media file
-  Future<bool> deleteMediaFile(int id) async {
-    try {
-      await _databaseService.deleteMediaFile(id);
-      await loadMediaFiles();
-      await loadStatistics();
-      return true;
-    } catch (e) {
-      print('Error deleting media file: $e');
-      return false;
-    }
-  }
-
-  // Toggle favorite
-  Future<void> toggleFavorite(int id) async {
-    try {
-      await _databaseService.toggleFavorite(id);
-      await loadMediaFiles();
-    } catch (e) {
-      print('Error toggling favorite: $e');
-    }
-  }
-
-  // Update play count
-  Future<void> updatePlayCount(int id) async {
-    try {
-      await _databaseService.updatePlayCount(id);
-      await loadMediaFiles();
-    } catch (e) {
-      print('Error updating play count: $e');
-    }
-  }
-
-  // Create playlist
-  Future<Playlist?> createPlaylist(String name, {String description = ''}) async {
-    try {
-      final playlist = Playlist(
-        name: name,
-        description: description,
-        dateCreated: DateTime.now(),
-        lastModified: DateTime.now(),
-      );
-      
-      final id = await _databaseService.insertPlaylist(playlist);
-      final newPlaylist = playlist.copyWith(id: id);
-      await loadPlaylists();
-      await loadStatistics();
-      return newPlaylist;
-    } catch (e) {
-      print('Error creating playlist: $e');
-      return null;
-    }
-  }
-
-  // Update playlist
-  Future<bool> updatePlaylist(Playlist playlist) async {
-    try {
-      await _databaseService.updatePlaylist(playlist);
-      await loadPlaylists();
-      return true;
-    } catch (e) {
-      print('Error updating playlist: $e');
-      return false;
-    }
-  }
-
-  // Delete playlist
-  Future<bool> deletePlaylist(int id) async {
-    try {
-      await _databaseService.deletePlaylist(id);
-      await loadPlaylists();
-      await loadStatistics();
-      return true;
-    } catch (e) {
-      print('Error deleting playlist: $e');
-      return false;
-    }
-  }
-
-  // Add media file to playlist
-  Future<bool> addToPlaylist(int playlistId, int mediaFileId) async {
-    try {
-      final playlist = await _databaseService.getPlaylistById(playlistId);
-      if (playlist != null) {
-        final updatedIds = List<int>.from(playlist.mediaFileIds);
-        if (!updatedIds.contains(mediaFileId)) {
-          updatedIds.add(mediaFileId);
-          final updatedPlaylist = playlist.copyWith(
-            mediaFileIds: updatedIds,
-            lastModified: DateTime.now(),
-          );
-          await _databaseService.updatePlaylist(updatedPlaylist);
-          await loadPlaylists();
-          return true;
-        }
-      }
-      return false;
-    } catch (e) {
-      print('Error adding to playlist: $e');
-      return false;
-    }
-  }
-
-  // Remove media file from playlist
-  Future<bool> removeFromPlaylist(int playlistId, int mediaFileId) async {
-    try {
-      final playlist = await _databaseService.getPlaylistById(playlistId);
-      if (playlist != null) {
-        final updatedIds = List<int>.from(playlist.mediaFileIds);
-        updatedIds.remove(mediaFileId);
-        final updatedPlaylist = playlist.copyWith(
-          mediaFileIds: updatedIds,
-          lastModified: DateTime.now(),
-        );
-        await _databaseService.updatePlaylist(updatedPlaylist);
-        await loadPlaylists();
-        return true;
-      }
-      return false;
-    } catch (e) {
-      print('Error removing from playlist: $e');
-      return false;
-    }
-  }
-
-  // Get playlist media files
-  Future<List<MediaFile>> getPlaylistMediaFiles(int playlistId) async {
-    try {
-      return await _databaseService.getPlaylistMediaFiles(playlistId);
-    } catch (e) {
-      print('Error getting playlist media files: $e');
-      return [];
-    }
-  }
-
-  // Search media files
-  Future<List<MediaFile>> searchMediaFiles(String query) async {
-    try {
-      return await _databaseService.searchMediaFiles(query);
-    } catch (e) {
-      print('Error searching media files: $e');
-      return [];
-    }
-  }
-
-  // Search playlists
-  Future<List<Playlist>> searchPlaylists(String query) async {
-    try {
-      return await _databaseService.searchPlaylists(query);
-    } catch (e) {
-      print('Error searching playlists: $e');
-      return [];
-    }
-  }
-
-  // Set current media file
-  void setCurrentMediaFile(MediaFile? mediaFile, {int index = 0}) {
-    _currentMediaFile = mediaFile;
-    _currentIndex = index;
+  Future<void> _loadMediaFiles() async {
+    _allMediaFiles = await _databaseService.getAllMediaFiles();
+    // Get all files and sort them by lastPlayed
+    _recentFiles = _allMediaFiles.toList();
+    _recentFiles.sort((a, b) => b.lastPlayed.compareTo(a.lastPlayed));
+    _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
+    _updateStatistics();
     notifyListeners();
-    
-    // Update play count if media file is set
-    if (mediaFile != null) {
-      updatePlayCount(mediaFile.id!);
+  }
+
+  Future<void> _loadPlaylists() async {
+    _playlists = await _databaseService.getAllPlaylists();
+    notifyListeners();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    _autoRepeat = prefs.getBool('autoRepeat') ?? false;
+    _shuffleMode = prefs.getBool('shuffleMode') ?? false;
+    notifyListeners();
+  }
+
+  void _updateStatistics() {
+    _statistics = {
+      'audio': _allMediaFiles.where((file) => file.type == 'audio').length,
+      'video': _allMediaFiles.where((file) => file.type == 'video').length,
+      'favorites': _favoriteFiles.length,
+      'playlists': _playlists.length,
+    };
+    debugPrint('Statistics updated: $_statistics');
+  }
+
+  Future<void> scanForMediaFiles() async {
+    _isScanning = true;
+    _scanningStatus = 'Preparing to scan...';
+    notifyListeners();
+    debugPrint('Starting media scan...');
+
+    try {
+      final scanResult = await _fileScannerService.performFullScan(
+        onDirectoryChanged: (status) {
+          _scanningStatus = status;
+          debugPrint('Scanning status: $status');
+          notifyListeners();
+        },
+      );
+
+      if (!scanResult.hasError) {
+        await _loadMediaFiles();
+        _scanningStatus = 'Scan complete!';
+        debugPrint('Scan complete. Found ${scanResult.filesAdded} new files.');
+      } else {
+        _scanningStatus = 'Scan error: ${scanResult.error}';
+        debugPrint('Scan error: ${scanResult.error}');
+      }
+      notifyListeners();
+      return;
+    } catch (e) {
+      _scanningStatus = 'Scan error: $e';
+      debugPrint('Scan error: $e');
+      notifyListeners();
+      return;
+    } finally {
+      _isScanning = false;
+      debugPrint('Media scan finished.');
+      notifyListeners();
     }
   }
 
-  // Set current playlist
+  Future<bool> checkAndRequestPermission() async {
+    final status = await Permission.storage.request();
+    return status.isGranted;
+  }
+
+  Future<void> scanAllFiles() async {
+    await scanForMediaFiles();
+  }
+
+  Future<void> updateMediaFile(MediaFile file) async {
+    await _databaseService.updateMediaFile(file);
+    await _loadMediaFiles();
+  }
+
+  Future<void> toggleFavorite(MediaFile file) async {
+    final updatedFile = file.copyWith(isFavorite: !file.isFavorite);
+    await _databaseService.updateMediaFile(updatedFile);
+    await _loadMediaFiles();
+  }
+
+  Future<void> createPlaylist(String name, {String description = ''}) async {
+    final newPlaylist = Playlist(
+      id: null,
+      name: name,
+      description: description, // Pass description
+      dateCreated: DateTime.now(),
+      lastModified: DateTime.now(),
+      mediaFileIds: [],
+    );
+    final id = await _databaseService.insertPlaylist(newPlaylist);
+    _playlists.add(newPlaylist.copyWith(id: id));
+    _updateStatistics();
+    notifyListeners();
+  }
+
+  Future<void> addMediaToPlaylist(
+    Playlist playlist,
+    MediaFile mediaFile,
+  ) async {
+    if (mediaFile.id != null && !playlist.mediaFileIds.contains(mediaFile.id)) {
+      final updatedMediaIds = List<int>.from(playlist.mediaFileIds)
+        ..add(mediaFile.id!);
+      final updatedPlaylist = playlist.copyWith(mediaFileIds: updatedMediaIds);
+      await _databaseService.updatePlaylist(updatedPlaylist);
+      _loadPlaylists();
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeMediaFromPlaylist(
+    Playlist playlist,
+    MediaFile mediaFile,
+  ) async {
+    if (mediaFile.id != null) {
+      final updatedMediaIds = List<int>.from(playlist.mediaFileIds)
+        ..remove(mediaFile.id);
+      final updatedPlaylist = playlist.copyWith(mediaFileIds: updatedMediaIds);
+      await _databaseService.updatePlaylist(updatedPlaylist);
+      _loadPlaylists();
+      notifyListeners();
+    }
+  }
+
+  Future<void> deletePlaylist(Playlist playlist) async {
+    await _databaseService.deletePlaylist(playlist.id!);
+    _playlists.removeWhere((p) => p.id == playlist.id);
+    _updateStatistics();
+    notifyListeners();
+  }
+
+  Future<void> cleanLibrary() async {
+    debugPrint('Starting library clean up...');
+    final removedCount = await _fileScannerService.cleanupMissingFiles();
+    debugPrint('Removed $removedCount missing files.');
+    await _loadMediaFiles();
+    _updateStatistics();
+    debugPrint('Library clean up complete.');
+    notifyListeners();
+  }
+
+  // إضافة الطريقة المفقودة
+  Future<void> cleanupMissingFiles() async {
+    await cleanLibrary();
+  }
+
+  Future<List<MediaFile>> searchMediaFiles(String query) async {
+    if (query.isEmpty) {
+      return _allMediaFiles;
+    }
+    return _allMediaFiles
+        .where((file) => file.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
   void setCurrentPlaylist(Playlist? playlist) {
     _currentPlaylist = playlist;
     notifyListeners();
   }
 
-  // Play next in current playlist
-  Future<MediaFile?> playNext() async {
-    if (_currentPlaylist != null) {
-      final playlistFiles = await getPlaylistMediaFiles(_currentPlaylist!.id!);
-      if (playlistFiles.isNotEmpty && _currentIndex < playlistFiles.length - 1) {
-        _currentIndex++;
-        _currentMediaFile = playlistFiles[_currentIndex];
-        notifyListeners();
-        updatePlayCount(_currentMediaFile!.id!);
-        return _currentMediaFile;
-      }
-    }
-    return null;
+  void setCurrentMediaFile(MediaFile? mediaFile) {
+    _currentMediaFile = mediaFile;
+    notifyListeners();
   }
 
-  // Play previous in current playlist
-  Future<MediaFile?> playPrevious() async {
-    if (_currentPlaylist != null) {
-      final playlistFiles = await getPlaylistMediaFiles(_currentPlaylist!.id!);
-      if (playlistFiles.isNotEmpty && _currentIndex > 0) {
-        _currentIndex--;
-        _currentMediaFile = playlistFiles[_currentIndex];
-        notifyListeners();
-        updatePlayCount(_currentMediaFile!.id!);
-        return _currentMediaFile;
-      }
-    }
-    return null;
+  Future<void> setAutoRepeat(bool value) async {
+    _autoRepeat = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('autoRepeat', value);
+    notifyListeners();
   }
 
-  // Cleanup missing files
-  Future<int> cleanupMissingFiles() async {
-    try {
-      final removedCount = await _fileScannerService.cleanupMissingFiles();
-      if (removedCount > 0) {
-        await loadAllData();
+  Future<void> setShuffleMode(bool value) async {
+    _shuffleMode = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('shuffleMode', value);
+    notifyListeners();
+  }
+
+  Future<List<MediaFile>> getMediaFilesByType(String type) async {
+    return await _databaseService.getMediaFilesByType(type);
+  }
+
+  Future<void> deleteMediaFile(MediaFile file) async {
+    if (file.id != null) {
+      await _databaseService.deleteMediaFile(file.id!);
+      for (var playlist in _playlists) {
+        if (playlist.mediaFileIds.contains(file.id)) {
+          final updatedMediaIds = List<int>.from(playlist.mediaFileIds)
+            ..remove(file.id);
+          final updatedPlaylist = playlist.copyWith(
+            mediaFileIds: updatedMediaIds,
+          );
+          await _databaseService.updatePlaylist(updatedPlaylist);
+        }
       }
-      return removedCount;
-    } catch (e) {
-      print('Error cleaning up missing files: $e');
-      return 0;
+      await _loadMediaFiles();
+      await _loadPlaylists();
     }
   }
 
-  // Clear all data
+  Future<List<MediaFile>> getPlaylistMediaFiles(int playlistId) async {
+    return await _databaseService.getPlaylistMediaFiles(playlistId);
+  }
+
+  Future<void> updatePlaylist(Playlist playlist) async {
+    await _databaseService.updatePlaylist(playlist);
+    _loadPlaylists();
+    notifyListeners();
+  }
+
+  Future<void> addToPlaylist(Playlist playlist, MediaFile mediaFile) async {
+    await addMediaToPlaylist(playlist, mediaFile);
+  }
+
+  Future<void> removeFromPlaylist(
+    Playlist playlist,
+    MediaFile mediaFile,
+  ) async {
+    await removeMediaFromPlaylist(playlist, mediaFile);
+  }
+
   Future<void> clearAllData() async {
-    try {
-      await _databaseService.clearAllData();
-      await loadAllData();
-    } catch (e) {
-      print('Error clearing all data: $e');
-    }
-  }
-
-  // Private helper methods
-  void _setLoading(bool loading) {
-    _isLoading = loading;
+    await _databaseService.clearAllData();
+    _allMediaFiles.clear();
+    _recentFiles.clear();
+    _favoriteFiles.clear();
+    _playlists.clear();
+    _statistics.clear();
+    await _loadSettings();
     notifyListeners();
   }
 
-  void _setScanning(bool scanning) {
-    _isScanning = scanning;
-    if (!scanning) {
-      _scanningStatus = '';
-    }
-    notifyListeners();
+  // New: updatePlayCount method
+  Future<void> updatePlayCount(int mediaFileId) async {
+    await _databaseService.updatePlayCount(mediaFileId);
+    await _loadMediaFiles(); // Reload to update UI with new play count
   }
+}
+
+class ScanResult {
+  final int filesAdded;
+  final int totalFilesFound;
+  final bool hasError;
+  final String? error;
+
+  ScanResult({
+    this.filesAdded = 0,
+    this.totalFilesFound = 0,
+    required this.hasError,
+    this.error,
+  });
 }
