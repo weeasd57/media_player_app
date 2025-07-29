@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'screens/main_navigation.dart';
-import 'providers/media_provider.dart';
-import 'providers/theme_provider.dart';
+import 'presentation/navigation/main_navigation.dart';
+import 'presentation/providers/media_provider.dart';
+import 'presentation/providers/theme_provider.dart';
+import 'presentation/providers/text_provider.dart';
 import 'package:media_player_app/generated/app_localizations.dart';
 
 void main() {
@@ -20,6 +21,7 @@ class MediaPlayerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => MediaProvider()),
+        ChangeNotifierProvider(create: (context) => TextProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
