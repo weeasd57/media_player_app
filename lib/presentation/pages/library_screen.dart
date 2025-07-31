@@ -528,17 +528,22 @@ class _LibraryScreenState extends State<LibraryScreen>
             ),
             ElevatedButton(
               onPressed: () async {
+                final navigator = Navigator.of(context);
+                final scaffold = ScaffoldMessenger.of(context);
+                final errorColor = Theme.of(context).colorScheme.error;
+                
                 final mediaProvider = Provider.of<MediaProvider>(
                   context,
                   listen: false,
                 );
                 await mediaProvider.deleteMediaFile(file);
                 if (!mounted) return;
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
+                
+                navigator.pop();
+                scaffold.showSnackBar(
                   SnackBar(
                     content: Text(textProvider.getText('success')),
-                    backgroundColor: Theme.of(context).colorScheme.error,
+                    backgroundColor: errorColor,
                   ),
                 );
               },
@@ -553,7 +558,95 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   void _scanForFiles() async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
+    final textProvider = Provider.of<TextProvider>(context, listen: false);
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    
+    if (mediaProvider.isScanning) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 12),
+            Text(
+              textProvider.getText('scanning_files'),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 20),
+            Consumer<MediaProvider>(
+              builder: (context, provider, child) {
+                return Text(
+                  provider.scanningStatus.isNotEmpty
+                      ? provider.scanningStatus
+                      : textProvider.getText('loading'),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // بدء عملية المسح
     await mediaProvider.scanForMediaFiles();
+
+    // إغلاق الحوار بعد انتهاء المسح
+    if (mounted) {
+      Navigator.of(context).pop();
+      
+      // إظهار رسالة نجاح المسح
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: themeProvider.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 28),
+              const SizedBox(width: 12),
+              Text(
+                textProvider.getText('scan_complete'),
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+            ],
+          ),
+          content: Text(
+            textProvider.getText('scan_complete_message'),
+            style: TextStyle(color: themeProvider.secondaryTextColor),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(textProvider.getText('ok')),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -600,10 +693,13 @@ class _AddToPlaylistDialog extends StatelessWidget {
                           style: TextStyle(color: themeProvider.secondaryTextColor),
                         ),
                         onTap: () async {
+                          final navigator = Navigator.of(context);
+                          final scaffold = ScaffoldMessenger.of(context);
+                          
                           await mediaProvider.addToPlaylist(playlist, file);
-                          if (!context.mounted) return;
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          
+                          navigator.pop();
+                          scaffold.showSnackBar(
                             SnackBar(
                               content: Text(
                                 '${textProvider.getText('playlist_created')} ${playlist.name}',

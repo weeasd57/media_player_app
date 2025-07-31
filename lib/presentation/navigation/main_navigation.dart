@@ -238,7 +238,7 @@ class _MainNavigationState extends State<MainNavigation>
         return ScaleTransition(
           scale: _fabAnimation,
           child: FloatingActionButton(
-            onPressed: () => _showScanDialog(context, mediaProvider),
+            onPressed: () => showScanDialog(context, mediaProvider),
             backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 8,
             child: AnimatedSwitcher(
@@ -264,7 +264,7 @@ class _MainNavigationState extends State<MainNavigation>
     );
   }
 
-  void _showScanDialog(BuildContext context, MediaProvider mediaProvider) {
+  void showScanDialog(BuildContext context, MediaProvider mediaProvider) async {
     if (mediaProvider.isScanning) return;
 
     showDialog(
@@ -277,6 +277,55 @@ class _MainNavigationState extends State<MainNavigation>
         ),
       ),
     );
+
+    // بدء عملية المسح
+    await mediaProvider.scanForMediaFiles();
+
+    // إغلاق الحوار بعد انتهاء المسح
+    if (context.mounted) {
+      Navigator.of(context).pop();
+      
+      // إظهار رسالة نجاح المسح
+      final textProvider = Provider.of<TextProvider>(context, listen: false);
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: themeProvider.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 28),
+              const SizedBox(width: 12),
+              Text(
+                textProvider.getText('scan_complete'),
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+            ],
+          ),
+          content: Text(
+            textProvider.getText('scan_complete_message'),
+            style: TextStyle(color: themeProvider.secondaryTextColor),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(textProvider.getText('ok')),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 

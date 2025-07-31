@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,12 +52,49 @@ class MediaProvider extends ChangeNotifier {
 
   Future<void> _loadMediaFiles() async {
     _allMediaFiles = await _databaseService.getAllMediaFiles();
-    // Get all files and sort them by lastPlayed
-    _recentFiles = _allMediaFiles.toList();
-    _recentFiles.sort((a, b) => b.lastPlayed.compareTo(a.lastPlayed));
-    _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
+
+    // إذا كانت قاعدة البيانات فارغة، قم بتحميل الملفات التجريبية
+    if (_allMediaFiles.isEmpty) {
+      await _loadSampleMedia();
+    } else {
+      // Get all files and sort them by lastPlayed
+      _recentFiles = _allMediaFiles.toList();
+      _recentFiles.sort((a, b) => b.lastPlayed.compareTo(a.lastPlayed));
+      _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
+    }
+
     _updateStatistics();
     notifyListeners();
+  }
+
+  Future<void> _loadSampleMedia() async {
+    final manifestContent = await rootBundle.loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+    final sampleMediaPaths = manifestMap.keys
+        .where((String key) => key.contains('assets/sample_media/'))
+        .toList();
+
+    for (String path in sampleMediaPaths) {
+      final fileName = path.split('/').last;
+      final type = fileName.endsWith('.mp3') || fileName.endsWith('.wav') ? 'audio' : 'video';
+
+      final sampleFile = MediaFile(
+        name: fileName,
+        path: path,
+        type: type,
+        duration: 180000, // قيمة افتراضية
+        size: 5000000,    // قيمة افتراضية
+        dateAdded: DateTime.now(),
+        lastPlayed: DateTime.now(),
+      );
+
+      _allMediaFiles.add(sampleFile);
+    }
+
+    // تحديث القوائم الأخرى
+    _recentFiles = _allMediaFiles.toList();
+    _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
   }
 
   Future<void> _loadPlaylists() async {

@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../generated/app_localizations.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/text_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,18 +16,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     
-    return Consumer2<ThemeProvider, MediaProvider>(
-      builder: (context, themeProvider, mediaProvider, child) {
+    return Consumer3<ThemeProvider, MediaProvider, TextProvider>(
+      builder: (context, themeProvider, mediaProvider, textProvider, child) {
 
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
           appBar: AppBar(
             title: Text(
-              l10n.settings,
+              textProvider.getText('settings'),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+            backgroundColor: themeProvider.primaryBackgroundColor,
+            foregroundColor: themeProvider.primaryTextColor,
+            elevation: 0,
           ),
           body: AnimationLimiter(
             child: ListView(
@@ -38,24 +41,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: FadeInAnimation(child: widget),
                 ),
                 children: [
+                  // قسم المظهر
+                  _buildSectionHeader(
+                    textProvider.getText('theme'),
+                    themeProvider,
+                  ),
+                  _buildSettingsCard(themeProvider, [
+                    _buildSwitchTile(
+                      icon: themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                      title: textProvider.getText('dark_mode'),
+                      subtitle: themeProvider.isDarkMode 
+                          ? textProvider.getText('dark_mode') 
+                          : textProvider.getText('light_mode'),
+                      value: themeProvider.isDarkMode,
+                      onChanged: (value) => themeProvider.toggleTheme(value),
+                      themeProvider: themeProvider,
+                    ),
+                  ]),
+
+                  const SizedBox(height: 24),
+
+                  // قسم اللغة
+                  _buildSectionHeader(
+                    textProvider.getText('language'),
+                    themeProvider,
+                  ),
+                  _buildSettingsCard(themeProvider, [
+                    _buildLanguageTile(
+                      icon: Icons.language,
+                      title: textProvider.getText('language'),
+                      subtitle: textProvider.currentLanguage == 'ar' 
+                          ? textProvider.getText('arabic') 
+                          : textProvider.getText('english'),
+                      onTap: () => _showLanguageDialog(textProvider, themeProvider),
+                      themeProvider: themeProvider,
+                    ),
+                  ]),
+
+                  const SizedBox(height: 24),
+
                   // قسم التشغيل
                   _buildSectionHeader(
-                    l10n.playback,
+                    textProvider.getText('playback'),
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSwitchTile(
                       icon: Icons.repeat_rounded,
-                      title: l10n.autoRepeat,
-                      subtitle: l10n.autoRepeatDesc,
+                      title: textProvider.getText('auto_repeat'),
+                      subtitle: textProvider.getText('automatically_repeat_playlists'),
                       value: mediaProvider.autoRepeat,
                       onChanged: (value) => mediaProvider.setAutoRepeat(value),
                       themeProvider: themeProvider,
                     ),
                     _buildSwitchTile(
                       icon: Icons.shuffle_rounded,
-                      title: l10n.shuffleMode,
-                      subtitle: l10n.shuffleModeDesc,
+                      title: textProvider.getText('shuffle_mode'),
+                      subtitle: textProvider.getText('randomize_playback_order'),
                       value: mediaProvider.shuffleMode,
                       onChanged: (value) => mediaProvider.setShuffleMode(value),
                       themeProvider: themeProvider,
@@ -65,36 +107,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 24),
 
                   // قسم المكتبة
-                  _buildSectionHeader(l10n.library, themeProvider),
+                  _buildSectionHeader(
+                    textProvider.getText('library'),
+                    themeProvider,
+                  ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.refresh_rounded,
-                      title: l10n.scanMediaFiles,
-                      subtitle: l10n.scanMediaFilesDesc,
-                      onTap: () => _scanForFiles(
-                        mediaProvider,
-                        themeProvider,
-                      ),
+                      title: textProvider.getText('scan_files'),
+                      subtitle: textProvider.getText('search_for_new_media_files'),
+                      onTap: () => _scanForFiles(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.cleaning_services_rounded,
-                      title: l10n.cleanLibrary,
-                      subtitle: l10n.cleanLibraryDesc,
-                      onTap: () => _cleanLibrary(
-                        mediaProvider,
-                        themeProvider,
-                      ),
+                      title: textProvider.getText('clean_library'),
+                      subtitle: textProvider.getText('remove_missing_files_from_library'),
+                      onTap: () => _cleanLibrary(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.folder_rounded,
-                      title: l10n.storageInfo,
-                      subtitle: l10n.storageInfoDesc,
-                      onTap: () => _showStorageInfo(
-                        mediaProvider,
-                        themeProvider,
-                      ),
+                      title: textProvider.getText('storage_info'),
+                      subtitle: textProvider.getText('view_usage_and_statistics'),
+                      onTap: () => _showStorageInfo(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                   ]),
@@ -103,18 +139,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // قسم إدارة البيانات
                   _buildSectionHeader(
-                    l10n.dataManagement,
+                    textProvider.getText('data_management'),
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.delete_forever_rounded,
-                      title: l10n.clearAllData,
-                      subtitle: l10n.clearAllDataDesc,
-                      onTap: () => _clearAllData(
-                        mediaProvider,
-                        themeProvider,
-                      ),
+                      title: textProvider.getText('clear_all_data'),
+                      subtitle: textProvider.getText('remove_all_playlists_and_preferences'),
+                      onTap: () => _clearAllData(mediaProvider, themeProvider),
                       textColor: Colors.red,
                       themeProvider: themeProvider,
                     ),
@@ -124,35 +157,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // قسم حول التطبيق
                   _buildSectionHeader(
-                    l10n.about,
+                    textProvider.getText('about'),
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.info_rounded,
-                      title: l10n.appVersion,
-                      subtitle: l10n.version,
+                      title: textProvider.getText('app_name'),
+                      subtitle: textProvider.getText('version'),
                       onTap: () => _showAppInfo(themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.star_rounded,
-                      title: l10n.rateApp,
-                      subtitle: l10n.rateAppDesc,
+                      title: textProvider.getText('rate_app'),
+                      subtitle: textProvider.getText('rate_us_on_app_store'),
                       onTap: () => _rateApp(),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.bug_report_rounded,
-                      title: l10n.reportBug,
-                      subtitle: l10n.reportBugDesc,
+                      title: textProvider.getText('report_bug'),
+                      subtitle: textProvider.getText('help_us_improve_app'),
                       onTap: () => _reportBug(),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.privacy_tip_rounded,
-                      title: l10n.privacyPolicy,
-                      subtitle: l10n.privacyPolicyDesc,
+                      title: textProvider.getText('privacy_policy'),
+                      subtitle: textProvider.getText('read_our_privacy_policy'),
                       onTap: () => _showPrivacyPolicy(themeProvider),
                       themeProvider: themeProvider,
                     ),
@@ -293,6 +326,104 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 : Colors.grey[300]!;
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    required ThemeProvider themeProvider,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.blue.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: Colors.blue, size: 24),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: themeProvider.primaryTextColor,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 14),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 16,
+        color: themeProvider.iconColor,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  void _showLanguageDialog(TextProvider textProvider, ThemeProvider themeProvider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeProvider.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.language, color: Colors.blue),
+            const SizedBox(width: 12),
+            Text(
+              textProvider.getText('language'),
+              style: TextStyle(color: themeProvider.primaryTextColor),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.flag, color: Colors.green),
+              title: Text(
+                textProvider.getText('arabic'),
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              trailing: textProvider.currentLanguage == 'ar'
+                  ? const Icon(Icons.check, color: Colors.blue)
+                  : null,
+              onTap: () {
+                textProvider.changeLanguage('ar');
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.flag, color: Colors.red),
+              title: Text(
+                textProvider.getText('english'),
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              trailing: textProvider.currentLanguage == 'en'
+                  ? const Icon(Icons.check, color: Colors.blue)
+                  : null,
+              onTap: () {
+                textProvider.changeLanguage('en');
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              textProvider.getText('cancel'),
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+        ],
       ),
     );
   }
