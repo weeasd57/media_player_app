@@ -1,5 +1,13 @@
 {
   "ar": [
-    "addedFromFavorites"
+    "noFilePlaying",
+    "noSearchResults",
+    "playedXTimes",
+    "addFilesToPlaylist",
+    "filesSelected",
+    "noFilesAvailableToAdd",
+    "addWithCount",
+    "addedFilesToPlaylist",
+    "confirmRemoveFromFile"
   ]
 }

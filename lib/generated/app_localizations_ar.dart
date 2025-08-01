@@ -69,7 +69,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String filesFound(Object newFiles, Object totalFiles) {
-    return 'تم العثور على $totalFiles ملف\nتمت إضافة $newFiles ملف جديد';
+    return 'تم العثور على $totalFiles ملف\\nتمت إضافة $newFiles ملف جديد';
   }
 
   @override
@@ -329,7 +329,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get removedFromPlaylist => 'تم إزالة الملف من قائمة التشغيل';
 
   @override
-  String get addedToPlaylist => 'تم إضافة الملف إلى قائمة التشغيل';
+  String addedToPlaylist(Object name) {
+    return 'تم إضافة الملف إلى قائمة التشغيل';
+  }
+
+  @override
+  String get noFilePlaying => 'No file playing';
+
+  @override
+  String get noSearchResults => 'No search results';
 
   @override
   String get removeFromFavorites => 'إزالة من المفضلة';
@@ -341,7 +349,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get removedFromFavorites => 'تم إزالة الملف من المفضلة';
 
   @override
-  String get addedFromFavorites => 'File added to favorites';
+  String get addedToFavorites => 'تم إضافة الملف إلى المفضلة';
 
   @override
   String get deleteFile => 'حذف الملف';
@@ -351,4 +359,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchHint => 'البحث في ملفات الوسائط...';
+
+  @override
+  String get error => 'خطأ';
+
+  @override
+  String get ready => 'جاهز';
+
+  @override
+  String get buffering => 'جاري التخزين المؤقت...';
+
+  @override
+  String get playing => 'قيد التشغيل';
+
+  @override
+  String get paused => 'متوقف';
+
+  @override
+  String get selectAudioFile => 'اختر ملف صوتي';
+
+  @override
+  String get upNext => 'قيد التشغيل التالي';
+
+  @override
+  String get currentVideo => 'الفيديو الحالي';
+
+  @override
+  String get dimensions => 'الأبعاد';
+
+  @override
+  String get selectVideoFile => 'اختر ملف فيديو';
+
+  @override
+  String playedXTimes(Object count) {
+    return 'Played $count times';
+  }
+
+  @override
+  String addFilesToPlaylist(Object playlistName) {
+    return 'Add Files to $playlistName';
+  }
+
+  @override
+  String filesSelected(Object count) {
+    return '$count files selected';
+  }
+
+  @override
+  String get noFilesAvailableToAdd => 'No files available to add';
+
+  @override
+  String addWithCount(Object count) {
+    return 'Add ($count)';
+  }
+
+  @override
+  String addedFilesToPlaylist(Object count) {
+    return 'Added $count files to playlist';
+  }
+
+  @override
+  String confirmRemoveFromFile(Object fileName) {
+    return 'Remove \"$fileName\" from this playlist?';
+  }
 }

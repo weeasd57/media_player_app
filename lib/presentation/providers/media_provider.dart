@@ -9,6 +9,8 @@ import '../../data/models/playlist.dart';
 import '../../data/datasources/database_service.dart';
 import '../../data/datasources/file_scanner_service.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:io'; // Added for File.exists()
+import 'package:path/path.dart' as p; // Import path package
 
 class MediaProvider extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -17,6 +19,7 @@ class MediaProvider extends ChangeNotifier {
   List<MediaFile> _allMediaFiles = [];
   List<MediaFile> _recentFiles = [];
   List<MediaFile> _favoriteFiles = [];
+  List<MediaFile> _missingFiles = []; // New: List to hold missing files
   List<Playlist> _playlists = [];
   Map<String, int> _statistics = {};
   bool _isScanning = false;
@@ -31,7 +34,12 @@ class MediaProvider extends ChangeNotifier {
   List<MediaFile> get allMediaFiles => _allMediaFiles;
   List<MediaFile> get recentFiles => _recentFiles;
   List<MediaFile> get favoriteFiles => _favoriteFiles;
+  List<MediaFile> get missingFiles => _missingFiles; // New getter
   List<Playlist> get playlists => _playlists;
+  
+  // إضافة خصائص audioFiles و videoFiles
+  List<MediaFile> get audioFiles => _allMediaFiles.where((file) => file.type == 'audio').toList();
+  List<MediaFile> get videoFiles => _allMediaFiles.where((file) => file.type == 'video').toList();
   Map<String, int> get statistics => _statistics;
   bool get isScanning => _isScanning;
   String get scanningStatus => _scanningStatus;
@@ -51,10 +59,13 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> _loadMediaFiles() async {
-    _allMediaFiles = await _databaseService.getAllMediaFiles();
+    final allFilesFromDb = await _databaseService.getAllMediaFiles();
+
+    _allMediaFiles = allFilesFromDb.where((file) => !file.isMissing).toList();
+    _missingFiles = allFilesFromDb.where((file) => file.isMissing).toList();
 
     // إذا كانت قاعدة البيانات فارغة، قم بتحميل الملفات التجريبية
-    if (_allMediaFiles.isEmpty) {
+    if (_allMediaFiles.isEmpty && _missingFiles.isEmpty) {
       await _loadSampleMedia();
     } else {
       // Get all files and sort them by lastPlayed
@@ -77,16 +88,21 @@ class MediaProvider extends ChangeNotifier {
 
     for (String path in sampleMediaPaths) {
       final fileName = path.split('/').last;
-      final type = fileName.endsWith('.mp3') || fileName.endsWith('.wav') ? 'audio' : 'video';
+      final type = fileName.endsWith('.mp3') || fileName.endsWith('.wav')
+          ? 'audio'
+          : 'video';
 
       final sampleFile = MediaFile(
         name: fileName,
         path: path,
         type: type,
         duration: 180000, // قيمة افتراضية
-        size: 5000000,    // قيمة افتراضية
+        size: 5000000, // قيمة افتراضية
         dateAdded: DateTime.now(),
         lastPlayed: DateTime.now(),
+        isMissing: !(await File(
+          path,
+        ).exists()), // Check existence for sample files too
       );
 
       _allMediaFiles.add(sampleFile);
@@ -95,6 +111,11 @@ class MediaProvider extends ChangeNotifier {
     // تحديث القوائم الأخرى
     _recentFiles = _allMediaFiles.toList();
     _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
+
+    // Re-filter after adding sample files to populate _missingFiles correctly
+    final allFilesCombined = [..._allMediaFiles, ..._missingFiles];
+    _allMediaFiles = allFilesCombined.where((file) => !file.isMissing).toList();
+    _missingFiles = allFilesCombined.where((file) => file.isMissing).toList();
   }
 
   Future<void> _loadPlaylists() async {
@@ -275,12 +296,23 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<List<MediaFile>> getMediaFilesByType(String type) async {
-    return await _databaseService.getMediaFilesByType(type);
+    final files = await _databaseService.getMediaFilesByType(type);
+    return files.where((file) => !file.isMissing).toList();
   }
 
   Future<void> deleteMediaFile(MediaFile file) async {
     if (file.id != null) {
       await _databaseService.deleteMediaFile(file.id!);
+
+      // Remove from internal lists
+      _allMediaFiles.removeWhere((mf) => mf.id == file.id);
+      _recentFiles.removeWhere((mf) => mf.id == file.id);
+      _favoriteFiles.removeWhere((mf) => mf.id == file.id);
+      _missingFiles.removeWhere(
+        (mf) => mf.id == file.id,
+      ); // Remove from missing list too
+
+      // Also remove from any playlists it might be in
       for (var playlist in _playlists) {
         if (playlist.mediaFileIds.contains(file.id)) {
           final updatedMediaIds = List<int>.from(playlist.mediaFileIds)
@@ -291,13 +323,14 @@ class MediaProvider extends ChangeNotifier {
           await _databaseService.updatePlaylist(updatedPlaylist);
         }
       }
-      await _loadMediaFiles();
-      await _loadPlaylists();
+      _updateStatistics();
+      notifyListeners();
     }
   }
 
   Future<List<MediaFile>> getPlaylistMediaFiles(int playlistId) async {
-    return await _databaseService.getPlaylistMediaFiles(playlistId);
+    final files = await _databaseService.getPlaylistMediaFiles(playlistId);
+    return files.where((file) => !file.isMissing).toList();
   }
 
   Future<void> updatePlaylist(Playlist playlist) async {
@@ -333,18 +366,91 @@ class MediaProvider extends ChangeNotifier {
     await _databaseService.updatePlayCount(mediaFileId);
     await _loadMediaFiles(); // Reload to update UI with new play count
   }
+
+  Map<String, List<MediaFile>> getGroupedMediaFilesByDirectory() {
+    final Map<String, List<MediaFile>> groupedFiles = {};
+    for (var file in _allMediaFiles) {
+      final directoryPath = p.dirname(file.path); // Use p.dirname
+      final directoryName = p.basename(
+        directoryPath,
+      ); // Get just the folder name
+      if (!groupedFiles.containsKey(directoryName)) {
+        groupedFiles[directoryName] = [];
+      }
+      groupedFiles[directoryName]!.add(file);
+    }
+    return groupedFiles;
+  }
+
+  // Get media file by ID
+  MediaFile? getMediaFileById(int id) {
+    try {
+      return _allMediaFiles.firstWhere((file) => file.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Reorder playlist items
+  Future<void> reorderPlaylist(Playlist playlist, int oldIndex, int newIndex) async {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    
+    final updatedMediaIds = List<int>.from(playlist.mediaFileIds);
+    final item = updatedMediaIds.removeAt(oldIndex);
+    updatedMediaIds.insert(newIndex, item);
+    
+    final updatedPlaylist = playlist.copyWith(
+      mediaFileIds: updatedMediaIds,
+      lastModified: DateTime.now(),
+    );
+    
+    await _databaseService.updatePlaylist(updatedPlaylist);
+    await _loadPlaylists();
+    notifyListeners();
+  }
+
+  // Group media files by artist
+  Map<String, List<MediaFile>> getGroupedMediaFilesByArtist() {
+    final Map<String, List<MediaFile>> groupedFiles = {};
+    for (var file in _allMediaFiles) {
+      final artist = file.artist ?? 'Unknown Artist';
+      if (!groupedFiles.containsKey(artist)) {
+        groupedFiles[artist] = [];
+      }
+      groupedFiles[artist]!.add(file);
+    }
+    return groupedFiles;
+  }
+
+  // Group media files by album
+  Map<String, List<MediaFile>> getGroupedMediaFilesByAlbum() {
+    final Map<String, List<MediaFile>> groupedFiles = {};
+    for (var file in _allMediaFiles) {
+      final album = file.album ?? 'Unknown Album';
+      if (!groupedFiles.containsKey(album)) {
+        groupedFiles[album] = [];
+      }
+      groupedFiles[album]!.add(file);
+    }
+    return groupedFiles;
+  }
 }
 
 class ScanResult {
   final int filesAdded;
   final int totalFilesFound;
-  final bool hasError;
+  final List<MediaFile> addedFiles;
   final String? error;
 
   ScanResult({
-    this.filesAdded = 0,
-    this.totalFilesFound = 0,
-    required this.hasError,
+    required this.totalFilesFound,
+    required this.filesAdded,
+    required this.addedFiles,
     this.error,
   });
+
+  bool get hasError => error != null;
+  bool get hasNewFiles => filesAdded > 0;
 }

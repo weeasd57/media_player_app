@@ -16,10 +16,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    
     return Consumer3<ThemeProvider, MediaProvider, TextProvider>(
       builder: (context, themeProvider, mediaProvider, textProvider, child) {
-
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
           appBar: AppBar(
@@ -41,18 +39,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: FadeInAnimation(child: widget),
                 ),
                 children: [
-                  // قسم المظهر
+                  // Theme Section
                   _buildSectionHeader(
                     textProvider.getText('theme'),
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSwitchTile(
-                      icon: themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                      title: textProvider.getText('dark_mode'),
-                      subtitle: themeProvider.isDarkMode 
-                          ? textProvider.getText('dark_mode') 
-                          : textProvider.getText('light_mode'),
+                      icon: themeProvider.isDarkMode
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                      title: textProvider.getText('darkMode'),
+                      subtitle: themeProvider.isDarkMode
+                          ? textProvider.getText('darkMode')
+                          : textProvider.getText('lightMode'),
                       value: themeProvider.isDarkMode,
                       onChanged: (value) => themeProvider.toggleTheme(value),
                       themeProvider: themeProvider,
@@ -61,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 24),
 
-                  // قسم اللغة
+                  // Language Section
                   _buildSectionHeader(
                     textProvider.getText('language'),
                     themeProvider,
@@ -70,17 +70,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildLanguageTile(
                       icon: Icons.language,
                       title: textProvider.getText('language'),
-                      subtitle: textProvider.currentLanguage == 'ar' 
-                          ? textProvider.getText('arabic') 
+                      subtitle: textProvider.currentLanguage == 'ar'
+                          ? textProvider.getText('arabic')
                           : textProvider.getText('english'),
-                      onTap: () => _showLanguageDialog(textProvider, themeProvider),
+                      onTap: () =>
+                          _showLanguageDialog(textProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                   ]),
 
                   const SizedBox(height: 24),
 
-                  // قسم التشغيل
+                  // Playback Section
                   _buildSectionHeader(
                     textProvider.getText('playback'),
                     themeProvider,
@@ -89,7 +90,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildSwitchTile(
                       icon: Icons.repeat_rounded,
                       title: textProvider.getText('auto_repeat'),
-                      subtitle: textProvider.getText('automatically_repeat_playlists'),
+                      subtitle: textProvider.getText(
+                        'automatically_repeat_playlists',
+                      ),
                       value: mediaProvider.autoRepeat,
                       onChanged: (value) => mediaProvider.setAutoRepeat(value),
                       themeProvider: themeProvider,
@@ -97,7 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildSwitchTile(
                       icon: Icons.shuffle_rounded,
                       title: textProvider.getText('shuffle_mode'),
-                      subtitle: textProvider.getText('randomize_playback_order'),
+                      subtitle: textProvider.getText(
+                        'randomize_playback_order',
+                      ),
                       value: mediaProvider.shuffleMode,
                       onChanged: (value) => mediaProvider.setShuffleMode(value),
                       themeProvider: themeProvider,
@@ -106,7 +111,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 24),
 
-                  // قسم المكتبة
+                  // Library Section
                   _buildSectionHeader(
                     textProvider.getText('library'),
                     themeProvider,
@@ -115,29 +120,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildSettingsTile(
                       icon: Icons.refresh_rounded,
                       title: textProvider.getText('scan_files'),
-                      subtitle: textProvider.getText('search_for_new_media_files'),
+                      subtitle: textProvider.getText(
+                        'search_for_new_media_files',
+                      ),
                       onTap: () => _scanForFiles(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.cleaning_services_rounded,
                       title: textProvider.getText('clean_library'),
-                      subtitle: textProvider.getText('remove_missing_files_from_library'),
+                      subtitle: textProvider.getText(
+                        'remove_missing_files_from_library',
+                      ),
                       onTap: () => _cleanLibrary(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.folder_rounded,
                       title: textProvider.getText('storage_info'),
-                      subtitle: textProvider.getText('view_usage_and_statistics'),
-                      onTap: () => _showStorageInfo(mediaProvider, themeProvider),
+                      subtitle: textProvider.getText(
+                        'view_usage_and_statistics',
+                      ),
+                      onTap: () =>
+                          _showStorageInfo(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                   ]),
 
                   const SizedBox(height: 24),
 
-                  // قسم إدارة البيانات
+                  // Data Management Section
                   _buildSectionHeader(
                     textProvider.getText('data_management'),
                     themeProvider,
@@ -146,7 +158,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildSettingsTile(
                       icon: Icons.delete_forever_rounded,
                       title: textProvider.getText('clear_all_data'),
-                      subtitle: textProvider.getText('remove_all_playlists_and_preferences'),
+                      subtitle: textProvider.getText(
+                        'remove_all_playlists_and_preferences',
+                      ),
                       onTap: () => _clearAllData(mediaProvider, themeProvider),
                       textColor: Colors.red,
                       themeProvider: themeProvider,
@@ -155,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 24),
 
-                  // قسم حول التطبيق
+                  // About Section
                   _buildSectionHeader(
                     textProvider.getText('about'),
                     themeProvider,
@@ -201,10 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(
-    String title,
-    ThemeProvider themeProvider,
-  ) {
+  Widget _buildSectionHeader(String title, ThemeProvider themeProvider) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
@@ -300,32 +311,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onChanged: onChanged,
         activeColor: Colors.blue,
         activeTrackColor: Colors.blue.withValues(alpha: 0.3),
-        inactiveThumbColor: themeProvider.isDarkMode 
-            ? Colors.grey[600] 
+        inactiveThumbColor: themeProvider.isDarkMode
+            ? Colors.grey[600]
             : Colors.grey[400],
-        inactiveTrackColor: themeProvider.isDarkMode 
-            ? Colors.grey[800] 
+        inactiveTrackColor: themeProvider.isDarkMode
+            ? Colors.grey[800]
             : Colors.grey[300],
-        thumbColor: WidgetStateProperty.resolveWith<Color>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.selected)) {
-              return Colors.white;
-            }
-            return themeProvider.isDarkMode 
-                ? Colors.grey[400]! 
-                : Colors.white;
-          },
-        ),
-        trackColor: WidgetStateProperty.resolveWith<Color>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.selected)) {
-              return Colors.blue.withValues(alpha: 0.5);
-            }
-            return themeProvider.isDarkMode 
-                ? Colors.grey[700]! 
-                : Colors.grey[300]!;
-          },
-        ),
+        thumbColor: WidgetStateProperty.resolveWith<Color>((
+          Set<WidgetState> states,
+        ) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return themeProvider.isDarkMode ? Colors.grey[400]! : Colors.white;
+        }),
+        trackColor: WidgetStateProperty.resolveWith<Color>((
+          Set<WidgetState> states,
+        ) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.blue.withValues(alpha: 0.5);
+          }
+          return themeProvider.isDarkMode
+              ? Colors.grey[700]!
+              : Colors.grey[300]!;
+        }),
       ),
     );
   }
@@ -366,7 +375,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showLanguageDialog(TextProvider textProvider, ThemeProvider themeProvider) {
+  void _showLanguageDialog(
+    TextProvider textProvider,
+    ThemeProvider themeProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -433,7 +445,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeProvider themeProvider,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -509,7 +521,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeProvider themeProvider,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -556,7 +568,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeProvider themeProvider,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => Consumer<MediaProvider>(
@@ -652,7 +664,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeProvider themeProvider,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -693,7 +705,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showAppInfo(ThemeProvider themeProvider) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -769,7 +781,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showPrivacyPolicy(ThemeProvider themeProvider) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

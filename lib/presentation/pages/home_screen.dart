@@ -84,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context, mediaProvider, themeProvider, textProvider, child) {
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
-          body: _isInitialized 
-              ? _buildMainContent(themeProvider, textProvider) 
+          body: _isInitialized
+              ? _buildMainContent(themeProvider, textProvider)
               : _buildLoadingScreen(themeProvider, textProvider),
         );
       },
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const CircularProgressIndicator(),
           const SizedBox(height: 20),
           Text(
-            textProvider.getText('setting_up_library'),
+            textProvider.getText('settingUpLibrary'),
             style: TextStyle(
               color: themeProvider.primaryTextColor,
               fontSize: 16,
@@ -131,10 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildHeader(
-    ThemeProvider themeProvider,
-    TextProvider textProvider,
-  ) {
+  Widget _buildHeader(ThemeProvider themeProvider, TextProvider textProvider) {
     final iconBgColor = themeProvider.isDarkMode
         ? Colors.white.withValues(alpha: 0.1)
         : Colors.grey.withValues(alpha: 0.1);
@@ -174,13 +171,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Text(
                                 _getTimeOfDay(textProvider),
                                 style: TextStyle(
-                                  color: themeProvider.primaryTextColor.withValues(alpha: 0.7),
+                                  color: themeProvider.primaryTextColor
+                                      .withValues(alpha: 0.7),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
                               Text(
-                                textProvider.getText('app_name'),
+                                textProvider.getText('appName'),
                                 style: TextStyle(
                                   color: themeProvider.primaryTextColor,
                                   fontSize: 28,
@@ -198,7 +196,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               color: iconBgColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.search, color: themeProvider.primaryTextColor),
+                            child: Icon(
+                              Icons.search,
+                              color: themeProvider.primaryTextColor,
+                            ),
                           ),
                         ),
                       ],
@@ -252,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        textProvider.getText('your_library'),
+                        textProvider.getText('yourLibrary'),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -264,21 +265,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         children: [
                           Expanded(
                             child: _buildStatCard(
-                              textProvider.getText('audio_files'),
-                              stats['audio'] ?? 0,
-                              Icons.headphones,
-                              Colors.purple,
-                              0,
+                              title: textProvider.getText('audioFiles'),
+                              count: stats['audio'] ?? 0,
+                              icon: Icons.headphones,
+                              accentColor: Colors
+                                  .purple
+                                  .shade300, // Use shade for dark mode visibility
+                              index: 0,
+                              themeProvider: themeProvider,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildStatCard(
-                              textProvider.getText('video_files'),
-                              stats['video'] ?? 0,
-                              Icons.movie_creation_outlined,
-                              Colors.orange,
-                              1,
+                              title: textProvider.getText('videoFiles'),
+                              count: stats['video'] ?? 0,
+                              icon: Icons.movie_creation_outlined,
+                              accentColor: Colors
+                                  .orange
+                                  .shade300, // Use shade for dark mode visibility
+                              index: 1,
+                              themeProvider: themeProvider,
                             ),
                           ),
                         ],
@@ -288,21 +295,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         children: [
                           Expanded(
                             child: _buildStatCard(
-                              textProvider.getText('favorites'),
-                              stats['favorites'] ?? 0,
-                              Icons.favorite,
-                              Colors.red,
-                              2,
+                              title: textProvider.getText('favorites'),
+                              count: stats['favorites'] ?? 0,
+                              icon: Icons.favorite,
+                              accentColor: Colors
+                                  .red
+                                  .shade300, // Use shade for dark mode visibility
+                              index: 2,
+                              themeProvider: themeProvider,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildStatCard(
-                              textProvider.getText('playlists'),
-                              stats['playlists'] ?? 0,
-                              Icons.queue_music,
-                              Colors.indigo,
-                              3,
+                              title: textProvider.getText('playlists'),
+                              count: stats['playlists'] ?? 0,
+                              icon: Icons.queue_music,
+                              accentColor: Colors
+                                  .indigo
+                                  .shade300, // Use shade for dark mode visibility
+                              index: 3,
+                              themeProvider: themeProvider,
                             ),
                           ),
                         ],
@@ -318,37 +331,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStatCard(
-    String title,
-    int count,
-    IconData icon,
-    Color color,
-    int index,
-  ) {
+  Widget _buildStatCard({
+    required String title,
+    required int count,
+    required IconData icon,
+    required Color accentColor,
+    required int index,
+    required ThemeProvider themeProvider,
+  }) {
+    final cardBgColor = themeProvider.cardBackgroundColor; // Use themeProvider
+    final borderColor = themeProvider.dividerColor; // Use themeProvider
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: cardBgColor, // Use themeProvider color
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+        border: Border.all(
+          color: borderColor,
+          width: 1,
+        ), // Use themeProvider color
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 32),
+          Icon(icon, color: accentColor, size: 32),
           const SizedBox(height: 8),
           Text(
             count.toString(),
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: color,
+              color: accentColor,
             ),
           ),
           Text(
             title,
             style: TextStyle(
               fontSize: 12,
-              color: color.withValues(alpha: 0.8),
+              color:
+                  themeProvider.secondaryTextColor, // Use themeProvider color
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -357,8 +378,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-
 
   Widget _buildRecentSection(
     ThemeProvider themeProvider,
@@ -377,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  textProvider.getText('recently_played'),
+                  textProvider.getText('recentlyPlayed'),
                   style: TextStyle(
                     color: themeProvider.primaryTextColor,
                     fontSize: 20,
@@ -394,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   itemCount: mediaProvider.recentFiles.length,
                   itemBuilder: (context, index) {
                     final file = mediaProvider.recentFiles[index];
-                    return _buildMediaCard(file, index);
+                    return _buildMediaCard(file, index, themeProvider);
                   },
                 ),
               ),
@@ -422,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Text(
-                  textProvider.getText('your_favorites'),
+                  textProvider.getText('yourFavorites'),
                   style: TextStyle(
                     color: themeProvider.primaryTextColor,
                     fontSize: 20,
@@ -443,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   itemCount: mediaProvider.favoriteFiles.length,
                   itemBuilder: (context, index) {
                     final file = mediaProvider.favoriteFiles[index];
-                    return _buildMediaCard(file, index);
+                    return _buildMediaCard(file, index, themeProvider);
                   },
                 ),
               ),
@@ -454,18 +473,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
-  Widget _buildMediaCard(MediaFile file, int index) {
+  Widget _buildMediaCard(
+    MediaFile file,
+    int index,
+    ThemeProvider themeProvider,
+  ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth < 600 ? 120.0 : 150.0;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-    final cardBgColor = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.grey.withValues(alpha: 0.05);
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.grey.withValues(alpha: 0.2);
+    final textColor = themeProvider.primaryTextColor; // Use themeProvider
+    final cardBgColor = themeProvider.cardBackgroundColor; // Use themeProvider
+    final borderColor = themeProvider.dividerColor; // Use themeProvider
 
     return Container(
       width: cardWidth,
@@ -479,10 +496,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             color: cardBgColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: borderColor,
-              width: 1,
-            ),
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Column(
             children: [
@@ -490,8 +504,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Container(
                   decoration: BoxDecoration(
                     color: file.type == 'audio'
-                        ? Colors.purple.withValues(alpha: 0.3)
-                        : Colors.orange.withValues(alpha: 0.3),
+                        ? themeProvider.currentTheme.colorScheme.primary
+                              .withValues(alpha: 0.3) // Use theme color
+                        : themeProvider.currentTheme.colorScheme.secondary
+                              .withValues(alpha: 0.3), // Use theme color
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
@@ -502,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ? Icons.graphic_eq
                           : Icons.movie_filter,
                       size: 40,
-                      color: Colors.white,
+                      color: themeProvider.iconColor, // Use themeProvider
                     ),
                   ),
                 ),
@@ -526,7 +542,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Text(
                       file.formattedDuration,
                       style: TextStyle(
-                        color: textColor.withValues(alpha: 0.7),
+                        color: themeProvider
+                            .secondaryTextColor, // Use themeProvider
                         fontSize: 10,
                       ),
                     ),
@@ -540,19 +557,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
   String _getTimeOfDay(TextProvider textProvider) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return textProvider.getText('good_morning');
-    if (hour < 17) return textProvider.getText('good_afternoon');
-    return textProvider.getText('good_evening');
+    if (hour < 12) return textProvider.getText('goodMorning');
+    if (hour < 17) return textProvider.getText('goodAfternoon');
+    return textProvider.getText('goodEvening');
   }
 
   void _showSearchDialog() {
     showDialog(context: context, builder: (context) => const _SearchDialog());
   }
-
-
 }
 
 class _SearchDialog extends StatefulWidget {
@@ -605,7 +619,7 @@ class _SearchDialogState extends State<_SearchDialog> {
                   : _searchResults.isEmpty
                   ? Center(
                       child: Text(
-                        textProvider.getText('no_files_found'),
+                        textProvider.getText('noFilesFound'),
                         style: TextStyle(
                           color: Theme.of(
                             context,
@@ -690,7 +704,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       contentPadding: EdgeInsets.all(isSmallScreen ? 16 : 24),
       title: Text(
-        widget.textProvider.getText('create_playlist'),
+        widget.textProvider.getText('createPlaylist'),
         style: TextStyle(
           fontSize: isSmallScreen ? 18 : 20,
           fontWeight: FontWeight.bold,
@@ -701,7 +715,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
         child: TextField(
           controller: _controller,
           decoration: InputDecoration(
-            labelText: widget.textProvider.getText('playlist_name'),
+            labelText: widget.textProvider.getText('playlistName'),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           autofocus: true,

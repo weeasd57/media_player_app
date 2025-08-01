@@ -47,7 +47,7 @@ class PlaylistEntity extends Equatable {
     if (mediaFileIds.contains(mediaFileId)) {
       return this;
     }
-    
+
     return copyWith(
       mediaFileIds: [...mediaFileIds, mediaFileId],
       lastModified: DateTime.now(),
@@ -59,12 +59,9 @@ class PlaylistEntity extends Equatable {
     if (!mediaFileIds.contains(mediaFileId)) {
       return this;
     }
-    
+
     final updatedIds = List<int>.from(mediaFileIds)..remove(mediaFileId);
-    return copyWith(
-      mediaFileIds: updatedIds,
-      lastModified: DateTime.now(),
-    );
+    return copyWith(mediaFileIds: updatedIds, lastModified: DateTime.now());
   }
 
   /// ترتيب ملفات الوسائط في قائمة التشغيل
@@ -72,11 +69,8 @@ class PlaylistEntity extends Equatable {
     final updatedIds = List<int>.from(mediaFileIds);
     final item = updatedIds.removeAt(oldIndex);
     updatedIds.insert(newIndex, item);
-    
-    return copyWith(
-      mediaFileIds: updatedIds,
-      lastModified: DateTime.now(),
-    );
+
+    return copyWith(mediaFileIds: updatedIds, lastModified: DateTime.now());
   }
 
   /// تحديث قائمة التشغيل مع ملفات الوسائط
@@ -90,7 +84,7 @@ class PlaylistEntity extends Equatable {
   /// المدة الإجمالية لقائمة التشغيل
   Duration get totalDuration {
     if (mediaFiles == null) return Duration.zero;
-    
+
     return mediaFiles!.fold<Duration>(
       Duration.zero,
       (total, media) => total + media.duration,
@@ -104,11 +98,11 @@ class PlaylistEntity extends Equatable {
     final seconds = totalDuration.inSeconds.remainder(60);
 
     if (hours > 0) {
-      return '${hours}س ${minutes}د';
+      return '$hoursس $minutesد';
     } else if (minutes > 0) {
-      return '${minutes}د ${seconds}ث';
+      return '$minutesد $secondsث';
     } else {
-      return '${seconds}ث';
+      return '$secondsث';
     }
   }
 
@@ -130,14 +124,14 @@ class PlaylistEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        dateCreated,
-        lastModified,
-        mediaFileIds,
-        mediaFiles,
-      ];
+    id,
+    name,
+    description,
+    dateCreated,
+    lastModified,
+    mediaFileIds,
+    mediaFiles,
+  ];
 
   @override
   String toString() {

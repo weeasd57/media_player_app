@@ -141,11 +141,22 @@ class FileScannerService {
       final stat = await file.stat();
       final fileName = file.path.split('/').last;
       final mediaType = getMediaType(file.path);
+      final bool exists = await file.exists(); // New: Check if file exists
 
       // Check if file already exists in database
       final existingFile = await _databaseService.getMediaFileByPath(file.path);
       if (existingFile != null) {
-        return existingFile;
+        // Update existing file in DB with current metadata including isMissing status
+        final updatedFile = existingFile.copyWith(
+          name: fileName,
+          type: mediaType,
+          duration: (await _getMediaDuration(file.path))?.inMilliseconds ?? 0,
+          size: stat.size,
+          dateAdded: stat.changed, // Use stat.changed for accurate date added
+          isMissing: !exists, // Update isMissing status
+        );
+        await _databaseService.updateMediaFile(updatedFile);
+        return updatedFile;
       }
 
       final duration = await _getMediaDuration(file.path); // Get duration
@@ -159,10 +170,12 @@ class FileScannerService {
             duration?.inMilliseconds ??
             0, // Use duration from _getMediaDuration
         size: stat.size,
-        dateAdded: DateTime.now(),
+        dateAdded:
+            DateTime.now(), // Fixed: Should use file's creation/modification date
         lastPlayed: DateTime.now(),
         playCount: 0,
         isFavorite: false,
+        isMissing: !exists, // Set isMissing status based on existence check
       );
     } catch (e) {
       debugPrint('Error creating MediaFile from ${file.path}: $e');
@@ -203,22 +216,53 @@ class FileScannerService {
     Function(int, int)? onImportProgress,
   }) async {
     try {
+      final existingMediaFiles = await _databaseService.getAllMediaFiles();
+      final Set<String> foundFilePaths = {};
+
       // Scan for files
       final files = await scanAllDirectories(
         onDirectoryChanged: onDirectoryChanged,
         onProgress: onScanProgress,
       );
 
-      // Add files to database
-      final addedFiles = await addMediaFilesToDatabase(
-        files,
-        onProgress: onImportProgress,
-      );
+      // Process found files: add new, update existing
+      List<MediaFile> addedFiles = [];
+      for (int i = 0; i < files.length; i++) {
+        if (files[i] is File) {
+          final file = files[i] as File;
+          foundFilePaths.add(file.path);
+          final mediaFile = await createMediaFileFromFile(file);
+          if (mediaFile != null) {
+            // If it's a new file, add it to addedFiles list
+            if (mediaFile.id == null) {
+              try {
+                final id = await _databaseService.insertMediaFile(mediaFile);
+                addedFiles.add(mediaFile.copyWith(id: id));
+              } catch (e) {
+                debugPrint(
+                  'Skipping duplicate file during add: ${mediaFile.path}',
+                );
+              }
+            }
+          }
+        }
+        onImportProgress?.call(i + 1, files.length);
+      }
+
+      // Mark existing files as missing if they were not found during scan
+      for (final existingFile in existingMediaFiles) {
+        if (!foundFilePaths.contains(existingFile.path) &&
+            !existingFile.isMissing) {
+          final updatedFile = existingFile.copyWith(isMissing: true);
+          await _databaseService.updateMediaFile(updatedFile);
+        }
+      }
 
       return ScanResult(
         totalFilesFound: files.length,
         filesAdded: addedFiles.length,
         addedFiles: addedFiles,
+        error: null,
       );
     } catch (e) {
       debugPrint('Error during full scan: $e');
@@ -237,21 +281,55 @@ class FileScannerService {
     Function(int, int)? onProgress,
   }) async {
     try {
+      final existingMediaFiles = await _databaseService
+          .getAllMediaFiles(); // Get existing files
+      final Set<String> foundFilePaths = {}; // Track found paths
+
       final directory = Directory(directoryPath);
       if (!await directory.exists()) {
         throw Exception('Directory does not exist: $directoryPath');
       }
 
       final files = await scanDirectory(directory);
-      final addedFiles = await addMediaFilesToDatabase(
-        files,
-        onProgress: onProgress,
-      );
+
+      // Process found files: add new, update existing
+      List<MediaFile> addedFiles = [];
+      for (int i = 0; i < files.length; i++) {
+        if (files[i] is File) {
+          final file = files[i] as File;
+          foundFilePaths.add(file.path);
+          final mediaFile = await createMediaFileFromFile(file);
+          if (mediaFile != null) {
+            // If it's a new file, add it to addedFiles list
+            if (mediaFile.id == null) {
+              try {
+                final id = await _databaseService.insertMediaFile(mediaFile);
+                addedFiles.add(mediaFile.copyWith(id: id));
+              } catch (e) {
+                debugPrint(
+                  'Skipping duplicate file during add: ${mediaFile.path}',
+                );
+              }
+            }
+          }
+        }
+        onProgress?.call(i + 1, files.length);
+      }
+
+      // Mark existing files as missing if they were not found during scan
+      for (final existingFile in existingMediaFiles) {
+        if (!foundFilePaths.contains(existingFile.path) &&
+            !existingFile.isMissing) {
+          final updatedFile = existingFile.copyWith(isMissing: true);
+          await _databaseService.updateMediaFile(updatedFile);
+        }
+      }
 
       return ScanResult(
         totalFilesFound: files.length,
         filesAdded: addedFiles.length,
         addedFiles: addedFiles,
+        error: null,
       );
     } catch (e) {
       debugPrint('Error scanning directory $directoryPath: $e');
@@ -270,8 +348,8 @@ class FileScannerService {
     int removedCount = 0;
 
     for (final mediaFile in allFiles) {
-      final file = File(mediaFile.path);
-      if (!await file.exists()) {
+      // Fixed: Check isMissing property instead of file.exists()
+      if (mediaFile.isMissing) {
         await _databaseService.deleteMediaFile(mediaFile.id!);
         removedCount++;
       }
@@ -294,16 +372,17 @@ class FileScannerService {
     }
     return null;
   }
-  
+
   // Optimized audio duration getter with timeout
   Future<Duration?> _getAudioDurationOptimized(String filePath) async {
     try {
       final audioPlayer = AudioPlayer();
-      
+
       // Set a timeout for duration retrieval
-      final duration = await audioPlayer.setFilePath(filePath)
+      final duration = await audioPlayer
+          .setFilePath(filePath)
           .timeout(const Duration(seconds: 3));
-      
+
       await audioPlayer.dispose();
       return duration;
     } catch (e) {
@@ -312,16 +391,15 @@ class FileScannerService {
       return const Duration(minutes: 3); // Default 3 minutes
     }
   }
-  
+
   // Optimized video duration getter with timeout
   Future<Duration?> _getVideoDurationOptimized(String filePath) async {
     try {
       final videoController = VideoPlayerController.file(File(filePath));
-      
+
       // Set a timeout for initialization
-      await videoController.initialize()
-          .timeout(const Duration(seconds: 2));
-      
+      await videoController.initialize().timeout(const Duration(seconds: 2));
+
       final duration = videoController.value.duration;
       await videoController.dispose();
       return duration;

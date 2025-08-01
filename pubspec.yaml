@@ -46,6 +46,12 @@ dependencies:
   file_picker: ^8.1.4
   permission_handler: ^11.3.1
   
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+  
+  # Media metadata (removed temporarily due to build issues)
+  # media_info: ^0.12.0+2
+  
   # Database and state management
   sqflite: ^2.3.3+1
   path: ^1.9.0

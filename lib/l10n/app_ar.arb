@@ -18,7 +18,7 @@
   "scanComplete": "اكتمل الفحص",
   "scanFailed": "فشل الفحص",
   "scanError": "خطأ في الفحص: {error}",
-  "filesFound": "تم العثور على {totalFiles} ملف\nتمت إضافة {newFiles} ملف جديد",
+  "filesFound": "تم العثور على {totalFiles} ملف\\nتمت إضافة {newFiles} ملف جديد",
   "playlistCreated": "تم إنشاء قائمة التشغيل بنجاح",
   "searchMediaFiles": "البحث في ملفات الوسائط",
   "createNewPlaylist": "إنشاء قائمة تشغيل جديدة",
@@ -105,5 +105,15 @@
   "addedToFavorites": "تم إضافة الملف إلى المفضلة",
   "deleteFile": "حذف الملف",
   "searchFiles": "البحث في الملفات",
-  "searchHint": "البحث في ملفات الوسائط..."
+  "searchHint": "البحث في ملفات الوسائط...",
+  "error": "خطأ",
+  "ready": "جاهز",
+  "buffering": "جاري التخزين المؤقت...",
+  "playing": "قيد التشغيل",
+  "paused": "متوقف",
+  "selectAudioFile": "اختر ملف صوتي",
+  "upNext": "قيد التشغيل التالي",
+  "currentVideo": "الفيديو الحالي",
+  "dimensions": "الأبعاد",
+  "selectVideoFile": "اختر ملف فيديو"
 }

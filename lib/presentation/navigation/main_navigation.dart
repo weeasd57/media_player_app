@@ -7,6 +7,7 @@ import '../pages/home_screen.dart';
 import '../pages/library_screen.dart';
 import '../pages/playlists_screen.dart';
 import '../pages/settings_screen.dart';
+import '../pages/explore_device_screen.dart'; // Import for device exploration
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -238,7 +239,14 @@ class _MainNavigationState extends State<MainNavigation>
         return ScaleTransition(
           scale: _fabAnimation,
           child: FloatingActionButton(
-            onPressed: () => showScanDialog(context, mediaProvider),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExploreDeviceScreen(), // Assume this screen allows file exploration and adding to favorites
+                ),
+              );
+            },
             backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 8,
             child: AnimatedSwitcher(
@@ -252,8 +260,16 @@ class _MainNavigationState extends State<MainNavigation>
                         strokeWidth: 2,
                       ),
                     )
+                  : mediaProvider.currentMediaFile != null
+                  ? Icon(
+                      Icons.play_arrow_rounded,
+                      key: const ValueKey('play_icon'),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      size: 28,
+                    )
                   : Icon(
-                      Icons.refresh_rounded,
+                      Icons.music_off,
+                      key: const ValueKey('no_file_icon'),
                       color: Theme.of(context).colorScheme.onPrimary,
                       size: 28,
                     ),
@@ -264,69 +280,8 @@ class _MainNavigationState extends State<MainNavigation>
     );
   }
 
-  void showScanDialog(BuildContext context, MediaProvider mediaProvider) async {
-    if (mediaProvider.isScanning) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Consumer<TextProvider>(
-        builder: (context, textProvider, child) => _ScanDialog(
-          mediaProvider: mediaProvider,
-          textProvider: textProvider,
-        ),
-      ),
-    );
-
-    // بدء عملية المسح
-    await mediaProvider.scanForMediaFiles();
-
-    // إغلاق الحوار بعد انتهاء المسح
-    if (context.mounted) {
-      Navigator.of(context).pop();
-      
-      // إظهار رسالة نجاح المسح
-      final textProvider = Provider.of<TextProvider>(context, listen: false);
-      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-      
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: themeProvider.cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 28),
-              const SizedBox(width: 12),
-              Text(
-                textProvider.getText('scan_complete'),
-                style: TextStyle(color: themeProvider.primaryTextColor),
-              ),
-            ],
-          ),
-          content: Text(
-            textProvider.getText('scan_complete_message'),
-            style: TextStyle(color: themeProvider.secondaryTextColor),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(textProvider.getText('ok')),
-            ),
-          ],
-        ),
-      );
-    }
-  }
+  // Removed showScanDialog as it's no longer used with the FloatingActionButton
+  // If scanning functionality is still needed, it should be moved to a different widget or screen.
 }
 
 class NavigationItem {
@@ -341,55 +296,4 @@ class NavigationItem {
     required this.label,
     required this.color,
   });
-}
-
-class _ScanDialog extends StatelessWidget {
-  final MediaProvider mediaProvider;
-  final TextProvider textProvider;
-
-  const _ScanDialog({
-    required this.mediaProvider,
-    required this.textProvider,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<MediaProvider>(
-      builder: (context, provider, child) {
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-        
-        return AlertDialog(
-          backgroundColor: colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.refresh_rounded, color: colorScheme.primary),
-              const SizedBox(width: 12),
-              Text(
-                textProvider.getText('scanning_files'),
-                style: TextStyle(color: colorScheme.onSurface),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(color: colorScheme.primary),
-              const SizedBox(height: 20),
-              Text(
-                provider.scanningStatus.isNotEmpty
-                    ? provider.scanningStatus
-                    : textProvider.getText('loading'),
-                textAlign: TextAlign.center,
-                style: TextStyle(color: colorScheme.onSurface),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

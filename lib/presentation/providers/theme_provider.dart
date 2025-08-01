@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart'; // Removed unused import
+import 'package:shared_preferences/shared_preferences.dart'; // New import
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
+  static const String _themeKey = 'themeMode'; // New: Key for SharedPreferences
 
   ThemeMode get themeMode => _themeMode;
   bool get isDarkMode => _themeMode == ThemeMode.dark; // New: isDarkMode getter
+
+  ThemeProvider() {
+    _loadTheme(); // New: Load theme on initialization
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeIndex = prefs.getInt(_themeKey);
+    if (themeIndex != null) {
+      _themeMode = ThemeMode.values[themeIndex];
+      notifyListeners();
+    }
+  }
+
+  Future<void> _saveTheme(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeKey, mode.index);
+  }
 
   ThemeData get currentTheme =>
       _themeMode == ThemeMode.dark ? _buildDarkTheme() : _buildLightTheme();
@@ -32,6 +51,7 @@ class ThemeProvider extends ChangeNotifier {
 
   void toggleTheme(bool isDark) {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    _saveTheme(_themeMode); // New: Save theme on toggle
     notifyListeners();
   }
 
@@ -83,8 +103,8 @@ class ThemeProvider extends ChangeNotifier {
       primaryColor: Colors.blue[300],
       hintColor: Colors.amber[300],
       scaffoldBackgroundColor: Colors.black,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.grey[900],
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -95,22 +115,20 @@ class ThemeProvider extends ChangeNotifier {
       colorScheme: ColorScheme.dark(
         primary: Colors.blue[300]!,
         secondary: Colors.amber[300]!,
-        surface: Colors.grey[900]!,
+        surface: Colors.black,
         onSurface: Colors.white,
         onPrimary: Colors.black,
         onSecondary: Colors.black,
       ),
-      cardColor: Colors.grey[900],
-      dialogTheme: DialogThemeData(
-        backgroundColor: Colors.grey[900],
-      ), // Fixed: dialogBackgroundColor to DialogThemeData
-      secondaryHeaderColor: Colors.grey[800],
+      cardColor: Colors.black,
+      dialogTheme: DialogThemeData(backgroundColor: Colors.black),
+      secondaryHeaderColor: Colors.black87,
       // Custom properties
       extensions: <ThemeExtension<dynamic>>[
         _CustomColors(
           primaryBackgroundColor: Colors.black,
-          secondaryBackgroundColor: Colors.grey[900]!,
-          cardBackgroundColor: Colors.grey[850]!,
+          secondaryBackgroundColor: Colors.black12,
+          cardBackgroundColor: Colors.black,
           iconColor: Colors.grey[300]!,
           textColor: Colors.white,
           secondaryTextColor: Colors.grey[400]!,

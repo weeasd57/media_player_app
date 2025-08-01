@@ -69,7 +69,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String filesFound(Object newFiles, Object totalFiles) {
-    return 'Found $totalFiles files\nAdded $newFiles new files';
+    return 'Found $totalFiles files\\nAdded $newFiles new files';
   }
 
   @override
@@ -179,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cleanLibraryConfirm =>
-      'This will remove all missing files from your library. This action cannot be undone.\n\nContinue?';
+      'This will remove all missing files from your library. This action cannot be undone.\\n\\nContinue?';
 
   @override
   String get clean => 'Clean';
@@ -197,7 +197,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearAllDataConfirm =>
-      'This will permanently delete all your playlists, favorites, and app data. This action cannot be undone.\n\nAre you sure you want to continue?';
+      'This will permanently delete all your playlists, favorites, and app data. This action cannot be undone.\\n\\nAre you sure you want to continue?';
 
   @override
   String get clearAll => 'Clear All';
@@ -239,7 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyContent =>
-      'Privacy Policy\n\nThis media player app is designed to respect your privacy. All media files are stored locally on your device and are not transmitted to any external servers.\n\nData Collection:\n• We do not collect any personal information\n• File paths and metadata are stored locally only\n• No data is shared with third parties\n\nPermissions:\n• Storage access: Required to scan and play media files\n• No network permissions are requested\n\nYour media library and playlists remain completely private and under your control.';
+      'Privacy Policy\\n\\nThis media player app is designed to respect your privacy. All media files are stored locally on your device and are not transmitted to any external servers.\\n\\nData Collection:\\n• We do not collect any personal information\\n• File paths and metadata are stored locally only\\n• No data is shared with third parties\\n\\nPermissions:\\n• Storage access: Required to scan and play media files\\n• No network permissions are requested\\n\\nYour media library and playlists remain completely private and under your control.';
 
   @override
   String filesCount(Object count) {
@@ -329,7 +329,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removedFromPlaylist => 'File removed from playlist';
 
   @override
-  String get addedToPlaylist => 'File added to playlist';
+  String addedToPlaylist(Object name) {
+    return 'Added to $name';
+  }
+
+  @override
+  String get noFilePlaying => 'No file playing';
+
+  @override
+  String get noSearchResults => 'No search results';
 
   @override
   String get removeFromFavorites => 'Remove from Favorites';
@@ -341,7 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removedFromFavorites => 'File removed from favorites';
 
   @override
-  String get addedFromFavorites => 'File added to favorites';
+  String get addedToFavorites => 'File added to favorites';
 
   @override
   String get deleteFile => 'Delete File';
@@ -351,4 +359,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchHint => 'Search media files...';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get ready => 'Ready';
+
+  @override
+  String get buffering => 'Buffering...';
+
+  @override
+  String get playing => 'Playing';
+
+  @override
+  String get paused => 'Paused';
+
+  @override
+  String get selectAudioFile => 'Select Audio File';
+
+  @override
+  String get upNext => 'Up Next';
+
+  @override
+  String get currentVideo => 'Current Video';
+
+  @override
+  String get dimensions => 'Dimensions';
+
+  @override
+  String get selectVideoFile => 'Select Video File';
+
+  @override
+  String playedXTimes(Object count) {
+    return 'Played $count times';
+  }
+
+  @override
+  String addFilesToPlaylist(Object playlistName) {
+    return 'Add Files to $playlistName';
+  }
+
+  @override
+  String filesSelected(Object count) {
+    return '$count files selected';
+  }
+
+  @override
+  String get noFilesAvailableToAdd => 'No files available to add';
+
+  @override
+  String addWithCount(Object count) {
+    return 'Add ($count)';
+  }
+
+  @override
+  String addedFilesToPlaylist(Object count) {
+    return 'Added $count files to playlist';
+  }
+
+  @override
+  String confirmRemoveFromFile(Object fileName) {
+    return 'Remove \"$fileName\" from this playlist?';
+  }
 }

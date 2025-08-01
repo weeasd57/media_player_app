@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @filesFound.
   ///
   /// In en, this message translates to:
-  /// **'Found {totalFiles} files\nAdded {newFiles} new files'**
+  /// **'Found {totalFiles} files\\nAdded {newFiles} new files'**
   String filesFound(Object newFiles, Object totalFiles);
 
   /// No description provided for @playlistCreated.
@@ -431,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @cleanLibraryConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This will remove all missing files from your library. This action cannot be undone.\n\nContinue?'**
+  /// **'This will remove all missing files from your library. This action cannot be undone.\\n\\nContinue?'**
   String get cleanLibraryConfirm;
 
   /// No description provided for @clean.
@@ -461,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearAllDataConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This will permanently delete all your playlists, favorites, and app data. This action cannot be undone.\n\nAre you sure you want to continue?'**
+  /// **'This will permanently delete all your playlists, favorites, and app data. This action cannot be undone.\\n\\nAre you sure you want to continue?'**
   String get clearAllDataConfirm;
 
   /// No description provided for @clearAll.
@@ -533,7 +533,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyContent.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy\n\nThis media player app is designed to respect your privacy. All media files are stored locally on your device and are not transmitted to any external servers.\n\nData Collection:\n• We do not collect any personal information\n• File paths and metadata are stored locally only\n• No data is shared with third parties\n\nPermissions:\n• Storage access: Required to scan and play media files\n• No network permissions are requested\n\nYour media library and playlists remain completely private and under your control.'**
+  /// **'Privacy Policy\\n\\nThis media player app is designed to respect your privacy. All media files are stored locally on your device and are not transmitted to any external servers.\\n\\nData Collection:\\n• We do not collect any personal information\\n• File paths and metadata are stored locally only\\n• No data is shared with third parties\\n\\nPermissions:\\n• Storage access: Required to scan and play media files\\n• No network permissions are requested\\n\\nYour media library and playlists remain completely private and under your control.'**
   String get privacyPolicyContent;
 
   /// No description provided for @filesCount.
@@ -695,8 +695,20 @@ abstract class AppLocalizations {
   /// No description provided for @addedToPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'File added to playlist'**
-  String get addedToPlaylist;
+  /// **'Added to {name}'**
+  String addedToPlaylist(Object name);
+
+  /// No description provided for @noFilePlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'No file playing'**
+  String get noFilePlaying;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No search results'**
+  String get noSearchResults;
 
   /// No description provided for @removeFromFavorites.
   ///
@@ -716,11 +728,11 @@ abstract class AppLocalizations {
   /// **'File removed from favorites'**
   String get removedFromFavorites;
 
-  /// No description provided for @addedFromFavorites.
+  /// No description provided for @addedToFavorites.
   ///
   /// In en, this message translates to:
   /// **'File added to favorites'**
-  String get addedFromFavorites;
+  String get addedToFavorites;
 
   /// No description provided for @deleteFile.
   ///
@@ -739,6 +751,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search media files...'**
   String get searchHint;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get ready;
+
+  /// No description provided for @buffering.
+  ///
+  /// In en, this message translates to:
+  /// **'Buffering...'**
+  String get buffering;
+
+  /// No description provided for @playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing'**
+  String get playing;
+
+  /// No description provided for @paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get paused;
+
+  /// No description provided for @selectAudioFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Audio File'**
+  String get selectAudioFile;
+
+  /// No description provided for @upNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Up Next'**
+  String get upNext;
+
+  /// No description provided for @currentVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Video'**
+  String get currentVideo;
+
+  /// No description provided for @dimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'Dimensions'**
+  String get dimensions;
+
+  /// No description provided for @selectVideoFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Video File'**
+  String get selectVideoFile;
+
+  /// No description provided for @playedXTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Played {count} times'**
+  String playedXTimes(Object count);
+
+  /// No description provided for @addFilesToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Files to {playlistName}'**
+  String addFilesToPlaylist(Object playlistName);
+
+  /// No description provided for @filesSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files selected'**
+  String filesSelected(Object count);
+
+  /// No description provided for @noFilesAvailableToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'No files available to add'**
+  String get noFilesAvailableToAdd;
+
+  /// No description provided for @addWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ({count})'**
+  String addWithCount(Object count);
+
+  /// No description provided for @addedFilesToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {count} files to playlist'**
+  String addedFilesToPlaylist(Object count);
+
+  /// No description provided for @confirmRemoveFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{fileName}\" from this playlist?'**
+  String confirmRemoveFromFile(Object fileName);
 }
 
 class _AppLocalizationsDelegate

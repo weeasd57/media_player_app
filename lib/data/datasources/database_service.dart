@@ -18,11 +18,12 @@ class DatabaseService {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'media_player.db');
-    
+
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Increment version for schema change
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade, // New: Add onUpgrade callback
     );
   }
 
@@ -39,7 +40,8 @@ class DatabaseService {
         dateAdded INTEGER NOT NULL,
         lastPlayed INTEGER NOT NULL,
         playCount INTEGER DEFAULT 0,
-        isFavorite INTEGER DEFAULT 0
+        isFavorite INTEGER DEFAULT 0,
+        isMissing INTEGER DEFAULT 0 -- New: isMissing column
       )
     ''');
 
@@ -57,8 +59,23 @@ class DatabaseService {
 
     // Create indexes for better performance
     await db.execute('CREATE INDEX idx_media_type ON media_files(type)');
-    await db.execute('CREATE INDEX idx_media_favorite ON media_files(isFavorite)');
-    await db.execute('CREATE INDEX idx_media_last_played ON media_files(lastPlayed)');
+    await db.execute(
+      'CREATE INDEX idx_media_favorite ON media_files(isFavorite)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_media_last_played ON media_files(lastPlayed)',
+    );
+  }
+
+  // New: onUpgrade callback for database schema changes
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add the new column 'isMissing' to 'media_files' table
+      await db.execute(
+        'ALTER TABLE media_files ADD COLUMN isMissing INTEGER DEFAULT 0',
+      );
+    }
+    // Add other migration steps for future versions here
   }
 
   // Media Files Operations
@@ -145,29 +162,31 @@ class DatabaseService {
 
   Future<int> deleteMediaFile(int id) async {
     final db = await database;
-    return await db.delete(
-      'media_files',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('media_files', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> updatePlayCount(int id) async {
     final db = await database;
-    await db.rawUpdate('''
+    await db.rawUpdate(
+      '''
       UPDATE media_files 
       SET playCount = playCount + 1, lastPlayed = ? 
       WHERE id = ?
-    ''', [DateTime.now().millisecondsSinceEpoch, id]);
+    ''',
+      [DateTime.now().millisecondsSinceEpoch, id],
+    );
   }
 
   Future<void> toggleFavorite(int id) async {
     final db = await database;
-    await db.rawUpdate('''
+    await db.rawUpdate(
+      '''
       UPDATE media_files 
       SET isFavorite = CASE WHEN isFavorite = 1 THEN 0 ELSE 1 END 
       WHERE id = ?
-    ''', [id]);
+    ''',
+      [id],
+    );
   }
 
   // Playlist Operations
@@ -210,11 +229,7 @@ class DatabaseService {
 
   Future<int> deletePlaylist(int id) async {
     final db = await database;
-    return await db.delete(
-      'playlists',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('playlists', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<MediaFile>> getPlaylistMediaFiles(int playlistId) async {
@@ -229,7 +244,7 @@ class DatabaseService {
       'SELECT * FROM media_files WHERE id IN ($placeholders)',
       playlist.mediaFileIds,
     );
-    
+
     return List.generate(maps.length, (i) => MediaFile.fromMap(maps[i]));
   }
 
@@ -259,22 +274,37 @@ class DatabaseService {
   // Statistics
   Future<Map<String, int>> getMediaStatistics() async {
     final db = await database;
-    
-    final audioCount = Sqflite.firstIntValue(await db.rawQuery(
-      'SELECT COUNT(*) FROM media_files WHERE type = ?', ['audio']
-    )) ?? 0;
-    
-    final videoCount = Sqflite.firstIntValue(await db.rawQuery(
-      'SELECT COUNT(*) FROM media_files WHERE type = ?', ['video']
-    )) ?? 0;
-    
-    final favoriteCount = Sqflite.firstIntValue(await db.rawQuery(
-      'SELECT COUNT(*) FROM media_files WHERE isFavorite = ?', [1]
-    )) ?? 0;
-    
-    final playlistCount = Sqflite.firstIntValue(await db.rawQuery(
-      'SELECT COUNT(*) FROM playlists'
-    )) ?? 0;
+
+    final audioCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM media_files WHERE type = ?', [
+            'audio',
+          ]),
+        ) ??
+        0;
+
+    final videoCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM media_files WHERE type = ?', [
+            'video',
+          ]),
+        ) ??
+        0;
+
+    final favoriteCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM media_files WHERE isFavorite = ?',
+            [1],
+          ),
+        ) ??
+        0;
+
+    final playlistCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM playlists'),
+        ) ??
+        0;
 
     return {
       'audio': audioCount,

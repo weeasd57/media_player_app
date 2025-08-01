@@ -9,6 +9,10 @@ class MediaFile {
   final DateTime lastPlayed;
   final int playCount;
   final bool isFavorite;
+  final bool
+  isMissing; // New: indicates if the file is missing from device storage
+  final String? artist; // New: Artist name
+  final String? album; // New: Album name
 
   MediaFile({
     this.id,
@@ -21,6 +25,9 @@ class MediaFile {
     required this.lastPlayed,
     this.playCount = 0,
     this.isFavorite = false,
+    this.isMissing = false, // Default to false
+    this.artist,
+    this.album,
   });
 
   // Convert MediaFile to Map for database operations
@@ -36,6 +43,9 @@ class MediaFile {
       'lastPlayed': lastPlayed.millisecondsSinceEpoch,
       'playCount': playCount,
       'isFavorite': isFavorite ? 1 : 0,
+      'isMissing': isMissing ? 1 : 0,
+      'artist': artist,
+      'album': album,
     };
   }
 
@@ -52,6 +62,9 @@ class MediaFile {
       lastPlayed: DateTime.fromMillisecondsSinceEpoch(map['lastPlayed']),
       playCount: map['playCount'],
       isFavorite: map['isFavorite'] == 1,
+      isMissing: map['isMissing'] == 1, // Read from map
+      artist: map['artist'],
+      album: map['album'],
     );
   }
 
@@ -67,6 +80,9 @@ class MediaFile {
     DateTime? lastPlayed,
     int? playCount,
     bool? isFavorite,
+    bool? isMissing,
+    String? artist,
+    String? album,
   }) {
     return MediaFile(
       id: id ?? this.id,
@@ -79,6 +95,9 @@ class MediaFile {
       lastPlayed: lastPlayed ?? this.lastPlayed,
       playCount: playCount ?? this.playCount,
       isFavorite: isFavorite ?? this.isFavorite,
+      isMissing: isMissing ?? this.isMissing,
+      artist: artist ?? this.artist,
+      album: album ?? this.album,
     );
   }
 
@@ -93,12 +112,14 @@ class MediaFile {
   String get formattedSize {
     if (size < 1024) return '$size B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (size < 1024 * 1024 * 1024) {
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   @override
   String toString() {
-    return 'MediaFile{id: $id, name: $name, type: $type, duration: $formattedDuration}';
+    return 'MediaFile{id: $id, name: $name, type: $type, isMissing: $isMissing, artist: $artist, album: $album}';
   }
 }

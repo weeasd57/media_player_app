@@ -7,8 +7,11 @@ import 'presentation/providers/media_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/text_provider.dart';
 import 'package:media_player_app/generated/app_localizations.dart';
+import 'package:media_player_app/services/notification_service.dart';
+import 'package:media_player_app/services/media_playback_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MediaPlayerApp());
 }
 
@@ -22,14 +25,16 @@ class MediaPlayerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => MediaProvider()),
         ChangeNotifierProvider(create: (context) => TextProvider()),
+        ChangeNotifierProvider(create: (context) => MediaPlaybackService()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, TextProvider>(
+        builder: (context, themeProvider, textProvider, child) {
           return MaterialApp(
-            title: 'Media Player',
+            title: textProvider.getText('appName'),
             theme: themeProvider.currentTheme,
             home: const PermissionHandler(),
             debugShowCheckedModeBanner: false,
+            locale: Locale(textProvider.currentLanguage),
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -62,6 +67,36 @@ class _PermissionHandlerState extends State<PermissionHandler>
     super.initState();
     _setupAnimations();
     _requestPermissions();
+    _initializeNotifications();
+  }
+
+  void _initializeNotifications() {
+    NotificationService.initializeNotifications((String? payload) {
+      final mediaPlaybackService = Provider.of<MediaPlaybackService>(
+        context,
+        listen: false,
+      );
+      switch (payload) {
+        case 'play_pause':
+          if (mediaPlaybackService.audioPlayer.playing ||
+              (mediaPlaybackService.videoPlayerController != null &&
+                  mediaPlaybackService
+                      .videoPlayerController!
+                      .value
+                      .isPlaying)) {
+            mediaPlaybackService.pause();
+          } else {
+            mediaPlaybackService.resume();
+          }
+          break;
+        case 'next':
+          mediaPlaybackService.next();
+          break;
+        case 'prev':
+          mediaPlaybackService.previous();
+          break;
+      }
+    });
   }
 
   void _setupAnimations() {
@@ -173,11 +208,15 @@ class _PermissionHandlerState extends State<PermissionHandler>
                         width: 120,
                         height: 120,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2), // إصلاح withOpacity
+                          color: Colors.white.withValues(
+                            alpha: 0.2,
+                          ), // إصلاح withOpacity
                           borderRadius: BorderRadius.circular(60),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1), // إصلاح withOpacity
+                              color: Colors.black.withValues(
+                                alpha: 0.1,
+                              ), // إصلاح withOpacity
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),

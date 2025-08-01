@@ -59,12 +59,15 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () => _createPlaylist(),
-            backgroundColor: Theme.of(context).primaryColor,
-            icon: const Icon(Icons.add, color: Colors.white),
+            backgroundColor: themeProvider.currentTheme.colorScheme.primary,
+            icon: Icon(
+              Icons.add,
+              color: themeProvider.currentTheme.colorScheme.onPrimary,
+            ),
             label: Text(
               AppLocalizations.of(context)!.createPlaylist,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: themeProvider.currentTheme.colorScheme.onPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -83,13 +86,15 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              color: themeProvider.currentTheme.colorScheme.primary.withValues(
+                alpha: 0.1,
+              ),
               borderRadius: BorderRadius.circular(60),
             ),
             child: Icon(
               Icons.playlist_add_rounded,
               size: 60,
-              color: Theme.of(context).primaryColor,
+              color: themeProvider.currentTheme.colorScheme.primary,
             ),
           ),
           const SizedBox(height: 24),
@@ -117,8 +122,8 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
             icon: const Icon(Icons.add),
             label: Text(AppLocalizations.of(context)!.createPlaylist),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              foregroundColor: Colors.white,
+              backgroundColor: themeProvider.currentTheme.colorScheme.primary,
+              foregroundColor: themeProvider.currentTheme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -139,6 +144,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
+      color: themeProvider.cardBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () => _openPlaylist(playlist),
@@ -161,15 +167,17 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: _getPlaylistColors(index)[0].withValues(alpha: 0.3),
+                        color: _getPlaylistColors(
+                          index,
+                        )[0].withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.playlist_play_rounded,
-                    color: Colors.white,
+                    color: themeProvider.iconColor,
                     size: 32,
                   ),
                 ),
@@ -207,9 +215,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                         Icon(
                           Icons.music_note,
                           size: 16,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: themeProvider.secondaryTextColor,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -218,9 +224,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                           )!.filesCount(playlist.mediaCount),
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.7),
+                            color: themeProvider.secondaryTextColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -228,18 +232,14 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                         Icon(
                           Icons.access_time,
                           size: 16,
-                          color: Theme.of(
-                            context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: themeProvider.secondaryTextColor,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _formatDate(playlist.lastModified),
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.7),
+                            color: themeProvider.secondaryTextColor,
                           ),
                         ),
                       ],
@@ -286,13 +286,13 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                       children: [
                         Icon(
                           Icons.delete,
-                          color: Theme.of(context).colorScheme.error,
+                          color: themeProvider.currentTheme.colorScheme.error,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.delete,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
+                            color: themeProvider.currentTheme.colorScheme.error,
                           ),
                         ),
                       ],
@@ -362,10 +362,14 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
   void _createPlaylist() async {
     final result = await showDialog<Map<String, String>>(
       context: context,
-      builder: (context) => const _CreatePlaylistDialog(),
+      builder: (context) => _CreatePlaylistDialog(
+        themeProvider: Provider.of<ThemeProvider>(context, listen: false),
+        textProvider: AppLocalizations.of(context)!,
+      ),
     );
 
     if (result != null && result['name']!.isNotEmpty) {
+      if (!mounted) return;
       final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
       await mediaProvider.createPlaylist(
         result['name']!,
@@ -373,10 +377,11 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
       );
 
       if (!mounted) return;
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.playlistCreated),
-          backgroundColor: Colors.green,
+          backgroundColor: themeProvider.currentTheme.colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -412,7 +417,11 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
       case 'edit':
         final result = await showDialog<Map<String, String>>(
           context: context,
-          builder: (context) => _EditPlaylistDialog(playlist: playlist),
+          builder: (context) => _EditPlaylistDialog(
+            playlist: playlist,
+            themeProvider: Provider.of<ThemeProvider>(context, listen: false),
+            textProvider: AppLocalizations.of(context)!,
+          ),
         );
 
         if (result != null) {
@@ -425,10 +434,14 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           await mediaProvider.updatePlaylist(updatedPlaylist);
 
           if (!mounted) return;
+          final themeProvider = Provider.of<ThemeProvider>(
+            context,
+            listen: false,
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.playlistUpdated),
-              backgroundColor: Colors.green,
+              backgroundColor: themeProvider.currentTheme.colorScheme.primary,
             ),
           );
         }
@@ -445,10 +458,14 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
         // Assuming mediaProvider will notify listeners after creation
 
         if (!mounted) return;
+        final themeProvider = Provider.of<ThemeProvider>(
+          context,
+          listen: false,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.playlistDuplicated),
-            backgroundColor: Colors.green,
+            backgroundColor: themeProvider.currentTheme.colorScheme.primary,
           ),
         );
         break;
@@ -486,10 +503,14 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           await mediaProvider.deletePlaylist(playlist);
 
           if (!mounted) return;
+          final themeProvider = Provider.of<ThemeProvider>(
+            context,
+            listen: false,
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.playlistDeleted),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: themeProvider.currentTheme.colorScheme.error,
             ),
           );
         }
@@ -499,7 +520,12 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
 }
 
 class _CreatePlaylistDialog extends StatefulWidget {
-  const _CreatePlaylistDialog();
+  final ThemeProvider themeProvider;
+  final AppLocalizations textProvider;
+  const _CreatePlaylistDialog({
+    required this.themeProvider,
+    required this.textProvider,
+  });
 
   @override
   State<_CreatePlaylistDialog> createState() => _CreatePlaylistDialogState();
@@ -519,15 +545,19 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: widget.themeProvider.cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(AppLocalizations.of(context)!.createNewPlaylist),
+      title: Text(
+        widget.textProvider.createPlaylist,
+        style: TextStyle(color: widget.themeProvider.primaryTextColor),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.playlistName,
+              labelText: widget.textProvider.playlistName,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -538,7 +568,7 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
           TextField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.descriptionOptional,
+              labelText: widget.textProvider.descriptionOptional,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -550,7 +580,12 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.cancel),
+          child: Text(
+            widget.textProvider.cancel,
+            style: TextStyle(
+              color: widget.themeProvider.currentTheme.colorScheme.primary,
+            ),
+          ),
         ),
         ElevatedButton(
           onPressed: () {
@@ -559,7 +594,13 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
               'description': _descriptionController.text,
             });
           },
-          child: Text(AppLocalizations.of(context)!.create),
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                widget.themeProvider.currentTheme.colorScheme.primary,
+            foregroundColor:
+                widget.themeProvider.currentTheme.colorScheme.onPrimary,
+          ),
+          child: Text(widget.textProvider.create),
         ),
       ],
     );
@@ -568,8 +609,14 @@ class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
 
 class _EditPlaylistDialog extends StatefulWidget {
   final Playlist playlist;
+  final ThemeProvider themeProvider; // New: ThemeProvider parameter
+  final AppLocalizations textProvider; // New: AppLocalizations parameter
 
-  const _EditPlaylistDialog({required this.playlist});
+  const _EditPlaylistDialog({
+    required this.playlist,
+    required this.themeProvider,
+    required this.textProvider,
+  });
 
   @override
   State<_EditPlaylistDialog> createState() => _EditPlaylistDialogState();
@@ -598,15 +645,21 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: widget.themeProvider.cardColor, // Use themeProvider
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(AppLocalizations.of(context)!.editPlaylist),
+      title: Text(
+        widget.textProvider.edit, // Use textProvider
+        style: TextStyle(
+          color: widget.themeProvider.primaryTextColor,
+        ), // Use themeProvider
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.playlistName,
+              labelText: widget.textProvider.playlistName, // Use textProvider
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -616,7 +669,8 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
           TextField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.descriptionOptional,
+              labelText:
+                  widget.textProvider.descriptionOptional, // Use textProvider
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -628,7 +682,12 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.cancel),
+          child: Text(
+            widget.textProvider.cancel,
+            style: TextStyle(
+              color: widget.themeProvider.currentTheme.colorScheme.primary,
+            ),
+          ), // Use textProvider and themeProvider
         ),
         ElevatedButton(
           onPressed: () {
@@ -637,7 +696,13 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
               'description': _descriptionController.text,
             });
           },
-          child: Text(AppLocalizations.of(context)!.save),
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                widget.themeProvider.currentTheme.colorScheme.primary,
+            foregroundColor:
+                widget.themeProvider.currentTheme.colorScheme.onPrimary,
+          ), // Use themeProvider
+          child: Text(widget.textProvider.save),
         ),
       ],
     );
