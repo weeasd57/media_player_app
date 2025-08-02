@@ -435,6 +435,84 @@ class _NeumorphicListTileState extends State<NeumorphicListTile> {
   }
 }
 
+class NeumorphicCustomButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onPressed;
+  final double? width;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+  final BorderRadius? borderRadius;
+
+  const NeumorphicCustomButton({
+    Key? key,
+    required this.child,
+    this.onPressed,
+    this.width,
+    this.height,
+    this.padding,
+    this.borderRadius,
+  }) : super(key: key);
+
+  @override
+  State<NeumorphicCustomButton> createState() => _NeumorphicCustomButtonState();
+}
+
+class _NeumorphicCustomButtonState extends State<NeumorphicCustomButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final neumorphicColors = theme.neumorphicColors;
+    final radius = widget.borderRadius ?? BorderRadius.circular(16);
+
+    return GestureDetector(
+      onTapDown: widget.onPressed != null ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp: widget.onPressed != null ? (_) => setState(() => _isPressed = false) : null,
+      onTapCancel: widget.onPressed != null ? () => setState(() => _isPressed = false) : null,
+      onTap: widget.onPressed,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: widget.width,
+        height: widget.height,
+        padding: widget.padding ?? const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: neumorphicColors.bgColor,
+          borderRadius: radius,
+          boxShadow: _isPressed
+              ? [
+                  BoxShadow(
+                    color: neumorphicColors.shadowDark,
+                    offset: const Offset(2, 2),
+                    blurRadius: 4,
+                    spreadRadius: -2,
+                  ),
+                  BoxShadow(
+                    color: neumorphicColors.shadowLight,
+                    offset: const Offset(-2, -2),
+                    blurRadius: 4,
+                    spreadRadius: -2,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: neumorphicColors.shadowDark,
+                    offset: const Offset(6, 6),
+                    blurRadius: 12,
+                  ),
+                  BoxShadow(
+                    color: neumorphicColors.shadowLight,
+                    offset: const Offset(-6, -6),
+                    blurRadius: 12,
+                  ),
+                ],
+        ),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
 class NeumorphicSlider extends StatefulWidget {
   final double value;
   final double min;

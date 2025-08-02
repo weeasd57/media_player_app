@@ -28,12 +28,13 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   // استخدام نظام Neumorphic
-  ThemeData get currentTheme =>
-      _themeMode == ThemeMode.dark ? NeumorphicTheme.darkTheme : NeumorphicTheme.lightTheme;
+  ThemeData get currentTheme => _themeMode == ThemeMode.dark
+      ? NeumorphicTheme.darkTheme
+      : NeumorphicTheme.lightTheme;
 
   // Neumorphic colors getters
   NeumorphicColors get neumorphicColors => currentTheme.neumorphicColors;
-  
+
   Color get primaryBackgroundColor => neumorphicColors.bgColor;
   Color get secondaryBackgroundColor => neumorphicColors.bgColor;
   Color get cardBackgroundColor => neumorphicColors.bgColor;
@@ -53,12 +54,17 @@ class ThemeProvider extends ChangeNotifier {
   Color get surfaceColor => neumorphicColors.bgColor;
   Color get onSurfaceColor => neumorphicColors.highlightColor;
 
-  void toggleTheme(bool isDark) {
+  void toggleTheme() {
+    _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    _saveTheme(_themeMode); // New: Save theme on toggle
+    notifyListeners();
+  }
+  
+  void setTheme(bool isDark) {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     _saveTheme(_themeMode); // New: Save theme on toggle
     notifyListeners();
   }
-
 
   ThemeData _buildLightTheme() {
     return ThemeData(
@@ -106,7 +112,7 @@ class ThemeProvider extends ChangeNotifier {
     const darkBg = Color(0xFF1A1A1A);
     const cardBg = Color(0xFF2D2D2D);
     const primaryColor = Color(0xFF4A9EFF);
-    
+
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: primaryColor,

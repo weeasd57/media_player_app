@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
-import 'package:provider/provider.dart';
-import '../providers/theme_provider.dart';
-import '../../generated/app_localizations.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -15,98 +8,375 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  VideoPlayerController? _videoPlayerController;
-  ChewieController? _chewieController;
-  String? _currentVideoName;
-  bool _isLoading = false;
+  bool _isPlaying = false;
+  bool _showControls = true;
+  double _currentPosition = 0.0;
+  double _volume = 0.7;
+  bool _isFullscreen = false;
 
   @override
-  void dispose() {
-    _videoPlayerController?.dispose();
-    _chewieController?.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickVideoFile() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.video,
-        allowMultiple: false,
-      );
-
-      if (result != null && result.files.single.path != null) {
-        await _initializeVideo(
-          result.files.single.path!,
-          result.files.single.name,
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      final localizations = AppLocalizations.of(context)!;
-      _showErrorDialog(localizations.error);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _initializeVideo(String path, String name) async {
-    // التخلص من المشغل السابق
-    await _videoPlayerController?.dispose();
-    _chewieController?.dispose();
-
-    _currentVideoName = name;
-
-    // إنشاء مشغل فيديو جديد
-    _videoPlayerController = VideoPlayerController.file(File(path));
-
-    await _videoPlayerController!.initialize();
-
-    if (!mounted) return;
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController!,
-      autoPlay: false,
-      looping: false,
-      showControls: true,
-      materialProgressColors: ChewieProgressColors(
-        playedColor: themeProvider.currentTheme.colorScheme.secondary,
-        handleColor: themeProvider.currentTheme.colorScheme.secondary,
-        backgroundColor: themeProvider.dividerColor,
-        bufferedColor: themeProvider.currentTheme.colorScheme.secondary
-            .withValues(alpha: 0.3),
-      ),
-      placeholder: Container(
-        color: themeProvider.primaryBackgroundColor,
-        child: Center(
-          child: CircularProgressIndicator(
-            color: themeProvider.currentTheme.colorScheme.secondary,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: _isFullscreen ? null : AppBar(
+        title: const Text('مشغل الفيديو'),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            onPressed: () {
+              _showFilePicker();
+            },
           ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Video Player Area
+          Center(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: _isFullscreen 
+                      ? BorderRadius.zero 
+                      : BorderRadius.circular(12),
+                ),
+                child: Stack(
+                  children: [
+                    // Video placeholder
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.video_library,
+                            size: 80,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'لم يتم تحديد فيديو',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'اضغط على أيقونة المجلد لاختيار فيديو',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Controls overlay
+                    if (_showControls)
+                      _buildControlsOverlay(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom controls (when not fullscreen)
+          if (!_isFullscreen)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildBottomControls(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlsOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withValues(alpha: 0.7),
+            Colors.transparent,
+            Colors.transparent,
+            Colors.black.withValues(alpha: 0.7),
+          ],
+        ),
+        borderRadius: _isFullscreen 
+            ? BorderRadius.zero 
+            : BorderRadius.circular(12),
+      ),
+      child: Stack(
+        children: [
+          // Play/Pause button in center
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isPlaying = !_isPlaying;
+                });
+              },
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withValues(alpha: 0.6),
+                ),
+                child: Icon(
+                  _isPlaying ? Icons.pause : Icons.play_arrow,
+                  size: 40,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+
+          // Top controls
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isFullscreen = !_isFullscreen;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+
+          // Progress bar at bottom
+          Positioned(
+            bottom: 20,
+            left: 20,
+            right: 20,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      _formatDuration(Duration(seconds: (_currentPosition * 3600).round())),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: _currentPosition,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentPosition = value;
+                          });
+                        },
+                        activeColor: Colors.red,
+                        inactiveColor: Colors.white.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    const Text(
+                      '1:00:00',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.skip_previous, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.replay_10, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPlaying = !_isPlaying;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.forward_10, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.skip_next, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomControls() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Volume control
+          Row(
+            children: [
+              const Icon(Icons.volume_up),
+              Expanded(
+                child: Slider(
+                  value: _volume,
+                  onChanged: (value) {
+                    setState(() {
+                      _volume = value;
+                    });
+                  },
+                ),
+              ),
+              Text('${(_volume * 100).round()}%'),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Video info
+          const ListTile(
+            leading: Icon(Icons.video_file),
+            title: Text('اسم الفيديو'),
+            subtitle: Text('لم يتم تحديد فيديو'),
+            trailing: Icon(Icons.info_outline),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed: _showFilePicker,
+                icon: const Icon(Icons.folder_open),
+                label: const Text('اختيار فيديو'),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.playlist_add),
+                label: const Text('إضافة لقائمة'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFilePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'اختيار مصدر الفيديو',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.folder),
+              title: const Text('من الملفات'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('سيتم إضافة هذه الميزة قريباً'),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('من الكاميرا'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('سيتم إضافة هذه الميزة قريباً'),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('من رابط'),
+              onTap: () {
+                Navigator.pop(context);
+                _showUrlDialog();
+              },
+            ),
+          ],
         ),
       ),
-      autoInitialize: true,
     );
-
-    setState(() {});
   }
 
-  void _showErrorDialog(String message) {
-    final localizations = AppLocalizations.of(context)!;
+  void _showUrlDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(localizations.error),
-        content: Text(message),
+        title: const Text('إدخال رابط الفيديو'),
+        content: const TextField(
+          decoration: InputDecoration(
+            hintText: 'أدخل رابط الفيديو هنا...',
+            border: OutlineInputBorder(),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(localizations.ok),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('سيتم إضافة هذه الميزة قريباً'),
+                ),
+              );
+            },
+            child: const Text('تحميل'),
           ),
         ],
       ),
@@ -115,267 +385,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     if (duration.inHours > 0) {
-      return '$hours:$minutes:$seconds';
-    } else {
-      return '$minutes:$seconds';
+      return '${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds';
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(localizations.nowPlaying),
-            centerTitle: true,
-          ),
-          backgroundColor: themeProvider.primaryBackgroundColor,
-          body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              themeProvider.currentTheme.colorScheme.secondary.withValues(alpha: 0.1),
-              themeProvider.currentTheme.colorScheme.secondary.withValues(alpha: 0.2),
-            ], // Use themeProvider
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // منطقة عرض الفيديو
-              Expanded(
-                flex: 3,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: themeProvider.primaryBackgroundColor,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: themeProvider.shadowColor,
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child:
-                        _chewieController != null &&
-                            _chewieController!
-                                .videoPlayerController
-                                .value
-                                .isInitialized
-                        ? Chewie(controller: _chewieController!)
-                        : _buildPlaceholder(themeProvider),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // معلومات الفيديو
-              if (_currentVideoName != null) ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: themeProvider.cardBackgroundColor,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: themeProvider.shadowColor,
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.video_file,
-                            color: themeProvider
-                                .currentTheme
-                                .colorScheme
-                                .secondary,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            localizations.nowPlaying,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: themeProvider.primaryTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        _currentVideoName!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: themeProvider.secondaryTextColor,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                      if (_videoPlayerController != null &&
-                          _videoPlayerController!.value.isInitialized) ...[
-                        const SizedBox(height: 12),
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              color: themeProvider
-                                  .currentTheme
-                                  .colorScheme
-                                  .secondary,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${localizations.duration}: ${_formatDuration(_videoPlayerController!.value.duration)}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: themeProvider.secondaryTextColor,
-                              ),
-                            ),
-
-                            const SizedBox(width: 20),
-
-                            Icon(
-                              Icons.aspect_ratio,
-                              color: themeProvider
-                                  .currentTheme
-                                  .colorScheme
-                                  .secondary,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Size: ${_videoPlayerController!.value.size.width.toInt()}x${_videoPlayerController!.value.size.height.toInt()}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: themeProvider.secondaryTextColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-              ],
-
-              // زر اختيار ملف
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _pickVideoFile,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.video_library),
-                  label: Text(
-                    _isLoading ? localizations.loading : localizations.search,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        themeProvider.currentTheme.colorScheme.secondary,
-                    foregroundColor:
-                        themeProvider.currentTheme.colorScheme.onSecondary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-      },
-    );
-  }
-
-  Widget _buildPlaceholder(ThemeProvider themeProvider) {
-    final localizations = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: themeProvider.primaryBackgroundColor,
-child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.play_arrow,
-            size: 60,
-            color: themeProvider.currentTheme.colorScheme.secondary,
-          ),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: themeProvider.currentTheme.colorScheme.secondary
-                  .withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Icon(
-              Icons.video_library,
-              size: 40,
-              color: themeProvider.currentTheme.colorScheme.secondary,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          Text(
-            localizations.noFilesFound,
-            style: TextStyle(
-              fontSize: 18,
-              color: themeProvider.primaryTextColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            localizations.search,
-            style: TextStyle(
-              fontSize: 14,
-              color: themeProvider.secondaryTextColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
+    return '$twoDigitMinutes:$twoDigitSeconds';
   }
 }
