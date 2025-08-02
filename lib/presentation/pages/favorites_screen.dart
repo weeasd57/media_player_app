@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
@@ -24,8 +24,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    final localizations = AppLocalizations.of(context)!;
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
@@ -33,7 +34,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
-              textProvider.getText('favorites'),
+              localizations.favorites,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: colorScheme.surface,
@@ -63,7 +64,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       children: [
                         const Icon(Icons.sort_by_alpha),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('sort_by_name')),
+                        Text(localizations.sortByName),
                       ],
                     ),
                   ),
@@ -73,7 +74,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       children: [
                         const Icon(Icons.access_time),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('sort_by_date')),
+                        Text(localizations.sortByDate),
                       ],
                     ),
                   ),
@@ -83,7 +84,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       children: [
                         const Icon(Icons.category),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('sort_by_type')),
+                        Text(localizations.sortByName),
                       ],
                     ),
                   ),
@@ -94,7 +95,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   context,
                   value,
                   mediaProvider,
-                  textProvider,
+                  localizations,
                   themeProvider,
                 ),
                 itemBuilder: (context) => [
@@ -108,7 +109,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          textProvider.getText('removeAllFavorites'),
+                          localizations.removeFromFavorites,
                           style: TextStyle(
                             color: themeProvider.currentTheme.colorScheme.error,
                           ),
@@ -123,7 +124,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           body: _buildFavoritesList(
             mediaProvider,
             themeProvider,
-            textProvider,
+            localizations,
           ),
         );
       },
@@ -133,12 +134,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget _buildFavoritesList(
     MediaProvider mediaProvider,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     final favoriteFiles = _sortFiles(mediaProvider.favoriteFiles);
 
     if (favoriteFiles.isEmpty) {
-      return _buildEmptyState(themeProvider, textProvider);
+      return _buildEmptyState(themeProvider, localizations);
     }
 
     if (_viewMode == FavoriteViewMode.list) {
@@ -151,7 +152,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             favoriteFiles[index],
             index,
             themeProvider,
-            textProvider,
+            localizations,
           );
         },
       );
@@ -171,7 +172,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             favoriteFiles[index],
             index,
             themeProvider,
-            textProvider,
+            localizations,
           );
         },
       );
@@ -183,7 +184,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     MediaFile file,
     int index,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -193,7 +194,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
         leading: Hero(
-          tag: 'favorite_media_${file.id}',
+          tag: 'favorite_media_${file.id}_${file.name}',
           child: Container(
             width: 56,
             height: 56,
@@ -267,9 +268,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    textProvider
-                        .getText('playedTimes')
-                        .replaceAll('{count}', file.playCount.toString()),
+                    localizations.playedTimes(file.playCount),
                     style: TextStyle(
                       color: themeProvider.secondaryTextColor.withValues(alpha: 0.6),
                       fontSize: 12,
@@ -285,7 +284,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             context,
             value,
             file,
-            textProvider,
+            localizations,
           ),
           itemBuilder: (context) => [
             PopupMenuItem(
@@ -295,7 +294,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 children: [
                   const Icon(Icons.play_arrow),
                   const SizedBox(width: 8),
-                  Text(textProvider.getText('play')),
+                  Text(localizations.play),
                 ],
               ),
             ),
@@ -306,7 +305,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 children: [
                   const Icon(Icons.playlist_add),
                   const SizedBox(width: 8),
-                  Text(textProvider.getText('addToPlaylist')),
+                  Text(localizations.addToPlaylist),
                 ],
               ),
             ),
@@ -320,7 +319,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    textProvider.getText('removeFromFavorites'),
+                    localizations.removeFromFavorites,
                     style: TextStyle(
                       color: themeProvider.currentTheme.colorScheme.error,
                     ),
@@ -331,7 +330,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ],
         ),
         onTap: () => file.isMissing
-            ? _showMissingFileMessage(context, file.name, textProvider)
+            ? _showMissingFileMessage(context, file.name, localizations)
             : _playMediaFile(context, file),
       ),
     );
@@ -342,7 +341,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     MediaFile file,
     int index,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return Card(
       elevation: 2,
@@ -351,7 +350,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => file.isMissing
-            ? _showMissingFileMessage(context, file.name, textProvider)
+            ? _showMissingFileMessage(context, file.name, localizations)
             : _playMediaFile(context, file),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,7 +465,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Widget _buildEmptyState(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return Center(
       child: Column(
@@ -479,7 +478,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            textProvider.getText('noFavorites'),
+            localizations.favorites.isEmpty ? 'No Favorites Yet' : 'لا توجد مفضلات بعد',
             style: TextStyle(
               fontSize: 18,
               color: themeProvider.primaryTextColor.withValues(alpha: 0.8),
@@ -488,7 +487,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            textProvider.getText('noFavoritesDescription'),
+            'Your favorite songs and videos will appear here',
             style: TextStyle(
               fontSize: 14,
               color: themeProvider.secondaryTextColor.withValues(alpha: 0.6),
@@ -499,7 +498,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.library_music),
-            label: Text(textProvider.getText('browseLibrary')),
+            label: Text(localizations.library),
             style: ElevatedButton.styleFrom(
               backgroundColor: themeProvider.currentTheme.colorScheme.primary,
               foregroundColor: themeProvider.currentTheme.colorScheme.onPrimary,
@@ -583,7 +582,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     BuildContext context,
     String action,
     MediaFile file,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
 
@@ -601,7 +600,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(textProvider.getText('removedFromFavorites')),
+            content: Text(localizations.removedFromFavorites),
           ),
         );
         break;
@@ -612,7 +611,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     BuildContext context,
     String action,
     MediaProvider mediaProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
     ThemeProvider themeProvider,
   ) {
     switch (action) {
@@ -620,7 +619,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         _showClearAllFavoritesDialog(
           context,
           mediaProvider,
-          textProvider,
+          localizations,
           themeProvider,
         );
         break;
@@ -639,7 +638,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   void _showClearAllFavoritesDialog(
     BuildContext context,
     MediaProvider mediaProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
     ThemeProvider themeProvider,
   ) {
     showDialog(
@@ -650,18 +649,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          textProvider.getText('removeAllFavorites'),
+          'Remove All Favorites',
           style: TextStyle(color: themeProvider.primaryTextColor),
         ),
         content: Text(
-          textProvider.getText('removeAllFavoritesConfirmation'),
+          'Are you sure you want to remove all favorites?',
           style: TextStyle(color: themeProvider.secondaryTextColor),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              textProvider.getText('cancel'),
+              localizations.cancel,
               style: TextStyle(
                 color: themeProvider.currentTheme.colorScheme.primary,
               ),
@@ -682,7 +681,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 
                 scaffold.showSnackBar(
                   SnackBar(
-                    content: Text(textProvider.getText('allFavoritesRemoved')),
+                    content: Text('All favorites removed'),
                   ),
                 );
               },
@@ -690,7 +689,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               backgroundColor: themeProvider.currentTheme.colorScheme.error,
             ),
             child: Text(
-              textProvider.getText('removeAll'),
+              'Remove All',
               style: TextStyle(
                 color: themeProvider.currentTheme.colorScheme.onError,
               ),
@@ -704,14 +703,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   void _showMissingFileMessage(
     BuildContext context,
     String fileName,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          textProvider
-              .getText('fileNotFound')
-              .replaceAll('{fileName}', fileName),
+          localizations.fileNotFound(fileName),
         ),
         backgroundColor: Colors.red,
       ),

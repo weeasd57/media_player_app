@@ -1,6 +1,3 @@
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +6,6 @@ import '../../data/models/playlist.dart';
 import '../../data/datasources/database_service.dart';
 import '../../data/datasources/file_scanner_service.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io'; // Added for File.exists()
 import 'package:path/path.dart' as p; // Import path package
 
 class MediaProvider extends ChangeNotifier {
@@ -64,59 +60,17 @@ class MediaProvider extends ChangeNotifier {
     _allMediaFiles = allFilesFromDb.where((file) => !file.isMissing).toList();
     _missingFiles = allFilesFromDb.where((file) => file.isMissing).toList();
 
-    // إذا كانت قاعدة البيانات فارغة، قم بتحميل الملفات التجريبية
-    if (_allMediaFiles.isEmpty && _missingFiles.isEmpty) {
-      await _loadSampleMedia();
-    } else {
-      // Get all files and sort them by lastPlayed
-      _recentFiles = _allMediaFiles.toList();
-      _recentFiles.sort((a, b) => b.lastPlayed.compareTo(a.lastPlayed));
-      _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
-    }
-
+    // تحديث القوائم الأخرى
+    _recentFiles = _allMediaFiles.toList();
+    _recentFiles.sort((a, b) => b.lastPlayed.compareTo(a.lastPlayed));
+    _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
+    
+    debugPrint('Loaded ${_allMediaFiles.length} media files, ${_missingFiles.length} missing files');
+    
     _updateStatistics();
     notifyListeners();
   }
 
-  Future<void> _loadSampleMedia() async {
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-    final sampleMediaPaths = manifestMap.keys
-        .where((String key) => key.contains('assets/sample_media/'))
-        .toList();
-
-    for (String path in sampleMediaPaths) {
-      final fileName = path.split('/').last;
-      final type = fileName.endsWith('.mp3') || fileName.endsWith('.wav')
-          ? 'audio'
-          : 'video';
-
-      final sampleFile = MediaFile(
-        name: fileName,
-        path: path,
-        type: type,
-        duration: 180000, // قيمة افتراضية
-        size: 5000000, // قيمة افتراضية
-        dateAdded: DateTime.now(),
-        lastPlayed: DateTime.now(),
-        isMissing: !(await File(
-          path,
-        ).exists()), // Check existence for sample files too
-      );
-
-      _allMediaFiles.add(sampleFile);
-    }
-
-    // تحديث القوائم الأخرى
-    _recentFiles = _allMediaFiles.toList();
-    _favoriteFiles = _allMediaFiles.where((file) => file.isFavorite).toList();
-
-    // Re-filter after adding sample files to populate _missingFiles correctly
-    final allFilesCombined = [..._allMediaFiles, ..._missingFiles];
-    _allMediaFiles = allFilesCombined.where((file) => !file.isMissing).toList();
-    _missingFiles = allFilesCombined.where((file) => file.isMissing).toList();
-  }
 
   Future<void> _loadPlaylists() async {
     _playlists = await _databaseService.getAllPlaylists();

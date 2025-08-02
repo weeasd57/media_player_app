@@ -54,7 +54,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get yourPlaylists => 'قوائم التشغيل الخاصة بك';
 
   @override
-  String get loadingLibrary => 'جاري تحميل مكتبة الوسائط...';
+  String get loadingLibrary => 'جاري تحميل المكتبة...';
 
   @override
   String get scanComplete => 'اكتمل الفحص';
@@ -211,9 +211,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String treble(Object value) {
-    return 'الصوت العالي: $value';
-  }
+  String get treble => 'الأصوات العالية';
 
   @override
   String get appInformation => 'معلومات التطبيق';
@@ -330,14 +328,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String addedToPlaylist(Object name) {
-    return 'تم إضافة الملف إلى قائمة التشغيل';
+    return 'تمت الإضافة إلى $name';
   }
 
   @override
-  String get noFilePlaying => 'No file playing';
+  String get noFilePlaying => 'لا يوجد ملف قيد التشغيل';
 
   @override
-  String get noSearchResults => 'No search results';
+  String get noSearchResults => 'لا توجد نتائج بحث';
 
   @override
   String get removeFromFavorites => 'إزالة من المفضلة';
@@ -392,34 +390,160 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String playedXTimes(Object count) {
-    return 'Played $count times';
+    return 'تم تشغيلها $count مرات';
   }
 
   @override
   String addFilesToPlaylist(Object playlistName) {
-    return 'Add Files to $playlistName';
+    return 'إضافة ملفات إلى $playlistName';
   }
 
   @override
   String filesSelected(Object count) {
-    return '$count files selected';
+    return '$count ملفات محددة';
   }
 
   @override
-  String get noFilesAvailableToAdd => 'No files available to add';
+  String get noFilesAvailableToAdd => 'لا توجد ملفات لإضافتها';
 
   @override
   String addWithCount(Object count) {
-    return 'Add ($count)';
+    return 'إضافة ($count)';
   }
 
   @override
   String addedFilesToPlaylist(Object count) {
-    return 'Added $count files to playlist';
+    return 'تم إضافة $count ملفات إلى قائمة التشغيل';
   }
 
   @override
   String confirmRemoveFromFile(Object fileName) {
-    return 'Remove \"$fileName\" from this playlist?';
+    return 'إزالة \"$fileName\" من هذه القائمة؟';
   }
+
+  @override
+  String get nowPlaying => 'الآن يُشغَّل';
+
+  @override
+  String get noMusicPlaying => 'لا يوجد موسيقى تعمل';
+
+  @override
+  String get tapToPlay => 'اضغط لتشغيل أغنية';
+
+  @override
+  String get home => 'الرئيسية';
+
+  @override
+  String get appName => 'مشغل الوسائط';
+
+  @override
+  String get settingUpLibrary => 'جاري إعداد مكتبتك...';
+
+  @override
+  String get seeAll => 'عرض الكل';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get noFilesFound => 'لا توجد ملفات';
+
+  @override
+  String get sortByName => 'ترتيب حسب الاسم';
+
+  @override
+  String get sortBySize => 'ترتيب حسب الحجم';
+
+  @override
+  String get allFiles => 'جميع الملفات';
+
+  @override
+  String get folders => 'المجلدات';
+
+  @override
+  String get parentDirectory => 'المجلد الأصلي';
+
+  @override
+  String fileNotFound(Object fileName) {
+    return 'الملف غير موجود: $fileName';
+  }
+
+  @override
+  String playedTimes(Object count) {
+    return 'تم تشغيلها $count مرات';
+  }
+
+  @override
+  String get play => 'تشغيل';
+
+  @override
+  String get exploreDevice => 'استكشاف الجهاز';
+
+  @override
+  String get refresh => 'تحديث';
+
+  @override
+  String get success => 'تم بنجاح';
+
+  @override
+  String get duration => 'المدة';
+
+  @override
+  String get sortByDate => 'ترتيب حسب التاريخ';
+
+  @override
+  String get equalizer => 'المعادل';
+
+  @override
+  String get loading => 'جاري التحميل...';
+
+  @override
+  String get loadingPlaylist => 'جاري تحميل قائمة التشغيل...';
+
+  @override
+  String get playlist => 'قائمة التشغيل';
+
+  @override
+  String get addFiles => 'إضافة ملفات';
+
+  @override
+  String get shufflePlay => 'تشغيل عشوائي';
+
+  @override
+  String get removeFromHistory => 'إزالة من السجل';
+
+  @override
+  String get noRecentFiles => 'لا توجد ملفات حديثة';
+
+  @override
+  String get noRecentFilesDescription => 'الملفات التي تشغلها ستظهر هنا';
+
+  @override
+  String removeFromHistoryConfirmation(Object fileName) {
+    return 'إزالة $fileName من السجل؟';
+  }
+
+  @override
+  String get removedFromHistory => 'تم إزالته من السجل';
+
+  @override
+  String get remove => 'إزالة';
+
+  @override
+  String get clearHistory => 'مسح السجل';
+
+  @override
+  String get clearHistoryConfirmation => 'مسح سجل الملفات الحديثة؟';
+
+  @override
+  String get historyCleared => 'تم مسح السجل';
+
+  @override
+  String get clear => 'مسح';
+
+  @override
+  String get scanCompleteMessage => 'تم اكتمال فحص الوسائط بنجاح.';
+
+  @override
+  String get emptyPlaylist => 'قائمة التشغيل فارغة';
 }

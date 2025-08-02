@@ -4,7 +4,8 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../generated/app_localizations.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../providers/locale_provider.dart';
+import '../../widgets/neumorphic_components.dart' as neumorphic;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,13 +17,14 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Consumer3<ThemeProvider, MediaProvider, TextProvider>(
-      builder: (context, themeProvider, mediaProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer3<ThemeProvider, MediaProvider, LocaleProvider>(
+      builder: (context, themeProvider, mediaProvider, localeProvider, child) {
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
           appBar: AppBar(
             title: Text(
-              textProvider.getText('settings'),
+              l10n.settings,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: themeProvider.primaryBackgroundColor,
@@ -41,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   // Theme Section
                   _buildSectionHeader(
-                    textProvider.getText('theme'),
+                    'Theme', // TODO: Add to l10n if needed
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
@@ -49,10 +51,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: themeProvider.isDarkMode
                           ? Icons.dark_mode
                           : Icons.light_mode,
-                      title: textProvider.getText('darkMode'),
+                      title: 'Dark Mode', // TODO: Add to l10n if needed
                       subtitle: themeProvider.isDarkMode
-                          ? textProvider.getText('darkMode')
-                          : textProvider.getText('lightMode'),
+                          ? 'Dark Mode'
+                          : 'Light Mode',
                       value: themeProvider.isDarkMode,
                       onChanged: (value) => themeProvider.toggleTheme(value),
                       themeProvider: themeProvider,
@@ -63,18 +65,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // Language Section
                   _buildSectionHeader(
-                    textProvider.getText('language'),
+                    'Language', // TODO: Add to l10n if needed
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildLanguageTile(
                       icon: Icons.language,
-                      title: textProvider.getText('language'),
-                      subtitle: textProvider.currentLanguage == 'ar'
-                          ? textProvider.getText('arabic')
-                          : textProvider.getText('english'),
+                      title: 'Language',
+                      subtitle: localeProvider.isArabic
+                          ? 'العربية'
+                          : 'English',
                       onTap: () =>
-                          _showLanguageDialog(textProvider, themeProvider),
+                          _showLanguageDialog(localeProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                   ]),
@@ -83,26 +85,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // Playback Section
                   _buildSectionHeader(
-                    textProvider.getText('playback'),
+                    l10n.playback,
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSwitchTile(
                       icon: Icons.repeat_rounded,
-                      title: textProvider.getText('auto_repeat'),
-                      subtitle: textProvider.getText(
-                        'automatically_repeat_playlists',
-                      ),
+                      title: l10n.autoRepeat,
+                      subtitle: l10n.autoRepeatDesc,
                       value: mediaProvider.autoRepeat,
                       onChanged: (value) => mediaProvider.setAutoRepeat(value),
                       themeProvider: themeProvider,
                     ),
                     _buildSwitchTile(
                       icon: Icons.shuffle_rounded,
-                      title: textProvider.getText('shuffle_mode'),
-                      subtitle: textProvider.getText(
-                        'randomize_playback_order',
-                      ),
+                      title: l10n.shuffleMode,
+                      subtitle: l10n.shuffleModeDesc,
                       value: mediaProvider.shuffleMode,
                       onChanged: (value) => mediaProvider.setShuffleMode(value),
                       themeProvider: themeProvider,
@@ -113,34 +111,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // Library Section
                   _buildSectionHeader(
-                    textProvider.getText('library'),
+                    l10n.library,
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.refresh_rounded,
-                      title: textProvider.getText('scan_files'),
-                      subtitle: textProvider.getText(
-                        'search_for_new_media_files',
-                      ),
+                      title: l10n.scanFiles,
+                      subtitle: l10n.scanMediaFilesDesc,
                       onTap: () => _scanForFiles(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.cleaning_services_rounded,
-                      title: textProvider.getText('clean_library'),
-                      subtitle: textProvider.getText(
-                        'remove_missing_files_from_library',
-                      ),
+                      title: l10n.cleanLibrary,
+                      subtitle: l10n.cleanLibraryDesc,
                       onTap: () => _cleanLibrary(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.folder_rounded,
-                      title: textProvider.getText('storage_info'),
-                      subtitle: textProvider.getText(
-                        'view_usage_and_statistics',
-                      ),
+                      title: l10n.storageInfo,
+                      subtitle: l10n.storageInfoDesc,
                       onTap: () =>
                           _showStorageInfo(mediaProvider, themeProvider),
                       themeProvider: themeProvider,
@@ -151,16 +143,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // Data Management Section
                   _buildSectionHeader(
-                    textProvider.getText('data_management'),
+                    l10n.dataManagement,
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.delete_forever_rounded,
-                      title: textProvider.getText('clear_all_data'),
-                      subtitle: textProvider.getText(
-                        'remove_all_playlists_and_preferences',
-                      ),
+                      title: l10n.clearAllData,
+                      subtitle: l10n.clearAllDataDesc,
                       onTap: () => _clearAllData(mediaProvider, themeProvider),
                       textColor: Colors.red,
                       themeProvider: themeProvider,
@@ -171,35 +161,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   // About Section
                   _buildSectionHeader(
-                    textProvider.getText('about'),
+                    l10n.about,
                     themeProvider,
                   ),
                   _buildSettingsCard(themeProvider, [
                     _buildSettingsTile(
                       icon: Icons.info_rounded,
-                      title: textProvider.getText('app_name'),
-                      subtitle: textProvider.getText('version'),
+                      title: l10n.appName,
+                      subtitle: l10n.version,
                       onTap: () => _showAppInfo(themeProvider),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.star_rounded,
-                      title: textProvider.getText('rate_app'),
-                      subtitle: textProvider.getText('rate_us_on_app_store'),
+                      title: l10n.rateApp,
+                      subtitle: l10n.rateAppDesc,
                       onTap: () => _rateApp(),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.bug_report_rounded,
-                      title: textProvider.getText('report_bug'),
-                      subtitle: textProvider.getText('help_us_improve_app'),
+                      title: l10n.reportBug,
+                      subtitle: l10n.reportBugDesc,
                       onTap: () => _reportBug(),
                       themeProvider: themeProvider,
                     ),
                     _buildSettingsTile(
                       icon: Icons.privacy_tip_rounded,
-                      title: textProvider.getText('privacy_policy'),
-                      subtitle: textProvider.getText('read_our_privacy_policy'),
+                      title: l10n.privacyPolicy,
+                      subtitle: l10n.privacyPolicyDesc,
                       onTap: () => _showPrivacyPolicy(themeProvider),
                       themeProvider: themeProvider,
                     ),
@@ -233,10 +223,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeProvider themeProvider,
     List<Widget> children,
   ) {
-    return Card(
-      elevation: 2,
-      color: themeProvider.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return neumorphic.NeumorphicCard(
+      padding: EdgeInsets.zero,
+      borderRadius: BorderRadius.circular(20),
       child: Column(children: children),
     );
   }
@@ -250,29 +239,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Container(
+      leading: neumorphic.NeumorphicContainer(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: (textColor ?? Colors.blue).withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+        width: 40,
+        height: 40,
+        borderRadius: BorderRadius.circular(12),
+        isInset: true,
+        child: Icon(
+          icon, 
+          color: textColor ?? themeProvider.accentColor, 
+          size: 20
         ),
-        child: Icon(icon, color: textColor ?? Colors.blue, size: 24),
       ),
       title: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.w600,
-          color: textColor ?? themeProvider.primaryTextColor,
+          color: textColor ?? themeProvider.highlightColor,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 14),
+        style: TextStyle(color: themeProvider.textColor, fontSize: 14),
       ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 16,
-        color: themeProvider.iconColor,
+      trailing: neumorphic.NeumorphicButton(
+        icon: Icons.arrow_forward_ios_rounded,
+        onTap: onTap,
+        size: 32,
       ),
       onTap: onTap,
     );
@@ -376,9 +369,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showLanguageDialog(
-    TextProvider textProvider,
+    LocaleProvider localeProvider,
     ThemeProvider themeProvider,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -389,7 +384,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Icon(Icons.language, color: Colors.blue),
             const SizedBox(width: 12),
             Text(
-              textProvider.getText('language'),
+              'Language',
               style: TextStyle(color: themeProvider.primaryTextColor),
             ),
           ],
@@ -398,31 +393,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.flag, color: Colors.green),
+              leading: const Text('🇸🇦', style: TextStyle(fontSize: 24)),
               title: Text(
-                textProvider.getText('arabic'),
+                'العربية',
                 style: TextStyle(color: themeProvider.primaryTextColor),
               ),
-              trailing: textProvider.currentLanguage == 'ar'
+              trailing: localeProvider.isArabic
                   ? const Icon(Icons.check, color: Colors.blue)
                   : null,
-              onTap: () {
-                textProvider.changeLanguage('ar');
-                Navigator.of(context).pop();
+              onTap: () async {
+                await localeProvider.setLocale(const Locale('ar'));
+                if (context.mounted) Navigator.of(context).pop();
               },
             ),
             ListTile(
-              leading: const Icon(Icons.flag, color: Colors.red),
+              leading: const Text('🇺🇸', style: TextStyle(fontSize: 24)),
               title: Text(
-                textProvider.getText('english'),
+                'English',
                 style: TextStyle(color: themeProvider.primaryTextColor),
               ),
-              trailing: textProvider.currentLanguage == 'en'
+              trailing: localeProvider.isEnglish
                   ? const Icon(Icons.check, color: Colors.blue)
                   : null,
-              onTap: () {
-                textProvider.changeLanguage('en');
-                Navigator.of(context).pop();
+              onTap: () async {
+                await localeProvider.setLocale(const Locale('en'));
+                if (context.mounted) Navigator.of(context).pop();
               },
             ),
           ],
@@ -431,8 +426,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              textProvider.getText('cancel'),
-              style: TextStyle(color: Colors.blue),
+              l10n.cancel,
+              style: const TextStyle(color: Colors.blue),
             ),
           ),
         ],

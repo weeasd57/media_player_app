@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 
 class UpNextScreen extends StatefulWidget {
@@ -15,16 +15,14 @@ class UpNextScreen extends StatefulWidget {
 class _UpNextScreenState extends State<UpNextScreen> {
   @override
   Widget build(BuildContext context) {
-    final textProvider = Provider.of<TextProvider>(
-      context,
-    ); // Access TextProvider
+    final localizations = AppLocalizations.of(context)!;
     final themeProvider = Provider.of<ThemeProvider>(
       context,
     ); // Access ThemeProvider
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(textProvider.getText('upNext')),
+        title: Text(localizations.upNext),
         backgroundColor:
             themeProvider.primaryBackgroundColor, // Use themeProvider
         foregroundColor: themeProvider.primaryTextColor, // Use themeProvider
@@ -39,8 +37,8 @@ class _UpNextScreenState extends State<UpNextScreen> {
           if (currentPlaylist == null || currentPlaylist.mediaFileIds.isEmpty) {
             return Center(
               child: Text(
-                textProvider.getText('emptyPlaylist'),
-                style: TextStyle(color: themeProvider.secondaryTextColor),
+                'No items in queue',
+                style: TextStyle(color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6)),
               ), // Use themeProvider
             );
           }
@@ -55,8 +53,8 @@ class _UpNextScreenState extends State<UpNextScreen> {
           if (mediaFiles.isEmpty) {
             return Center(
               child: Text(
-                textProvider.getText('noMediaFound'),
-                style: TextStyle(color: themeProvider.secondaryTextColor),
+                localizations.noMediaFound,
+                style: TextStyle(color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6)),
               ), // Use themeProvider
             );
           }
@@ -71,20 +69,20 @@ class _UpNextScreenState extends State<UpNextScreen> {
                 color: isPlaying
                     ? themeProvider.currentTheme.colorScheme.primary
                           .withValues(alpha: 0.1)
-                    : themeProvider.cardBackgroundColor, // Use themeProvider
+                    : themeProvider.currentTheme.cardColor, // Use themeProvider
                 child: ListTile(
                   leading: Icon(
                     file.type == 'audio' ? Icons.music_note : Icons.movie,
                     color: isPlaying
                         ? themeProvider.currentTheme.colorScheme.primary
-                        : themeProvider.iconColor, // Use themeProvider
+                        : themeProvider.currentTheme.iconTheme.color, // Use themeProvider
                   ),
                   title: Text(
                     file.name,
                     style: TextStyle(
                       color: isPlaying
                           ? themeProvider.currentTheme.colorScheme.primary
-                          : themeProvider.primaryTextColor,
+                          : themeProvider.currentTheme.colorScheme.onSurface,
                     ), // Use themeProvider
                   ),
                   subtitle: Text(
@@ -93,7 +91,7 @@ class _UpNextScreenState extends State<UpNextScreen> {
                       color: isPlaying
                           ? themeProvider.currentTheme.colorScheme.primary
                                 .withValues(alpha: 0.7)
-                          : themeProvider.secondaryTextColor,
+                          : themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ), // Use themeProvider
                   ),
                   onTap: () {

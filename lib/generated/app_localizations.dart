@@ -191,7 +191,7 @@ abstract class AppLocalizations {
   /// No description provided for @loadingLibrary.
   ///
   /// In en, this message translates to:
-  /// **'Loading your media library...'**
+  /// **'Loading library...'**
   String get loadingLibrary;
 
   /// No description provided for @scanComplete.
@@ -485,8 +485,8 @@ abstract class AppLocalizations {
   /// No description provided for @treble.
   ///
   /// In en, this message translates to:
-  /// **'Treble: {value}'**
-  String treble(Object value);
+  /// **'Treble'**
+  String get treble;
 
   /// No description provided for @appInformation.
   ///
@@ -853,6 +853,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove \"{fileName}\" from this playlist?'**
   String confirmRemoveFromFile(Object fileName);
+
+  /// No description provided for @nowPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Now Playing'**
+  String get nowPlaying;
+
+  /// No description provided for @noMusicPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'No music playing'**
+  String get noMusicPlaying;
+
+  /// No description provided for @tapToPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to play a song'**
+  String get tapToPlay;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @appName.
+  ///
+  /// In en, this message translates to:
+  /// **'Media Player'**
+  String get appName;
+
+  /// No description provided for @settingUpLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up your library...'**
+  String get settingUpLibrary;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get seeAll;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @noFilesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No files found'**
+  String get noFilesFound;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Name'**
+  String get sortByName;
+
+  /// No description provided for @sortBySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Size'**
+  String get sortBySize;
+
+  /// No description provided for @allFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'All Files'**
+  String get allFiles;
+
+  /// No description provided for @folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get folders;
+
+  /// No description provided for @parentDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Directory'**
+  String get parentDirectory;
+
+  /// No description provided for @fileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'File not found: {fileName}'**
+  String fileNotFound(Object fileName);
+
+  /// No description provided for @playedTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Played {count} times'**
+  String playedTimes(Object count);
+
+  /// No description provided for @play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play;
+
+  /// No description provided for @exploreDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Device'**
+  String get exploreDevice;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @sortByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Date'**
+  String get sortByDate;
+
+  /// No description provided for @equalizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Equalizer'**
+  String get equalizer;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @loadingPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading playlist...'**
+  String get loadingPlaylist;
+
+  /// No description provided for @playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist'**
+  String get playlist;
+
+  /// No description provided for @addFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Files'**
+  String get addFiles;
+
+  /// No description provided for @shufflePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle Play'**
+  String get shufflePlay;
+
+  /// No description provided for @removeFromHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from History'**
+  String get removeFromHistory;
+
+  /// No description provided for @noRecentFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'No Recent Files'**
+  String get noRecentFiles;
+
+  /// No description provided for @noRecentFilesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Files you play will appear here'**
+  String get noRecentFilesDescription;
+
+  /// No description provided for @removeFromHistoryConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {fileName} from history?'**
+  String removeFromHistoryConfirmation(Object fileName);
+
+  /// No description provided for @removedFromHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from history'**
+  String get removedFromHistory;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @clearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get clearHistory;
+
+  /// No description provided for @clearHistoryConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all recent files history?'**
+  String get clearHistoryConfirmation;
+
+  /// No description provided for @historyCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared'**
+  String get historyCleared;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @scanCompleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Media scan completed successfully.'**
+  String get scanCompleteMessage;
+
+  /// No description provided for @emptyPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty Playlist'**
+  String get emptyPlaylist;
 }
 
 class _AppLocalizationsDelegate

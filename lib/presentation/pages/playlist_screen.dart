@@ -3,12 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import '../../data/models/playlist.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Removed as TextProvider handles localization
 
 class PlaylistScreen extends StatefulWidget {
   final Playlist? playlist;
@@ -72,13 +71,14 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, TextProvider>(
-      builder: (context, themeProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
           body: _isLoading
-              ? _buildLoadingScreen(themeProvider, textProvider)
-              : _buildMainContent(themeProvider, textProvider),
+              ? _buildLoadingScreen(themeProvider, l10n)
+              : _buildMainContent(themeProvider, l10n),
           floatingActionButton:
               widget.playlist != null && _playlistFiles.isNotEmpty
               ? FloatingActionButton.extended(
@@ -86,7 +86,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                   backgroundColor: Theme.of(context).primaryColor,
                   icon: const Icon(Icons.play_arrow, color: Colors.white),
                   label: Text(
-                    textProvider.getText('play_all'),
+                    l10n.playAll,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -101,7 +101,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   Widget _buildLoadingScreen(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Column(
@@ -110,7 +110,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           const CircularProgressIndicator(),
           const SizedBox(height: 20),
           Text(
-            textProvider.getText('loading_playlist'),
+            l10n.loadingPlaylist,
             style: TextStyle(
               color: themeProvider.primaryTextColor,
               fontSize: 16,
@@ -123,19 +123,19 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   Widget _buildMainContent(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return CustomScrollView(
       slivers: [
-        _buildAppBar(themeProvider, textProvider),
+        _buildAppBar(themeProvider, l10n),
         if (widget.playlist != null)
-          _buildPlaylistInfo(themeProvider, textProvider),
-        _buildFilesList(themeProvider, textProvider),
+          _buildPlaylistInfo(themeProvider, l10n),
+        _buildFilesList(themeProvider, l10n),
       ],
     );
   }
 
-  Widget _buildAppBar(ThemeProvider themeProvider, TextProvider textProvider) {
+  Widget _buildAppBar(ThemeProvider themeProvider, AppLocalizations l10n) {
     return SliverAppBar(
       expandedHeight: 120,
       floating: false,
@@ -143,7 +143,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
       backgroundColor: Theme.of(context).primaryColor,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
-          widget.playlist?.name ?? textProvider.getText('playlist'),
+          widget.playlist?.name ?? l10n.playlist,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -166,11 +166,14 @@ class _PlaylistScreenState extends State<PlaylistScreen>
         if (widget.playlist != null) ...[
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () => _showAddMediaDialog(textProvider),
-            tooltip: textProvider.getText('add_files'),
+            onPressed: _showAddMediaDialog,
+            tooltip: l10n.addFiles,
           ),
           PopupMenuButton<String>(
-            onSelected: (value) => _handleMenuAction(value, textProvider),
+            onSelected: (action) {
+              final l10n = AppLocalizations.of(context)!;
+              _handleMenuAction(action, l10n);
+            },
             icon: const Icon(Icons.more_vert, color: Colors.white),
             itemBuilder: (context) => [
               PopupMenuItem(
@@ -179,7 +182,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                   children: [
                     const Icon(Icons.edit),
                     const SizedBox(width: 8),
-                    Text(textProvider.getText('edit_playlist')),
+                    Text(l10n.editPlaylist),
                   ],
                 ),
               ),
@@ -189,7 +192,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                   children: [
                     const Icon(Icons.shuffle),
                     const SizedBox(width: 8),
-                    Text(textProvider.getText('shuffle_play')),
+                    Text(l10n.shufflePlay),
                   ],
                 ),
               ),
@@ -200,7 +203,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                     const Icon(Icons.delete, color: Colors.red),
                     const SizedBox(width: 8),
                     Text(
-                      textProvider.getText('delete_playlist'),
+                      l10n.deletePlaylist,
                       style: const TextStyle(color: Colors.red),
                     ),
                   ],
@@ -215,7 +218,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   Widget _buildPlaylistInfo(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return SliverToBoxAdapter(
       child: FadeTransition(
@@ -291,20 +294,20 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                 children: [
                   _buildStatItem(
                     icon: Icons.queue_music,
-                    label: textProvider.getText('totalFiles'),
+                    label: l10n.totalFiles,
                     value: '${_playlistFiles.length}',
                     color: Colors.blue,
                   ),
                   _buildStatItem(
                     icon: Icons.music_note,
-                    label: textProvider.getText('audioFiles'),
+                    label: l10n.audioFiles,
                     value:
                         '${_playlistFiles.where((f) => f.type == 'audio').length}',
                     color: Colors.purple,
                   ),
                   _buildStatItem(
                     icon: Icons.video_library,
-                    label: textProvider.getText('videoFiles'),
+                    label: l10n.videoFiles,
                     value:
                         '${_playlistFiles.where((f) => f.type == 'video').length}',
                     color: Colors.orange,
@@ -354,11 +357,11 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   Widget _buildFilesList(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     if (_playlistFiles.isEmpty) {
       return SliverFillRemaining(
-        child: _buildEmptyState(themeProvider, textProvider),
+        child: _buildEmptyState(themeProvider, l10n),
       );
     }
 
@@ -378,7 +381,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                     file,
                     index: index,
                     themeProvider: themeProvider, // New
-                    textProvider: textProvider, // New
+                    l10n: l10n, // New
                   ),
                 ),
               ),
@@ -391,7 +394,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 
   Widget _buildEmptyState(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Column(
@@ -412,7 +415,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           ),
           const SizedBox(height: 24),
           Text(
-            textProvider.getText('playlistIsEmpty'),
+            l10n.playlistIsEmpty,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -421,7 +424,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            textProvider.getText('addSomeFiles'),
+            l10n.addSomeFiles,
             style: TextStyle(
               fontSize: 16,
               color: themeProvider.secondaryTextColor,
@@ -431,9 +434,9 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           const SizedBox(height: 32),
           if (widget.playlist != null)
             ElevatedButton.icon(
-              onPressed: () => _showAddMediaDialog(textProvider),
+              onPressed: _showAddMediaDialog,
               icon: const Icon(Icons.add),
-              label: Text(textProvider.getText('addMedia')),
+              label: Text(l10n.addFiles),
               style: ElevatedButton.styleFrom(
                 backgroundColor: themeProvider.currentTheme.colorScheme.primary,
                 foregroundColor:
@@ -456,7 +459,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
     MediaFile file, {
     int? index,
     required ThemeProvider themeProvider, // New
-    required TextProvider textProvider, // New
+    required AppLocalizations l10n, // New
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -534,9 +537,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
             if (file.playCount > 0) ...[
               const SizedBox(height: 2),
               Text(
-                textProvider.getTextWithParams('playedTimes', {
-                  'count': file.playCount,
-                }),
+                l10n.playedTimes(file.playCount),
                 style: TextStyle(
                   color: file.isMissing
                       ? themeProvider.secondaryTextColor.withValues(alpha: 0.4)
@@ -562,8 +563,8 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                 value,
                 file,
                 index ?? 0,
-                textProvider,
-              ), // Fixed: Pass index
+                l10n,
+              ),
               itemBuilder: (context) => [
                 PopupMenuItem(
                   value: 'play',
@@ -572,7 +573,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                     children: [
                       const Icon(Icons.play_arrow),
                       const SizedBox(width: 8),
-                      Text(textProvider.getText('play')),
+                      Text(l10n.play),
                     ],
                   ),
                 ),
@@ -588,8 +589,8 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                       const SizedBox(width: 8),
                       Text(
                         file.isFavorite
-                            ? textProvider.getText('removeFromFavorites')
-                            : textProvider.getText('addToFavorites'),
+                            ? l10n.removeFromFavorites
+                            : l10n.addToFavorites,
                       ),
                     ],
                   ),
@@ -605,9 +606,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        textProvider.getText(
-                          'removeFromPlaylist',
-                        ), // Fixed localization
+                        l10n.removeFromPlaylist,
                         style: TextStyle(
                           color: themeProvider.currentTheme.colorScheme.error,
                         ),
@@ -620,7 +619,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           ],
         ),
         onTap: () => file.isMissing
-            ? _showMissingFileMessage(file.name, textProvider)
+            ? _showMissingFileMessage(file.name, l10n)
             : _playMediaFile(file, index ?? 0),
       ),
     );
@@ -679,18 +678,19 @@ class _PlaylistScreenState extends State<PlaylistScreen>
     }
   }
 
-  void _showAddMediaDialog(TextProvider textProvider) {
+  void _showAddMediaDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => _AddMediaDialog(
         playlist: widget.playlist!,
         onFilesAdded: _loadPlaylistFiles,
-        textProvider: textProvider,
+        l10n: l10n,
       ),
     );
   }
 
-  void _handleMenuAction(String action, TextProvider textProvider) async {
+  void _handleMenuAction(String action, AppLocalizations l10n) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
 
     switch (action) {
@@ -700,7 +700,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
           builder: (context) => _EditPlaylistDialog(
             playlist: widget.playlist!,
             themeProvider: Provider.of<ThemeProvider>(context, listen: false),
-            textProvider: textProvider, // Use local textProvider
+            l10n: l10n, // Use local l10n
           ),
         );
 
@@ -778,7 +778,7 @@ class _PlaylistScreenState extends State<PlaylistScreen>
     String action,
     MediaFile file,
     int index,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
 
@@ -799,21 +799,19 @@ class _PlaylistScreenState extends State<PlaylistScreen>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: Text(textProvider.getText('removeFromPlaylist')),
+            title: Text(l10n.removeFromPlaylist),
             content: Text(
-              textProvider.getTextWithParams('confirmRemoveFromFile', {
-                'fileName': file.name,
-              }),
+              l10n.confirmRemoveFromFile(file.name),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(textProvider.getText('cancel')),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text(textProvider.getText('remove')),
+                child: Text(l10n.remove),
               ),
             ],
           ),
@@ -835,13 +833,11 @@ class _PlaylistScreenState extends State<PlaylistScreen>
     }
   }
 
-  void _showMissingFileMessage(String fileName, TextProvider textProvider) {
+  void _showMissingFileMessage(String fileName, AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          textProvider.getTextWithParams('fileNotFound', {
-            'fileName': fileName,
-          }),
+          '${l10n.fileNotFound}: $fileName',
         ),
         backgroundColor: Colors.red,
       ),
@@ -852,12 +848,12 @@ class _PlaylistScreenState extends State<PlaylistScreen>
 class _AddMediaDialog extends StatefulWidget {
   final Playlist playlist;
   final VoidCallback onFilesAdded;
-  final TextProvider textProvider;
+  final AppLocalizations l10n;
 
   const _AddMediaDialog({
     required this.playlist,
     required this.onFilesAdded,
-    required this.textProvider,
+    required this.l10n,
   });
 
   @override
@@ -918,9 +914,7 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
         child: Column(
           children: [
             Text(
-              widget.textProvider.getTextWithParams('addFilesToPlaylist', {
-                'playlistName': widget.playlist.name,
-              }),
+              widget.l10n.addFilesToPlaylist(widget.playlist.name),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -928,7 +922,7 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
             // Search bar
             TextField(
               decoration: InputDecoration(
-                hintText: widget.textProvider.getText('searchHint'),
+                hintText: widget.l10n.searchHint,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -955,9 +949,7 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
                     const Icon(Icons.check_circle, color: Colors.blue),
                     const SizedBox(width: 8),
                     Text(
-                      widget.textProvider.getTextWithParams('filesSelected', {
-                        'count': _selectedFiles.length,
-                      }),
+                      widget.l10n.filesSelected(_selectedFiles.length),
                       style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.w600,
@@ -976,7 +968,7 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
                   : _filteredFiles.isEmpty
                   ? Center(
                       child: Text(
-                        widget.textProvider.getText('noFilesAvailableToAdd'),
+                        widget.l10n.noFilesAvailableToAdd,
                       ),
                     )
                   : ListView.builder(
@@ -1023,15 +1015,13 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text(widget.textProvider.getText('cancel')),
+                  child: Text(widget.l10n.cancel),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _selectedFiles.isEmpty ? null : _addSelectedFiles,
                   child: Text(
-                    widget.textProvider.getTextWithParams('addWithCount', {
-                      'count': _selectedFiles.length,
-                    }),
+                    widget.l10n.addWithCount(_selectedFiles.length),
                   ),
                 ),
               ],
@@ -1056,9 +1046,7 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          widget.textProvider.getTextWithParams('addedFilesToPlaylist', {
-            'count': _selectedFiles.length,
-          }),
+          widget.l10n.addedFilesToPlaylist(_selectedFiles.length),
         ),
         backgroundColor: Colors.green,
       ),
@@ -1069,12 +1057,12 @@ class _AddMediaDialogState extends State<_AddMediaDialog> {
 class _EditPlaylistDialog extends StatefulWidget {
   final Playlist playlist;
   final ThemeProvider themeProvider; // New: ThemeProvider parameter
-  final TextProvider textProvider; // New: AppLocalizations parameter
+  final AppLocalizations l10n; // New: AppLocalizations parameter
 
   const _EditPlaylistDialog({
     required this.playlist,
     required this.themeProvider,
-    required this.textProvider,
+    required this.l10n,
   });
 
   @override
@@ -1107,7 +1095,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
       backgroundColor: widget.themeProvider.cardColor, // Use themeProvider
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
-        widget.textProvider.getText('editPlaylist'), // Use textProvider
+        widget.l10n.editPlaylist, // Use l10n
         style: TextStyle(color: widget.themeProvider.primaryTextColor),
       ),
       content: Column(
@@ -1116,9 +1104,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: widget.textProvider.getText(
-                'playlistName',
-              ), // Use textProvider
+              labelText: widget.l10n.playlistName, // Use l10n
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1128,9 +1114,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
           TextField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: widget.textProvider.getText(
-                'descriptionOptional',
-              ), // Use textProvider
+              labelText: widget.l10n.descriptionOptional, // Use l10n
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1143,7 +1127,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            widget.textProvider.getText('cancel'), // Use textProvider
+            widget.l10n.cancel, // Use l10n
             style: TextStyle(
               color: widget.themeProvider.currentTheme.colorScheme.primary,
             ),
@@ -1162,7 +1146,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
             foregroundColor:
                 widget.themeProvider.currentTheme.colorScheme.onPrimary,
           ), // Use themeProvider
-          child: Text(widget.textProvider.getText('save')), // Use textProvider
+          child: Text(widget.l10n.save), // Use l10n
         ),
       ],
     );

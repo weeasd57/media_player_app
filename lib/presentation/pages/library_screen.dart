@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../widgets/neumorphic_widgets.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
@@ -10,7 +11,7 @@ import 'package:media_player_app/services/media_playback_service.dart';
 import 'dart:io'; // Required for Directory and File operations
 import 'package:path_provider/path_provider.dart'; // For getting common directories
 import 'package:path/path.dart' as p; // For path manipulation
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Removed as TextProvider handles localization
+import 'package:file_picker/file_picker.dart'; // For folder selection
 
 enum ViewMode { list, grid }
 
@@ -176,34 +177,77 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, TextProvider>(
-      builder: (context, themeProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
         return Scaffold(
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
-            title: Text(
-              textProvider.getText('library'),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary,
+                        colorScheme.primary.withValues(alpha: 0.7),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.library_music,
+                    color: colorScheme.onPrimary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  l10n.library,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
             ),
             backgroundColor: colorScheme.surface,
             foregroundColor: colorScheme.onSurface,
             elevation: 0,
-            actions: [
-              IconButton(
-                icon: Icon(
-                  _viewMode == ViewMode.list ? Icons.grid_view : Icons.list,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    colorScheme.surface,
+                    colorScheme.surface,
+                  ],
                 ),
-                onPressed: () {
-                  setState(() {
-                    _viewMode = _viewMode == ViewMode.list
-                        ? ViewMode.grid
-                        : ViewMode.list;
-                  });
-                },
               ),
+            ),
+            actions: [
+          IconButton(
+            icon: Icon(
+              _viewMode == ViewMode.list ? Icons.grid_view : Icons.list,
+            ),
+            onPressed: () {
+              setState(() {
+                _viewMode = _viewMode == ViewMode.list
+                    ? ViewMode.grid
+                    : ViewMode.list;
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            onPressed: _selectFolder,
+          ),
               PopupMenuButton<String>(
                 onSelected: _handleSort,
                 itemBuilder: (context) => [
@@ -213,7 +257,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       children: [
                         const Icon(Icons.sort_by_alpha),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('sortByName')),
+                        Text(l10n.sortByName),
                       ],
                     ),
                   ),
@@ -223,20 +267,30 @@ class _LibraryScreenState extends State<LibraryScreen>
                       children: [
                         const Icon(Icons.access_time),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('sortByDate')),
+                        Text(l10n.sortByDate),
                       ],
                     ),
                   ),
-                  PopupMenuItem(
-                    value: 'size',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.storage),
-                        const SizedBox(width: 8),
-                        Text(textProvider.getText('sortBySize')),
-                      ],
-                    ),
+              PopupMenuItem(
+                  value: 'size',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.storage),
+                      const SizedBox(width: 8),
+                      Text(l10n.sortBySize),
+                    ],
                   ),
+                ),
+                PopupMenuItem(
+                  value: 'selectFolder',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.folder),
+                      const SizedBox(width: 8),
+                      Text(l10n.exploreDevice),
+                    ],
+                  ),
+                ),
                 ],
               ),
             ],
@@ -254,7 +308,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: textProvider.getText('search'),
+                        hintText: l10n.search,
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -273,10 +327,10 @@ class _LibraryScreenState extends State<LibraryScreen>
                     ),
                     indicatorColor: colorScheme.primary,
                     tabs: [
-                      Tab(text: textProvider.getText('allFiles')),
-                      Tab(text: textProvider.getText('audioFiles')),
-                      Tab(text: textProvider.getText('videoFiles')),
-                      Tab(text: textProvider.getText('folders')),
+                      Tab(text: l10n.allFiles),
+                      Tab(text: l10n.audioFiles),
+                      Tab(text: l10n.videoFiles),
+                      Tab(text: l10n.folders),
                     ],
                   ),
                 ],
@@ -286,10 +340,10 @@ class _LibraryScreenState extends State<LibraryScreen>
           body: TabBarView(
             controller: _tabController,
             children: [
-              _buildAllFilesTab(themeProvider, textProvider),
-              _buildAudioTab(themeProvider, textProvider),
-              _buildVideoTab(themeProvider, textProvider),
-              _buildFoldersTab(themeProvider, textProvider),
+              _buildAllFilesTab(themeProvider, l10n),
+              _buildAudioTab(themeProvider, l10n),
+              _buildVideoTab(themeProvider, l10n),
+              _buildFoldersTab(themeProvider, l10n),
             ],
           ),
         );
@@ -299,7 +353,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   Widget _buildAllFilesTab(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
@@ -310,13 +364,13 @@ class _LibraryScreenState extends State<LibraryScreen>
 
         if (files.isEmpty) {
           String emptyMessage = _searchQuery.isNotEmpty
-              ? textProvider.getText('noSearchResults')
-              : textProvider.getText('noFilesFound');
+              ? l10n.noSearchResults
+              : l10n.noFilesFound;
           return _buildEmptyState(
             emptyMessage,
             Icons.library_music,
             themeProvider,
-            textProvider,
+            l10n,
           );
         }
 
@@ -330,7 +384,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                 files[index],
                 index,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             },
           );
@@ -350,7 +404,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                 files[index],
                 index,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             },
           );
@@ -361,7 +415,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   Widget _buildAudioTab(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
@@ -372,20 +426,20 @@ class _LibraryScreenState extends State<LibraryScreen>
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return _buildEmptyState(
-                textProvider.getText('error'),
+                l10n.error,
                 Icons.error,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               String emptyMessage = _searchQuery.isNotEmpty
-                  ? textProvider.getText('noSearchResults')
-                  : textProvider.getText('noFilesFound');
+                  ? l10n.noSearchResults
+                  : l10n.noFilesFound;
               return _buildEmptyState(
                 emptyMessage,
                 Icons.music_note,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             } else {
               final files = _filterFiles(
@@ -402,7 +456,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       files[index],
                       index,
                       themeProvider,
-                      textProvider,
+                      l10n,
                     );
                   },
                 );
@@ -421,7 +475,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       files[index],
                       index,
                       themeProvider,
-                      textProvider,
+                      l10n,
                     );
                   },
                 );
@@ -435,7 +489,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   Widget _buildVideoTab(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
@@ -446,20 +500,20 @@ class _LibraryScreenState extends State<LibraryScreen>
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return _buildEmptyState(
-                textProvider.getText('error'),
+                l10n.error,
                 Icons.error,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               String emptyMessage = _searchQuery.isNotEmpty
-                  ? textProvider.getText('noSearchResults')
-                  : textProvider.getText('noFilesFound');
+                  ? l10n.noSearchResults
+                  : l10n.noFilesFound;
               return _buildEmptyState(
                 emptyMessage,
                 Icons.video_library,
                 themeProvider,
-                textProvider,
+                l10n,
               );
             } else {
               final files = _filterFiles(
@@ -476,7 +530,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       files[index],
                       index,
                       themeProvider,
-                      textProvider,
+                      l10n,
                     );
                   },
                 );
@@ -495,7 +549,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       files[index],
                       index,
                       themeProvider,
-                      textProvider,
+                      l10n,
                     );
                   },
                 );
@@ -511,7 +565,7 @@ class _LibraryScreenState extends State<LibraryScreen>
     String message,
     IconData icon,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Column(
@@ -531,7 +585,7 @@ class _LibraryScreenState extends State<LibraryScreen>
           ElevatedButton.icon(
             onPressed: _scanForFiles,
             icon: const Icon(Icons.refresh),
-            label: Text(textProvider.getText('scanFiles')),
+            label: Text(l10n.scanFiles),
             style: ElevatedButton.styleFrom(
               backgroundColor: themeProvider.currentTheme.colorScheme.primary,
               foregroundColor: themeProvider.currentTheme.colorScheme.onPrimary,
@@ -550,17 +604,18 @@ class _LibraryScreenState extends State<LibraryScreen>
     MediaFile file,
     int index,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 2,
-      color: Theme.of(context).colorScheme.surfaceContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return NeumorphicCard(
+      margin: const EdgeInsets.all(4.0),
+      padding: EdgeInsets.zero,
+      onTap: () => file.isMissing
+          ? _showMissingFileMessage(file.name, l10n)
+          : _playMediaFile(file),
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
         leading: Hero(
-          tag: 'media_${file.id}',
+          tag: 'media_${file.id}_${file.name}',
           child: Container(
             width: 56,
             height: 56,
@@ -628,9 +683,7 @@ class _LibraryScreenState extends State<LibraryScreen>
             if (file.playCount > 0) ...[
               const SizedBox(height: 2),
               Text(
-                textProvider.getTextWithParams('playedTimes', {
-                  'count': file.playCount,
-                }),
+                '${l10n.playedTimes}: ${file.playCount}',
                 style: TextStyle(
                   color: file.isMissing
                       ? themeProvider.secondaryTextColor.withValues(alpha: 0.4)
@@ -653,7 +706,7 @@ class _LibraryScreenState extends State<LibraryScreen>
             const SizedBox(width: 8),
             PopupMenuButton<String>(
               onSelected: (value) =>
-                  _handleFileAction(value, file, textProvider),
+                  _handleFileAction(value, file, l10n),
               itemBuilder: (context) => [
                 PopupMenuItem(
                   value: 'play',
@@ -662,7 +715,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                     children: [
                       const Icon(Icons.play_arrow),
                       const SizedBox(width: 8),
-                      Text(textProvider.getText('play')),
+                      Text(l10n.play),
                     ],
                   ),
                 ),
@@ -678,8 +731,8 @@ class _LibraryScreenState extends State<LibraryScreen>
                       const SizedBox(width: 8),
                       Text(
                         file.isFavorite
-                            ? textProvider.getText('removeFromFavorites')
-                            : textProvider.getText('addToFavorites'),
+                            ? l10n.removeFromFavorites
+                            : l10n.addToFavorites,
                       ),
                     ],
                   ),
@@ -691,7 +744,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                     children: [
                       const Icon(Icons.playlist_add),
                       const SizedBox(width: 8),
-                      Text(textProvider.getText('addToPlaylist')),
+                      Text(l10n.addToPlaylist),
                     ],
                   ),
                 ),
@@ -705,7 +758,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        textProvider.getText('delete'),
+                        l10n.delete,
                         style: TextStyle(
                           color: themeProvider.currentTheme.colorScheme.error,
                         ),
@@ -717,9 +770,6 @@ class _LibraryScreenState extends State<LibraryScreen>
             ),
           ],
         ),
-        onTap: () => file.isMissing
-            ? _showMissingFileMessage(file.name, textProvider)
-            : _playMediaFile(file),
       ),
     );
   }
@@ -728,7 +778,7 @@ class _LibraryScreenState extends State<LibraryScreen>
     MediaFile file,
     int index,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Card(
       elevation: 2,
@@ -737,7 +787,7 @@ class _LibraryScreenState extends State<LibraryScreen>
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => file.isMissing
-            ? _showMissingFileMessage(file.name, textProvider)
+            ? _showMissingFileMessage(file.name, l10n)
             : _playMediaFile(file),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -883,11 +933,30 @@ class _LibraryScreenState extends State<LibraryScreen>
     }
   }
 
+  void _selectFolder() async {
+    try {
+      final directory = await FilePicker.platform.getDirectoryPath();
+      if (directory != null) {
+        Directory selectedDir = Directory(directory);
+        _currentDirectory = selectedDir;
+        await _loadDirectoryContents(_currentDirectory!);
+        // Switch to folders tab to show the selected folder
+        _tabController.animateTo(3);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
   void _handleFileAction(
-    String action,
-    MediaFile file,
-    TextProvider textProvider,
-  ) async {
+      String action,
+      MediaFile file,
+      AppLocalizations l10n,
+    ) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
 
     switch (action) {
@@ -919,72 +988,70 @@ class _LibraryScreenState extends State<LibraryScreen>
   void _showDeleteConfirmation(MediaFile file) {
     showDialog(
       context: context,
-      builder: (context) => Consumer2<ThemeProvider, TextProvider>(
-        builder: (context, themeProvider, textProvider, child) => AlertDialog(
-          backgroundColor: themeProvider.cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            textProvider.getText('delete'),
-            style: TextStyle(color: themeProvider.primaryTextColor),
-          ),
-          content: Text(
-            textProvider.getTextWithParams('deletePlaylistConfirmation', {
-              'playlistName': file.name,
-            }),
-            style: TextStyle(color: themeProvider.secondaryTextColor),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                textProvider.getText('cancel'),
-                style: TextStyle(
-                  color: themeProvider.currentTheme.colorScheme.primary,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final navigator = Navigator.of(context);
-                final scaffold = ScaffoldMessenger.of(context);
-                final errorColor = themeProvider.currentTheme.colorScheme.error;
-
-                final mediaProvider = Provider.of<MediaProvider>(
-                  context,
-                  listen: false,
-                );
-                await mediaProvider.deleteMediaFile(file);
-                if (!mounted) return;
-
-                navigator.pop();
-                scaffold.showSnackBar(
-                  SnackBar(
-                    content: Text(textProvider.getText('success')),
-                    backgroundColor: errorColor,
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: themeProvider.currentTheme.colorScheme.error,
-              ),
-              child: Text(
-                textProvider.getText('delete'),
-                style: TextStyle(
-                  color: themeProvider.currentTheme.colorScheme.onError,
-                ),
-              ),
-            ),
-          ],
+      builder: (context) => Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) => AlertDialog(
+        backgroundColor: themeProvider.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
+        title: Text(
+          AppLocalizations.of(context)!.delete,
+          style: TextStyle(color: themeProvider.primaryTextColor),
+        ),
+        content: Text(
+          '${AppLocalizations.of(context)!.deletePlaylistConfirmation}: ${file.name}',
+          style: TextStyle(color: themeProvider.secondaryTextColor),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: TextStyle(
+                color: themeProvider.currentTheme.colorScheme.primary,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              final scaffold = ScaffoldMessenger.of(context);
+              final errorColor = themeProvider.currentTheme.colorScheme.error;
+
+              final mediaProvider = Provider.of<MediaProvider>(
+                context,
+                listen: false,
+              );
+              await mediaProvider.deleteMediaFile(file);
+              if (!mounted) return;
+
+              navigator.pop();
+              scaffold.showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.success),
+                  backgroundColor: errorColor,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: themeProvider.currentTheme.colorScheme.error,
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.delete,
+              style: TextStyle(
+                color: themeProvider.currentTheme.colorScheme.onError,
+              ),
+            ),
+          ),
+        ],
+      ),
       ),
     );
   }
 
   void _scanForFiles() async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
-    final textProvider = Provider.of<TextProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
     if (mediaProvider.isScanning) return;
@@ -1003,7 +1070,7 @@ class _LibraryScreenState extends State<LibraryScreen>
             ),
             const SizedBox(width: 12),
             Text(
-              textProvider.getText('scanningFiles'),
+              l10n.scanningFiles,
               style: TextStyle(color: themeProvider.primaryTextColor),
             ),
           ],
@@ -1020,7 +1087,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                 return Text(
                   provider.scanningStatus.isNotEmpty
                       ? provider.scanningStatus
-                      : textProvider.getText('loading'),
+                      : l10n.loading,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: themeProvider.primaryTextColor),
                 );
@@ -1051,13 +1118,13 @@ class _LibraryScreenState extends State<LibraryScreen>
               const Icon(Icons.check_circle, color: Colors.green, size: 28),
               const SizedBox(width: 12),
               Text(
-                textProvider.getText('scanComplete'),
+                l10n.scanComplete,
                 style: TextStyle(color: themeProvider.primaryTextColor),
               ),
             ],
           ),
           content: Text(
-            textProvider.getText('scanCompleteMessage'),
+            l10n.scanCompleteMessage,
             style: TextStyle(color: themeProvider.secondaryTextColor),
           ),
           actions: [
@@ -1071,7 +1138,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(textProvider.getText('ok')),
+              child: Text(l10n.ok),
             ),
           ],
         ),
@@ -1081,7 +1148,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   Widget _buildFoldersTab(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     if (_isFoldersLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -1096,11 +1163,11 @@ class _LibraryScreenState extends State<LibraryScreen>
     if (filteredContents.isEmpty) {
       return _buildEmptyState(
         _searchQuery.isNotEmpty
-            ? textProvider.getText('noSearchResults')
-            : textProvider.getText('noFilesFound'),
+            ? l10n.noSearchResults
+            : l10n.noFilesFound,
         Icons.folder_off,
         themeProvider,
-        textProvider,
+        l10n,
       );
     }
 
@@ -1111,7 +1178,7 @@ class _LibraryScreenState extends State<LibraryScreen>
           ListTile(
             leading: const Icon(Icons.arrow_back, color: Colors.blueGrey),
             title: Text(
-              textProvider.getText('parentDirectory'), // 'Parent Directory'
+              l10n.parentDirectory, // 'Parent Directory'
               style: TextStyle(
                 color: themeProvider.primaryTextColor,
                 fontWeight: FontWeight.w500,
@@ -1173,7 +1240,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                   ),
                   index, // Pass index
                   themeProvider,
-                  textProvider,
+                  l10n,
                 );
               }
               return const SizedBox.shrink(); // Fallback for unsupported types
@@ -1184,13 +1251,11 @@ class _LibraryScreenState extends State<LibraryScreen>
     );
   }
 
-  void _showMissingFileMessage(String fileName, TextProvider textProvider) {
+  void _showMissingFileMessage(String fileName, AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          textProvider.getTextWithParams('fileNotFound', {
-            'fileName': fileName,
-          }),
+          l10n.fileNotFound(fileName),
         ),
         backgroundColor: Colors.red,
       ),
@@ -1205,15 +1270,16 @@ class _AddToPlaylistDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         return AlertDialog(
           backgroundColor: themeProvider.cardColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            textProvider.getText('addToPlaylist'),
+            l10n.addToPlaylist,
             style: TextStyle(color: themeProvider.primaryTextColor),
           ),
           content: SizedBox(
@@ -1222,7 +1288,7 @@ class _AddToPlaylistDialog extends StatelessWidget {
             child: mediaProvider.playlists.isEmpty
                 ? Center(
                     child: Text(
-                      textProvider.getText('emptyPlaylist'),
+                      l10n.emptyPlaylist,
                       style: TextStyle(color: themeProvider.secondaryTextColor),
                     ),
                   )
@@ -1239,9 +1305,7 @@ class _AddToPlaylistDialog extends StatelessWidget {
                           ),
                         ),
                         subtitle: Text(
-                          textProvider.getTextWithParams('filesSelected', {
-                            'count': playlist.mediaCount,
-                          }), // Using textProvider.getTextWithParams
+                          l10n.filesSelected(playlist.mediaCount),
                           style: TextStyle(
                             color: themeProvider.secondaryTextColor,
                           ),
@@ -1256,10 +1320,7 @@ class _AddToPlaylistDialog extends StatelessWidget {
                           scaffold.showSnackBar(
                             SnackBar(
                               content: Text(
-                                textProvider.getTextWithParams(
-                                  'addedToPlaylist',
-                                  {'name': playlist.name},
-                                ), // Using textProvider.getTextWithParams
+                                l10n.addedToPlaylist(playlist.name),
                               ),
                               backgroundColor: themeProvider
                                   .currentTheme
@@ -1276,7 +1337,7 @@ class _AddToPlaylistDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                textProvider.getText('cancel'),
+                l10n.cancel,
                 style: TextStyle(
                   color: themeProvider.currentTheme.colorScheme.primary,
                 ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
@@ -17,13 +17,14 @@ class ExploreDeviceScreen extends StatefulWidget {
 class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    final localizations = AppLocalizations.of(context)!;
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         return Scaffold(
           backgroundColor: themeProvider.primaryBackgroundColor,
           appBar: AppBar(
             title: Text(
-              textProvider.getText('exploreDevice'),
+              localizations.exploreDevice,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: themeProvider.primaryBackgroundColor,
@@ -33,11 +34,11 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
               IconButton(
                 icon: const Icon(Icons.refresh),
                 onPressed: () => _refreshFiles(mediaProvider),
-                tooltip: textProvider.getText('refresh'),
+                tooltip: localizations.refresh,
               ),
             ],
           ),
-          body: _buildBody(mediaProvider, themeProvider, textProvider),
+          body: _buildBody(mediaProvider, themeProvider, localizations),
         );
       },
     );
@@ -46,24 +47,24 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
   Widget _buildBody(
     MediaProvider mediaProvider,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     if (mediaProvider.isScanning) {
-      return _buildLoadingState(themeProvider, textProvider);
+      return _buildLoadingState(themeProvider, localizations);
     }
 
     final allFiles = [...mediaProvider.audioFiles, ...mediaProvider.videoFiles];
     
     if (allFiles.isEmpty) {
-      return _buildEmptyState(themeProvider, textProvider);
+      return _buildEmptyState(themeProvider, localizations);
     }
 
-    return _buildFilesList(allFiles, mediaProvider, themeProvider, textProvider);
+    return _buildFilesList(allFiles, mediaProvider, themeProvider, localizations);
   }
 
   Widget _buildLoadingState(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return Center(
       child: Column(
@@ -72,7 +73,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
           const CircularProgressIndicator(),
           const SizedBox(height: 16),
           Text(
-            textProvider.getText('scanningFiles'),
+            localizations.scanningFiles,
             style: TextStyle(
               color: themeProvider.primaryTextColor,
               fontSize: 16,
@@ -85,7 +86,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
 
   Widget _buildEmptyState(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return Center(
       child: Column(
@@ -98,7 +99,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            textProvider.getText('noFilesFound'),
+            localizations.noFilesFound,
             style: TextStyle(
               color: themeProvider.primaryTextColor,
               fontSize: 18,
@@ -107,7 +108,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            textProvider.getText('scanForFiles'),
+            localizations.scanFiles,
             style: TextStyle(
               color: themeProvider.secondaryTextColor,
               fontSize: 14,
@@ -117,7 +118,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
           ElevatedButton.icon(
             onPressed: () => _refreshFiles(Provider.of<MediaProvider>(context, listen: false)),
             icon: const Icon(Icons.refresh),
-            label: Text(textProvider.getText('scanFiles')),
+            label: Text(localizations.scanFiles),
             style: ElevatedButton.styleFrom(
               backgroundColor: themeProvider.currentTheme.colorScheme.primary,
               foregroundColor: themeProvider.currentTheme.colorScheme.onPrimary,
@@ -132,14 +133,14 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
     List<MediaFile> files,
     MediaProvider mediaProvider,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: files.length,
       itemBuilder: (context, index) {
         final file = files[index];
-        return _buildFileCard(file, mediaProvider, themeProvider, textProvider);
+        return _buildFileCard(file, mediaProvider, themeProvider, localizations);
       },
     );
   }
@@ -148,7 +149,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
     MediaFile file,
     MediaProvider mediaProvider,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) {
     final isFavorite = mediaProvider.favoriteFiles.contains(file);
     
@@ -210,7 +211,7 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
                 isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: isFavorite ? Colors.red : themeProvider.iconColor,
               ),
-              onPressed: () => _toggleFavorite(file, mediaProvider, textProvider),
+              onPressed: () => _toggleFavorite(file, mediaProvider, localizations),
             ),
             IconButton(
               icon: Icon(
@@ -233,14 +234,14 @@ class _ExploreDeviceScreenState extends State<ExploreDeviceScreen> {
   void _toggleFavorite(
     MediaFile file,
     MediaProvider mediaProvider,
-    TextProvider textProvider,
+    AppLocalizations localizations,
   ) async {
     await mediaProvider.toggleFavorite(file);
     
     final isFavorite = mediaProvider.favoriteFiles.contains(file);
     final message = isFavorite 
-        ? textProvider.getText('addedToFavorites')
-        : textProvider.getText('removedFromFavorites');
+        ? localizations.addedToFavorites
+        : localizations.removedFromFavorites;
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

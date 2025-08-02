@@ -54,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourPlaylists => 'Your Playlists';
 
   @override
-  String get loadingLibrary => 'Loading your media library...';
+  String get loadingLibrary => 'Loading library...';
 
   @override
   String get scanComplete => 'Scan Complete';
@@ -211,9 +211,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String treble(Object value) {
-    return 'Treble: $value';
-  }
+  String get treble => 'Treble';
 
   @override
   String get appInformation => 'App Information';
@@ -422,4 +420,130 @@ class AppLocalizationsEn extends AppLocalizations {
   String confirmRemoveFromFile(Object fileName) {
     return 'Remove \"$fileName\" from this playlist?';
   }
+
+  @override
+  String get nowPlaying => 'Now Playing';
+
+  @override
+  String get noMusicPlaying => 'No music playing';
+
+  @override
+  String get tapToPlay => 'Tap to play a song';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get appName => 'Media Player';
+
+  @override
+  String get settingUpLibrary => 'Setting up your library...';
+
+  @override
+  String get seeAll => 'See All';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get noFilesFound => 'No files found';
+
+  @override
+  String get sortByName => 'Sort by Name';
+
+  @override
+  String get sortBySize => 'Sort by Size';
+
+  @override
+  String get allFiles => 'All Files';
+
+  @override
+  String get folders => 'Folders';
+
+  @override
+  String get parentDirectory => 'Parent Directory';
+
+  @override
+  String fileNotFound(Object fileName) {
+    return 'File not found: $fileName';
+  }
+
+  @override
+  String playedTimes(Object count) {
+    return 'Played $count times';
+  }
+
+  @override
+  String get play => 'Play';
+
+  @override
+  String get exploreDevice => 'Explore Device';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get sortByDate => 'Sort by Date';
+
+  @override
+  String get equalizer => 'Equalizer';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get loadingPlaylist => 'Loading playlist...';
+
+  @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get addFiles => 'Add Files';
+
+  @override
+  String get shufflePlay => 'Shuffle Play';
+
+  @override
+  String get removeFromHistory => 'Remove from History';
+
+  @override
+  String get noRecentFiles => 'No Recent Files';
+
+  @override
+  String get noRecentFilesDescription => 'Files you play will appear here';
+
+  @override
+  String removeFromHistoryConfirmation(Object fileName) {
+    return 'Remove $fileName from history?';
+  }
+
+  @override
+  String get removedFromHistory => 'Removed from history';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get clearHistory => 'Clear History';
+
+  @override
+  String get clearHistoryConfirmation => 'Clear all recent files history?';
+
+  @override
+  String get historyCleared => 'History cleared';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get scanCompleteMessage => 'Media scan completed successfully.';
+
+  @override
+  String get emptyPlaylist => 'Empty Playlist';
 }

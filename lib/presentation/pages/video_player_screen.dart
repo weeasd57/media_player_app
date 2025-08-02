@@ -3,9 +3,9 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
-import '../../generated/app_localizations.dart';
-import 'package:provider/provider.dart'; // Added for ThemeProvider
+import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../../generated/app_localizations.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -46,7 +46,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog(AppLocalizations.of(context)!.scanError(e.toString()));
+      final localizations = AppLocalizations.of(context)!;
+      _showErrorDialog(localizations.error);
     } finally {
       setState(() {
         _isLoading = false;
@@ -96,16 +97,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _showErrorDialog(String message) {
-    final l10n = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.error),
+        title: Text(localizations.error),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.ok),
+            child: Text(localizations.ok),
           ),
         ],
       ),
@@ -127,16 +128,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final themeProvider = Provider.of<ThemeProvider>(
-      context,
-    ); // Access ThemeProvider
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle), centerTitle: true),
-      backgroundColor:
-          themeProvider.primaryBackgroundColor, // Use themeProvider
-      body: Container(
+    final localizations = AppLocalizations.of(context)!;
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(localizations.nowPlaying),
+            centerTitle: true,
+          ),
+          backgroundColor: themeProvider.primaryBackgroundColor,
+          body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -214,7 +215,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            l10n.currentVideo,
+                            localizations.nowPlaying,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -252,7 +253,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'المدة: ${_formatDuration(_videoPlayerController!.value.duration)}',
+                              '${localizations.duration}: ${_formatDuration(_videoPlayerController!.value.duration)}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: themeProvider.secondaryTextColor,
@@ -271,7 +272,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'الأبعاد: ${_videoPlayerController!.value.size.width.toInt()}x${_videoPlayerController!.value.size.height.toInt()}',
+                              'Size: ${_videoPlayerController!.value.size.width.toInt()}x${_videoPlayerController!.value.size.height.toInt()}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: themeProvider.secondaryTextColor,
@@ -301,8 +302,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         )
                       : const Icon(Icons.video_library),
                   label: Text(
-                    _isLoading ? l10n.loadingLibrary : l10n.selectVideoFile,
-                  ), // Keep Arabic for file picker
+                    _isLoading ? localizations.loading : localizations.search,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         themeProvider.currentTheme.colorScheme.secondary,
@@ -319,16 +320,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         ),
       ),
     );
+      },
+    );
   }
 
   Widget _buildPlaceholder(ThemeProvider themeProvider) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       height: double.infinity,
       color: themeProvider.primaryBackgroundColor,
-      child: Column(
+child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Icon(
+            Icons.play_arrow,
+            size: 60,
+            color: themeProvider.currentTheme.colorScheme.secondary,
+          ),
           Container(
             width: 80,
             height: 80,
@@ -347,7 +356,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           const SizedBox(height: 20),
 
           Text(
-            AppLocalizations.of(context)!.noMediaFound,
+            localizations.noFilesFound,
             style: TextStyle(
               fontSize: 18,
               color: themeProvider.primaryTextColor,
@@ -358,7 +367,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           const SizedBox(height: 8),
 
           Text(
-            AppLocalizations.of(context)!.selectVideoFile,
+            localizations.search,
             style: TextStyle(
               fontSize: 14,
               color: themeProvider.secondaryTextColor,

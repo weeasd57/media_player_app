@@ -24,7 +24,7 @@ class MediaListItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Hero(
-          tag: 'media_list_item_${mediaItem.id}',
+          tag: 'media_list_item_${mediaItem.id}_${mediaItem.name}',
           child: Container(
             width: 56,
             height: 56,

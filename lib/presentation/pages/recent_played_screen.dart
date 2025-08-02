@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
@@ -13,8 +13,9 @@ class RecentPlayedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
@@ -22,7 +23,7 @@ class RecentPlayedScreen extends StatelessWidget {
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
-              textProvider.getText('recentlyPlayed'),
+              l10n.recentlyPlayed,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: colorScheme.surface,
@@ -34,7 +35,7 @@ class RecentPlayedScreen extends StatelessWidget {
                   context,
                   value,
                   mediaProvider,
-                  textProvider,
+                  l10n,
                   themeProvider,
                 ),
                 itemBuilder: (context) => [
@@ -44,7 +45,7 @@ class RecentPlayedScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.clear_all),
                         const SizedBox(width: 8),
-                        Text(textProvider.getText('clearHistory')),
+                        Text('Clear History'),
                       ],
                     ),
                   ),
@@ -55,7 +56,7 @@ class RecentPlayedScreen extends StatelessWidget {
           body: _buildRecentFilesList(
             mediaProvider,
             themeProvider,
-            textProvider,
+            l10n,
           ),
         );
       },
@@ -65,7 +66,7 @@ class RecentPlayedScreen extends StatelessWidget {
   Widget _buildRecentFilesList(
     MediaProvider mediaProvider,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     // Get recent files sorted by last played time
     final recentFiles = mediaProvider.recentFiles
@@ -75,7 +76,7 @@ class RecentPlayedScreen extends StatelessWidget {
         .toList();
 
     if (recentFiles.isEmpty) {
-      return _buildEmptyState(themeProvider, textProvider);
+      return _buildEmptyState(themeProvider, l10n);
     }
 
     return ListView.builder(
@@ -88,7 +89,7 @@ class RecentPlayedScreen extends StatelessWidget {
           file,
           index,
           themeProvider,
-          textProvider,
+          l10n,
         );
       },
     );
@@ -99,19 +100,19 @@ class RecentPlayedScreen extends StatelessWidget {
     MediaFile file,
     int index,
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     final timeDifference = DateTime.now().difference(file.lastPlayed);
     String timeAgo;
 
     if (timeDifference.inDays > 0) {
-      timeAgo = '${timeDifference.inDays} ${textProvider.getText('daysAgo')}';
+      timeAgo = '${timeDifference.inDays} days ago';
     } else if (timeDifference.inHours > 0) {
-      timeAgo = '${timeDifference.inHours} ${textProvider.getText('hoursAgo')}';
+      timeAgo = '${timeDifference.inHours} hours ago';
     } else if (timeDifference.inMinutes > 0) {
-      timeAgo = '${timeDifference.inMinutes} ${textProvider.getText('minutesAgo')}';
+      timeAgo = '${timeDifference.inMinutes} minutes ago';
     } else {
-      timeAgo = textProvider.getText('justNow');
+      timeAgo = 'Just now';
     }
 
     return Card(
@@ -236,7 +237,7 @@ class RecentPlayedScreen extends StatelessWidget {
                 context,
                 value,
                 file,
-                textProvider,
+                l10n,
               ),
               itemBuilder: (context) => [
                 PopupMenuItem(
@@ -246,7 +247,7 @@ class RecentPlayedScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.play_arrow),
                       const SizedBox(width: 8),
-                      Text(textProvider.getText('play')),
+                      Text(l10n.play),
                     ],
                   ),
                 ),
@@ -262,8 +263,8 @@ class RecentPlayedScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         file.isFavorite
-                            ? textProvider.getText('removeFromFavorites')
-                            : textProvider.getText('addToFavorites'),
+                            ? l10n.removeFromFavorites
+                            : l10n.addToFavorites,
                       ),
                     ],
                   ),
@@ -275,7 +276,7 @@ class RecentPlayedScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.playlist_add),
                       const SizedBox(width: 8),
-                      Text(textProvider.getText('addToPlaylist')),
+                      Text(l10n.addToPlaylist),
                     ],
                   ),
                 ),
@@ -289,7 +290,7 @@ class RecentPlayedScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        textProvider.getText('removeFromHistory'),
+                        l10n.removeFromHistory,
                         style: TextStyle(
                           color: themeProvider.currentTheme.colorScheme.error,
                         ),
@@ -302,7 +303,7 @@ class RecentPlayedScreen extends StatelessWidget {
           ],
         ),
         onTap: () => file.isMissing
-            ? _showMissingFileMessage(context, file.name, textProvider)
+            ? _showMissingFileMessage(context, file.name, l10n)
             : _playMediaFile(context, file),
       ),
     );
@@ -310,7 +311,7 @@ class RecentPlayedScreen extends StatelessWidget {
 
   Widget _buildEmptyState(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Column(
@@ -323,7 +324,7 @@ class RecentPlayedScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            textProvider.getText('noRecentFiles'),
+            l10n.noRecentFiles,
             style: TextStyle(
               fontSize: 18,
               color: themeProvider.primaryTextColor.withValues(alpha: 0.8),
@@ -332,7 +333,7 @@ class RecentPlayedScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            textProvider.getText('noRecentFilesDescription'),
+            l10n.noRecentFilesDescription,
             style: TextStyle(
               fontSize: 14,
               color: themeProvider.secondaryTextColor.withValues(alpha: 0.6),
@@ -372,7 +373,7 @@ class RecentPlayedScreen extends StatelessWidget {
     BuildContext context,
     String action,
     MediaFile file,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) async {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
 
@@ -390,7 +391,7 @@ class RecentPlayedScreen extends StatelessWidget {
         break;
 
       case 'removeFromHistory':
-        _showRemoveFromHistoryDialog(context, file, textProvider);
+        _showRemoveFromHistoryDialog(context, file, l10n);
         break;
     }
   }
@@ -399,7 +400,7 @@ class RecentPlayedScreen extends StatelessWidget {
     BuildContext context,
     String action,
     MediaProvider mediaProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
     ThemeProvider themeProvider,
   ) {
     switch (action) {
@@ -407,7 +408,7 @@ class RecentPlayedScreen extends StatelessWidget {
         _showClearHistoryDialog(
           context,
           mediaProvider,
-          textProvider,
+          l10n,
           themeProvider,
         );
         break;
@@ -428,7 +429,7 @@ class RecentPlayedScreen extends StatelessWidget {
   void _showRemoveFromHistoryDialog(
     BuildContext context,
     MediaFile file,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     showDialog(
       context: context,
@@ -439,19 +440,18 @@ class RecentPlayedScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            textProvider.getText('removeFromHistory'),
+            l10n.removeFromHistory,
             style: TextStyle(color: themeProvider.primaryTextColor),
           ),
           content: Text(
-            textProvider.getText('removeFromHistoryConfirmation')
-                .replaceAll('{fileName}', file.name),
+            l10n.removeFromHistoryConfirmation(file.name),
             style: TextStyle(color: themeProvider.secondaryTextColor),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                textProvider.getText('cancel'),
+                l10n.cancel,
                 style: TextStyle(
                   color: themeProvider.currentTheme.colorScheme.primary,
                 ),
@@ -469,7 +469,7 @@ class RecentPlayedScreen extends StatelessWidget {
                 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(textProvider.getText('removedFromHistory')),
+                    content: Text(l10n.removedFromHistory),
                   ),
                 );
               },
@@ -477,7 +477,7 @@ class RecentPlayedScreen extends StatelessWidget {
                 backgroundColor: themeProvider.currentTheme.colorScheme.error,
               ),
               child: Text(
-                textProvider.getText('remove'),
+                l10n.remove,
                 style: TextStyle(
                   color: themeProvider.currentTheme.colorScheme.onError,
                 ),
@@ -492,7 +492,7 @@ class RecentPlayedScreen extends StatelessWidget {
   void _showClearHistoryDialog(
     BuildContext context,
     MediaProvider mediaProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
     ThemeProvider themeProvider,
   ) {
     showDialog(
@@ -503,18 +503,18 @@ class RecentPlayedScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          textProvider.getText('clearHistory'),
+          l10n.clearHistory,
           style: TextStyle(color: themeProvider.primaryTextColor),
         ),
         content: Text(
-          textProvider.getText('clearHistoryConfirmation'),
+          l10n.clearHistoryConfirmation,
           style: TextStyle(color: themeProvider.secondaryTextColor),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              textProvider.getText('cancel'),
+              l10n.cancel,
               style: TextStyle(
                 color: themeProvider.currentTheme.colorScheme.primary,
               ),
@@ -536,7 +536,7 @@ class RecentPlayedScreen extends StatelessWidget {
               
               scaffold.showSnackBar(
                 SnackBar(
-                  content: Text(textProvider.getText('historyCleared')),
+                  content: Text(l10n.historyCleared),
                 ),
               );
             },
@@ -544,7 +544,7 @@ class RecentPlayedScreen extends StatelessWidget {
               backgroundColor: themeProvider.currentTheme.colorScheme.error,
             ),
             child: Text(
-              textProvider.getText('clear'),
+              l10n.clear,
               style: TextStyle(
                 color: themeProvider.currentTheme.colorScheme.onError,
               ),
@@ -558,14 +558,12 @@ class RecentPlayedScreen extends StatelessWidget {
   void _showMissingFileMessage(
     BuildContext context,
     String fileName,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              textProvider
-                  .getText('fileNotFound')
-                  .replaceAll('{fileName}', fileName),
+              l10n.fileNotFound(fileName),
             ),
             backgroundColor: Colors.red,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // New import
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../theme/neumorphic_theme.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
@@ -26,34 +27,38 @@ class ThemeProvider extends ChangeNotifier {
     await prefs.setInt(_themeKey, mode.index);
   }
 
+  // استخدام نظام Neumorphic
   ThemeData get currentTheme =>
-      _themeMode == ThemeMode.dark ? _buildDarkTheme() : _buildLightTheme();
+      _themeMode == ThemeMode.dark ? NeumorphicTheme.darkTheme : NeumorphicTheme.lightTheme;
 
-  // New: Getters for custom colors/properties from _CustomColors extension
-  Color get primaryBackgroundColor =>
-      currentTheme.extension<_CustomColors>()!.primaryBackgroundColor;
-  Color get secondaryBackgroundColor =>
-      currentTheme.extension<_CustomColors>()!.secondaryBackgroundColor;
-  Color get cardBackgroundColor =>
-      currentTheme.extension<_CustomColors>()!.cardBackgroundColor;
-  Color get iconColor => currentTheme.extension<_CustomColors>()!.iconColor;
-  Color get textColor => currentTheme.extension<_CustomColors>()!.textColor;
-  Color get secondaryTextColor =>
-      currentTheme.extension<_CustomColors>()!.secondaryTextColor;
+  // Neumorphic colors getters
+  NeumorphicColors get neumorphicColors => currentTheme.neumorphicColors;
+  
+  Color get primaryBackgroundColor => neumorphicColors.bgColor;
+  Color get secondaryBackgroundColor => neumorphicColors.bgColor;
+  Color get cardBackgroundColor => neumorphicColors.bgColor;
+  Color get iconColor => neumorphicColors.textColor;
+  Color get textColor => neumorphicColors.textColor;
+  Color get secondaryTextColor => neumorphicColors.textColor;
+  Color get highlightColor => neumorphicColors.highlightColor;
+  Color get accentColor => neumorphicColors.accentColor;
+  Color get shadowDark => neumorphicColors.shadowDark;
+  Color get shadowLight => neumorphicColors.shadowLight;
 
   // إضافة خصائص إضافية للألوان
-  Color get cardColor => currentTheme.cardColor;
-  Color get primaryTextColor => textColor;
-  Color get shadowColor => isDarkMode ? Colors.black26 : Colors.black12;
-  Color get dividerColor => isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
-  Color get surfaceColor => currentTheme.colorScheme.surface;
-  Color get onSurfaceColor => currentTheme.colorScheme.onSurface;
+  Color get cardColor => neumorphicColors.bgColor;
+  Color get primaryTextColor => neumorphicColors.highlightColor;
+  Color get shadowColor => neumorphicColors.shadowDark;
+  Color get dividerColor => neumorphicColors.shadowDark;
+  Color get surfaceColor => neumorphicColors.bgColor;
+  Color get onSurfaceColor => neumorphicColors.highlightColor;
 
   void toggleTheme(bool isDark) {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     _saveTheme(_themeMode); // New: Save theme on toggle
     notifyListeners();
   }
+
 
   ThemeData _buildLightTheme() {
     return ThemeData(
@@ -98,13 +103,17 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   ThemeData _buildDarkTheme() {
+    const darkBg = Color(0xFF1A1A1A);
+    const cardBg = Color(0xFF2D2D2D);
+    const primaryColor = Color(0xFF4A9EFF);
+    
     return ThemeData(
       brightness: Brightness.dark,
-      primaryColor: Colors.blue[300],
-      hintColor: Colors.amber[300],
-      scaffoldBackgroundColor: Colors.black,
+      primaryColor: primaryColor,
+      hintColor: primaryColor,
+      scaffoldBackgroundColor: darkBg,
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.black,
+        backgroundColor: darkBg,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -113,25 +122,25 @@ class ThemeProvider extends ChangeNotifier {
         bodyMedium: TextStyle(color: Colors.white70),
       ),
       colorScheme: ColorScheme.dark(
-        primary: Colors.blue[300]!,
-        secondary: Colors.amber[300]!,
-        surface: Colors.black,
+        primary: primaryColor,
+        secondary: primaryColor,
+        surface: darkBg,
         onSurface: Colors.white,
-        onPrimary: Colors.black,
-        onSecondary: Colors.black,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
       ),
-      cardColor: Colors.black,
-      dialogTheme: DialogThemeData(backgroundColor: Colors.black),
-      secondaryHeaderColor: Colors.black87,
+      cardColor: cardBg,
+      dialogTheme: const DialogThemeData(backgroundColor: cardBg),
+      secondaryHeaderColor: cardBg,
       // Custom properties
       extensions: <ThemeExtension<dynamic>>[
         _CustomColors(
-          primaryBackgroundColor: Colors.black,
-          secondaryBackgroundColor: Colors.black12,
-          cardBackgroundColor: Colors.black,
-          iconColor: Colors.grey[300]!,
+          primaryBackgroundColor: darkBg,
+          secondaryBackgroundColor: cardBg,
+          cardBackgroundColor: cardBg,
+          iconColor: Colors.white70,
           textColor: Colors.white,
-          secondaryTextColor: Colors.grey[400]!,
+          secondaryTextColor: Colors.white60,
         ),
       ],
     );

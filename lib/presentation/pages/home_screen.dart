@@ -3,13 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
+import '../../generated/app_localizations.dart';
 import '../../data/models/media_file.dart';
 import 'audio_player_screen.dart';
 import 'video_player_screen.dart';
+import 'favorites_screen.dart';
+import 'recent_played_screen.dart';
+import '../../widgets/neumorphic_components.dart' as neumorphic;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onNavigateToTab;
+  const HomeScreen({super.key, this.onNavigateToTab});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -71,6 +75,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  /// Navigate to specific section based on index
+  /// 0: Audio Files, 1: Video Files, 2: Favorites, 3: Playlists
+  void _navigateToSection(int index) {
+    if (widget.onNavigateToTab != null) {
+      if (index == 2) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => FavoritesScreen(),
+          ),
+        );
+      } else {
+        widget.onNavigateToTab!(index);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _headerAnimationController.dispose();
@@ -80,13 +100,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         return Scaffold(
-          backgroundColor: themeProvider.primaryBackgroundColor,
+          backgroundColor: themeProvider.currentTheme.scaffoldBackgroundColor,
           body: _isInitialized
-              ? _buildMainContent(themeProvider, textProvider)
-              : _buildLoadingScreen(themeProvider, textProvider),
+              ? _buildMainContent(themeProvider, l10n)
+              : _buildLoadingScreen(themeProvider, l10n),
         );
       },
     );
@@ -94,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildLoadingScreen(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Column(
@@ -103,9 +124,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const CircularProgressIndicator(),
           const SizedBox(height: 20),
           Text(
-            textProvider.getText('settingUpLibrary'),
+            l10n.settingUpLibrary,
             style: TextStyle(
-              color: themeProvider.primaryTextColor,
+              color: themeProvider.currentTheme.colorScheme.onSurface,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -117,25 +138,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildMainContent(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return SafeArea(
       child: CustomScrollView(
         slivers: [
-          _buildHeader(themeProvider, textProvider),
-          _buildStatsSection(themeProvider, textProvider),
-          _buildRecentSection(themeProvider, textProvider),
-          _buildFavoritesSection(themeProvider, textProvider),
+          _buildHeader(themeProvider, l10n),
+          _buildStatsSection(themeProvider, l10n),
+          _buildRecentSection(themeProvider, l10n),
+          _buildNowPlayingSection(themeProvider, l10n),
+          _buildFavoritesSection(themeProvider, l10n),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(ThemeProvider themeProvider, TextProvider textProvider) {
-    final iconBgColor = themeProvider.isDarkMode
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.grey.withValues(alpha: 0.1);
-
+  Widget _buildHeader(ThemeProvider themeProvider, AppLocalizations l10n) {
     return SliverToBoxAdapter(
       child: AnimatedBuilder(
         animation: _headerAnimation,
@@ -149,18 +167,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                      Row(
                       children: [
+                        // App Logo with enhanced design
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: 56,
+                          height: 56,
                           decoration: BoxDecoration(
-                            color: iconBgColor,
                             borderRadius: BorderRadius.circular(16),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                themeProvider.currentTheme.colorScheme.primary,
+                                themeProvider.currentTheme.colorScheme.secondary,
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: themeProvider.currentTheme.colorScheme.primary.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            Icons.graphic_eq,
-                            color: Theme.of(context).primaryColor,
-                            size: 32,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset(
+                              'assets/icons/app_icon.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback icon if image fails to load
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        themeProvider.currentTheme.colorScheme.primary,
+                                        themeProvider.currentTheme.colorScheme.secondary,
+                                      ],
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.music_note_rounded,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -169,18 +226,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _getTimeOfDay(textProvider),
+                                _getTimeOfDay(l10n),
                                 style: TextStyle(
-                                  color: themeProvider.primaryTextColor
+                                  color: themeProvider.currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.7),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
                               Text(
-                                textProvider.getText('appName'),
+                                l10n.appName,
                                 style: TextStyle(
-                                  color: themeProvider.primaryTextColor,
+                                  color: themeProvider.currentTheme.colorScheme.onSurface,
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -188,19 +245,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: _showSearchDialog,
-                          icon: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: iconBgColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.search,
-                              color: themeProvider.primaryTextColor,
-                            ),
-                          ),
+                        neumorphic.NeumorphicButton(
+                          icon: Icons.search,
+                          onTap: _showSearchDialog,
+                          size: 40,
                         ),
                       ],
                     ),
@@ -216,15 +264,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildStatsSection(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
-    final cardBgColor = themeProvider.isDarkMode
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.grey.withValues(alpha: 0.05);
-    final borderColor = themeProvider.isDarkMode
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.grey.withValues(alpha: 0.2);
-
     return SliverToBoxAdapter(
       child: Consumer<MediaProvider>(
         builder: (context, mediaProvider, child) {
@@ -235,92 +276,80 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             builder: (context, child) {
               return Transform.scale(
                 scale: _statsAnimation.value.clamp(0.0, 1.0),
-                child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width < 600
-                        ? 16
-                        : 24,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width < 600 ? 16 : 24,
+                    vertical: 8,
                   ),
-                  padding: EdgeInsets.all(
-                    MediaQuery.of(context).size.width < 600 ? 16 : 20,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cardBgColor,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: borderColor, width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        textProvider.getText('yourLibrary'),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: themeProvider.primaryTextColor,
+                  child: neumorphic.NeumorphicCard(
+                    padding: EdgeInsets.all(
+                      MediaQuery.of(context).size.width < 600 ? 16 : 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.yourLibrary,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.currentTheme.colorScheme.onSurface,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              title: textProvider.getText('audioFiles'),
-                              count: stats['audio'] ?? 0,
-                              icon: Icons.headphones,
-                              accentColor: Colors
-                                  .purple
-                                  .shade300, // Use shade for dark mode visibility
-                              index: 0,
-                              themeProvider: themeProvider,
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                title: l10n.audioFiles,
+                                count: stats['audio'] ?? 0,
+                                icon: Icons.headphones,
+                                accentColor: Colors.purple.shade300,
+                                index: 0,
+                                themeProvider: themeProvider,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildStatCard(
-                              title: textProvider.getText('videoFiles'),
-                              count: stats['video'] ?? 0,
-                              icon: Icons.movie_creation_outlined,
-                              accentColor: Colors
-                                  .orange
-                                  .shade300, // Use shade for dark mode visibility
-                              index: 1,
-                              themeProvider: themeProvider,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildStatCard(
+                                title: l10n.videoFiles,
+                                count: stats['video'] ?? 0,
+                                icon: Icons.movie_creation_outlined,
+                                accentColor: Colors.orange.shade300,
+                                index: 1,
+                                themeProvider: themeProvider,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              title: textProvider.getText('favorites'),
-                              count: stats['favorites'] ?? 0,
-                              icon: Icons.favorite,
-                              accentColor: Colors
-                                  .red
-                                  .shade300, // Use shade for dark mode visibility
-                              index: 2,
-                              themeProvider: themeProvider,
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                title: l10n.favorites,
+                                count: stats['favorites'] ?? 0,
+                                icon: Icons.favorite,
+                                accentColor: Colors.red.shade300,
+                                index: 2,
+                                themeProvider: themeProvider,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildStatCard(
-                              title: textProvider.getText('playlists'),
-                              count: stats['playlists'] ?? 0,
-                              icon: Icons.queue_music,
-                              accentColor: Colors
-                                  .indigo
-                                  .shade300, // Use shade for dark mode visibility
-                              index: 3,
-                              themeProvider: themeProvider,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildStatCard(
+                                title: l10n.playlists,
+                                count: stats['playlists'] ?? 0,
+                                icon: Icons.queue_music,
+                                accentColor: Colors.indigo.shade300,
+                                index: 3,
+                                themeProvider: themeProvider,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -331,6 +360,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  /// Enhanced stat card with navigation functionality
   Widget _buildStatCard({
     required String title,
     required int count,
@@ -339,49 +369,55 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     required int index,
     required ThemeProvider themeProvider,
   }) {
-    final cardBgColor = themeProvider.cardBackgroundColor; // Use themeProvider
-    final borderColor = themeProvider.dividerColor; // Use themeProvider
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBgColor, // Use themeProvider color
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor,
-          width: 1,
-        ), // Use themeProvider color
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: accentColor, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            count.toString(),
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: accentColor,
-            ),
+    return GestureDetector(
+      onTap: () => _navigateToSection(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: neumorphic.NeumorphicContainer(
+          padding: const EdgeInsets.all(16),
+          borderRadius: BorderRadius.circular(16),
+          isInset: true,
+          child: Column(
+            children: [
+              // Icon with subtle animation on tap
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 150),
+                tween: Tween(begin: 1.0, end: 1.0),
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Icon(icon, color: accentColor, size: 32),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: accentColor,
+                ),
+              ),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color:
-                  themeProvider.secondaryTextColor, // Use themeProvider color
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildRecentSection(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
@@ -395,13 +431,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  textProvider.getText('recentlyPlayed'),
-                  style: TextStyle(
-                    color: themeProvider.primaryTextColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.recentlyPlayed,
+                      style: TextStyle(
+                        color: themeProvider.currentTheme.colorScheme.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const RecentPlayedScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        l10n.seeAll,
+                        style: TextStyle(
+                          color: themeProvider.currentTheme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
@@ -424,9 +481,136 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildNowPlayingSection(
+    ThemeProvider themeProvider,
+    AppLocalizations l10n,
+  ) {
+    return Consumer<MediaProvider>(
+      builder: (context, mediaProvider, child) {
+        final currentMedia = mediaProvider.currentMediaFile;
+        final lastPlayedMedia = mediaProvider.recentFiles.isNotEmpty 
+            ? mediaProvider.recentFiles.first 
+            : null;
+        
+        // تحديد الوسائط المراد عرضها (الحالية أو الأخيرة)
+        final displayMedia = currentMedia ?? lastPlayedMedia;
+        
+        // تحديد العنوان والرمز بناء على الحالة
+        final sectionTitle = currentMedia != null 
+            ? l10n.nowPlaying
+            : lastPlayedMedia != null 
+                ? l10n.recentlyPlayed
+                : l10n.nowPlaying;
+        
+        final displayText = displayMedia?.name ?? l10n.noFilePlaying;
+        final actionIcon = displayMedia != null ? Icons.play_arrow : Icons.library_music;
+        
+        return SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: neumorphic.NeumorphicCard(
+              padding: const EdgeInsets.all(16),
+              child: InkWell(
+                onTap: () => _handleNowPlayingTap(displayMedia),
+                borderRadius: BorderRadius.circular(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            sectionTitle,
+                            style: TextStyle(
+                            color: themeProvider.currentTheme.colorScheme.onSurface,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            displayText,
+                            style: TextStyle(
+                              color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontSize: 16,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (displayMedia != null && currentMedia == null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.playAll,
+                              style: TextStyle(
+                                color: themeProvider.currentTheme.colorScheme.primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: themeProvider.currentTheme.colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        actionIcon,
+                        color: themeProvider.currentTheme.colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  
+  void _handleNowPlayingTap(dynamic displayMedia) {
+    if (displayMedia != null) {
+      // تحديث الوسائط الحالية في المزود
+      final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
+      mediaProvider.setCurrentMediaFile(displayMedia);
+      
+      // انتقل إلى مشغل الوسائط المناسب
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              displayMedia.type == 'audio'
+                  ? const AudioPlayerScreen()
+                  : const VideoPlayerScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        ),
+      );
+    } else {
+      // إذا لم يكن هناك ملف، انتقل إلى صفحة المكتبة
+      if (widget.onNavigateToTab != null) {
+        widget.onNavigateToTab!(1); // Library tab index
+      }
+    }
+  }
+
   Widget _buildFavoritesSection(
     ThemeProvider themeProvider,
-    TextProvider textProvider,
+    AppLocalizations l10n,
   ) {
     return Consumer<MediaProvider>(
       builder: (context, mediaProvider, child) {
@@ -440,13 +624,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                child: Text(
-                  textProvider.getText('yourFavorites'),
-                  style: TextStyle(
-                    color: themeProvider.primaryTextColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.yourFavorites,
+                      style: TextStyle(
+                        color: themeProvider.currentTheme.colorScheme.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const FavoritesScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        l10n.seeAll,
+                        style: TextStyle(
+                          color: themeProvider.currentTheme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
@@ -480,15 +685,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth < 600 ? 120.0 : 150.0;
-    final textColor = themeProvider.primaryTextColor; // Use themeProvider
-    final cardBgColor = themeProvider.cardBackgroundColor; // Use themeProvider
-    final borderColor = themeProvider.dividerColor; // Use themeProvider
+    final textColor = themeProvider.currentTheme.colorScheme.onSurface;
+    final cardBgColor = themeProvider.currentTheme.cardColor;
+    final borderColor = themeProvider.currentTheme.dividerColor;
 
     return Container(
       width: cardWidth,
       margin: EdgeInsets.only(right: screenWidth < 600 ? 12 : 16),
       child: OpenContainer(
         transitionDuration: const Duration(milliseconds: 500),
+        closedElevation: 0,
+        openElevation: 0,
+        middleColor: Colors.transparent,
+        closedColor: Colors.transparent,
+        openColor: Colors.transparent,
+        useRootNavigator: false,
+        routeSettings: RouteSettings(name: 'media_${file.path}_$index'),
         openBuilder: (context, action) => file.type == 'audio'
             ? const AudioPlayerScreen()
             : const VideoPlayerScreen(),
@@ -505,9 +717,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     color: file.type == 'audio'
                         ? themeProvider.currentTheme.colorScheme.primary
-                              .withValues(alpha: 0.3) // Use theme color
+                              .withValues(alpha: 0.3)
                         : themeProvider.currentTheme.colorScheme.secondary
-                              .withValues(alpha: 0.3), // Use theme color
+                              .withValues(alpha: 0.3),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
@@ -518,7 +730,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ? Icons.graphic_eq
                           : Icons.movie_filter,
                       size: 40,
-                      color: themeProvider.iconColor, // Use themeProvider
+                      color: themeProvider.currentTheme.iconTheme.color,
                     ),
                   ),
                 ),
@@ -542,8 +754,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Text(
                       file.formattedDuration,
                       style: TextStyle(
-                        color: themeProvider
-                            .secondaryTextColor, // Use themeProvider
+                        color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 10,
                       ),
                     ),
@@ -557,11 +768,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  String _getTimeOfDay(TextProvider textProvider) {
+  String _getTimeOfDay(AppLocalizations l10n) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return textProvider.getText('goodMorning');
-    if (hour < 17) return textProvider.getText('goodAfternoon');
-    return textProvider.getText('goodEvening');
+    if (hour < 12) return l10n.goodMorning;
+    if (hour < 17) return l10n.goodAfternoon;
+    return l10n.goodEvening;
   }
 
   void _showSearchDialog() {
@@ -591,7 +802,7 @@ class _SearchDialogState extends State<_SearchDialog> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen = screenSize.width < 600;
-    final textProvider = Provider.of<TextProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -604,7 +815,7 @@ class _SearchDialogState extends State<_SearchDialog> {
             TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: textProvider.getText('search'),
+                labelText: l10n.search,
                 prefixIcon: const Icon(Icons.search_rounded),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -619,7 +830,7 @@ class _SearchDialogState extends State<_SearchDialog> {
                   : _searchResults.isEmpty
                   ? Center(
                       child: Text(
-                        textProvider.getText('noFilesFound'),
+                        l10n.noFilesFound,
                         style: TextStyle(
                           color: Theme.of(
                             context,
@@ -675,62 +886,5 @@ class _SearchDialogState extends State<_SearchDialog> {
       _searchResults = results;
       _isSearching = false;
     });
-  }
-}
-
-class _CreatePlaylistDialog extends StatefulWidget {
-  final TextProvider textProvider;
-  const _CreatePlaylistDialog({required this.textProvider});
-
-  @override
-  State<_CreatePlaylistDialog> createState() => _CreatePlaylistDialogState();
-}
-
-class _CreatePlaylistDialogState extends State<_CreatePlaylistDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final isSmallScreen = screenSize.width < 600;
-
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      contentPadding: EdgeInsets.all(isSmallScreen ? 16 : 24),
-      title: Text(
-        widget.textProvider.getText('createPlaylist'),
-        style: TextStyle(
-          fontSize: isSmallScreen ? 18 : 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: SizedBox(
-        width: isSmallScreen ? screenSize.width * 0.8 : 300,
-        child: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            labelText: widget.textProvider.getText('playlistName'),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          autofocus: true,
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(widget.textProvider.getText('cancel')),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text(widget.textProvider.getText('create')),
-        ),
-      ],
-    );
   }
 }

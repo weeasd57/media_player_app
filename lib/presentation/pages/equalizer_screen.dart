@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // New import
-import '../providers/text_provider.dart';
-import '../providers/theme_provider.dart'; // Added import for ThemeProvider
+import '../providers/theme_provider.dart';
+import '../../generated/app_localizations.dart';
 
 class EqualizerScreen extends StatefulWidget {
   const EqualizerScreen({super.key});
@@ -37,31 +37,31 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textProvider = Provider.of<TextProvider>(context);
+    final localizations = AppLocalizations.of(context)!;
     final themeProvider = Provider.of<ThemeProvider>(
       context,
     ); // Access ThemeProvider
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(textProvider.getText('equalizer')),
+        title: Text(localizations.equalizer),
         backgroundColor:
-            themeProvider.primaryBackgroundColor, // Use themeProvider
-        foregroundColor: themeProvider.primaryTextColor, // Use themeProvider
+            themeProvider.currentTheme.scaffoldBackgroundColor, // Use themeProvider
+        foregroundColor: themeProvider.currentTheme.colorScheme.onSurface, // Use themeProvider
       ),
       backgroundColor:
-          themeProvider.primaryBackgroundColor, // Use themeProvider
+          themeProvider.currentTheme.scaffoldBackgroundColor, // Use themeProvider
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              textProvider.getText('bass'),
+              'Bass',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: themeProvider.primaryTextColor, // Use themeProvider
+                color: themeProvider.currentTheme.colorScheme.onSurface, // Use themeProvider
               ),
             ),
             Slider(
@@ -80,15 +80,15 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                   .currentTheme
                   .colorScheme
                   .primary, // Use themeProvider
-              inactiveColor: themeProvider.dividerColor, // Use themeProvider
+              inactiveColor: themeProvider.currentTheme.dividerColor, // Use themeProvider
             ),
             const SizedBox(height: 20),
             Text(
-              textProvider.getText('treble'),
+              'Treble',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: themeProvider.primaryTextColor, // Use themeProvider
+                color: themeProvider.currentTheme.colorScheme.onSurface, // Use themeProvider
               ),
             ),
             Slider(
@@ -107,7 +107,7 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                   .currentTheme
                   .colorScheme
                   .primary, // Use themeProvider
-              inactiveColor: themeProvider.dividerColor, // Use themeProvider
+              inactiveColor: themeProvider.currentTheme.dividerColor, // Use themeProvider
             ),
             // يمكنك إضافة أشرطة تمرير مخصصة هنا
             const SizedBox(height: 40),
@@ -124,7 +124,7 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                 foregroundColor:
                     themeProvider.currentTheme.colorScheme.onPrimary,
               ),
-              child: Text(textProvider.getText('reset')),
+              child: Text(localizations.reset),
             ),
           ],
         ),

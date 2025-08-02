@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/media_provider.dart';
 import '../providers/theme_provider.dart';
-import '../providers/text_provider.dart';
 import '../../data/models/media_file.dart';
 
 class ArtistAlbumViewScreen extends StatelessWidget {
@@ -10,14 +9,14 @@ class ArtistAlbumViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<MediaProvider, ThemeProvider, TextProvider>(
-      builder: (context, mediaProvider, themeProvider, textProvider, child) {
+    return Consumer2<MediaProvider, ThemeProvider>(
+      builder: (context, mediaProvider, themeProvider, child) {
         return DefaultTabController(
           length: 2,
           child: Scaffold(
             appBar: AppBar(
               title: Text(
-                textProvider.getText('artistAlbum'),
+                'Artists & Albums', // TODO: Add to l10n if needed
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               bottom: const TabBar(
@@ -29,8 +28,8 @@ class ArtistAlbumViewScreen extends StatelessWidget {
             ),
             body: TabBarView(
               children: [
-                _buildArtistsTab(mediaProvider, themeProvider, textProvider),
-                _buildAlbumsTab(mediaProvider, themeProvider, textProvider),
+                _buildArtistsTab(mediaProvider, themeProvider),
+                _buildAlbumsTab(mediaProvider, themeProvider),
               ],
             ),
           ),
@@ -39,7 +38,7 @@ class ArtistAlbumViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildArtistsTab(MediaProvider mediaProvider, ThemeProvider themeProvider, TextProvider textProvider) {
+  Widget _buildArtistsTab(MediaProvider mediaProvider, ThemeProvider themeProvider) {
     final artistGroups = mediaProvider.getGroupedMediaFilesByArtist();
 
     return ListView.builder(
@@ -56,7 +55,7 @@ class ArtistAlbumViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAlbumsTab(MediaProvider mediaProvider, ThemeProvider themeProvider, TextProvider textProvider) {
+  Widget _buildAlbumsTab(MediaProvider mediaProvider, ThemeProvider themeProvider) {
     final albumGroups = mediaProvider.getGroupedMediaFilesByAlbum();
 
     return ListView.builder(
