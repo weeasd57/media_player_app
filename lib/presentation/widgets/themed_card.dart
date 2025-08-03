@@ -25,21 +25,33 @@ class ThemedCard extends StatelessWidget {
     return Consumer2<AppProvider, ThemeProvider>(
       builder: (context, appProvider, themeProvider, child) {
         final uiKitType = appProvider.currentApp.uiKitType;
-        
+
         Widget cardWidget;
-        
+
         switch (uiKitType) {
           case 'modern':
             cardWidget = _buildModernCard(context, appProvider, themeProvider);
             break;
           case 'glassmorphic':
-            cardWidget = _buildGlassmorphicCard(context, appProvider, themeProvider);
+            cardWidget = _buildGlassmorphicCard(
+              context,
+              appProvider,
+              themeProvider,
+            );
             break;
           case 'neomorphic':
-            cardWidget = _buildNeomorphicCard(context, appProvider, themeProvider);
+            cardWidget = _buildNeomorphicCard(
+              context,
+              appProvider,
+              themeProvider,
+            );
             break;
           case 'gradient':
-            cardWidget = _buildGradientCard(context, appProvider, themeProvider);
+            cardWidget = _buildGradientCard(
+              context,
+              appProvider,
+              themeProvider,
+            );
             break;
           case 'minimal':
             cardWidget = _buildMinimalCard(context, appProvider, themeProvider);
@@ -64,19 +76,20 @@ class ThemedCard extends StatelessWidget {
         }
 
         if (onTap != null) {
-          return GestureDetector(
-            onTap: onTap,
-            child: cardWidget,
-          );
+          return GestureDetector(onTap: onTap, child: cardWidget);
         }
-        
+
         return cardWidget;
       },
-      child: this.child,
+      child: child,
     );
   }
 
-  Widget _buildModernCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildModernCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -85,12 +98,14 @@ class ThemedCard extends StatelessWidget {
         color: themeProvider.currentTheme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: themeProvider.currentTheme.colorScheme.outline.withOpacity(0.1),
+          color: themeProvider.currentTheme.colorScheme.outline.withAlpha(
+            (0.1 * 255).round(),
+          ),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha((0.05 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -100,7 +115,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassmorphicCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildGlassmorphicCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -110,15 +129,17 @@ class ThemedCard extends StatelessWidget {
           height: height,
           padding: padding ?? const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(themeProvider.isDarkMode ? 0.1 : 0.7),
+            color: Colors.white.withAlpha(
+              ((themeProvider.isDarkMode ? 0.1 : 0.7) * 255).round(),
+            ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withAlpha((0.2 * 255).round()),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha((0.1 * 255).round()),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -130,7 +151,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNeomorphicCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildNeomorphicCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -140,12 +165,16 @@ class ThemedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: themeProvider.isDarkMode ? Colors.black54 : Colors.grey.shade400,
+            color: themeProvider.isDarkMode
+                ? Colors.black54
+                : Colors.grey.shade400,
             offset: const Offset(8, 8),
             blurRadius: 15,
           ),
           BoxShadow(
-            color: themeProvider.isDarkMode ? Colors.grey.shade800 : Colors.white,
+            color: themeProvider.isDarkMode
+                ? Colors.grey.shade800
+                : Colors.white,
             offset: const Offset(-8, -8),
             blurRadius: 15,
           ),
@@ -155,7 +184,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGradientCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildGradientCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -163,8 +196,10 @@ class ThemedCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            appProvider.currentApp.primaryColor.withOpacity(0.8),
-            appProvider.currentApp.secondaryColor.withOpacity(0.8),
+            appProvider.currentApp.primaryColor.withAlpha((0.8 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.8 * 255).round(),
+            ),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -172,7 +207,9 @@ class ThemedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -185,7 +222,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMinimalCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildMinimalCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -201,7 +242,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCyberCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildCyberCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -215,7 +260,9 @@ class ThemedCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             blurRadius: 15,
           ),
         ],
@@ -224,7 +271,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNatureCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildNatureCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -234,7 +285,9 @@ class ThemedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.2),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.2 * 255).round(),
+            ),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -244,7 +297,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRetroCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildRetroCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -258,7 +315,7 @@ class ThemedCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             offset: const Offset(4, 4),
           ),
@@ -268,7 +325,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildOceanCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildOceanCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -278,7 +339,9 @@ class ThemedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -288,7 +351,11 @@ class ThemedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSunsetCard(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildSunsetCard(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       width: width,
       height: height,
@@ -296,9 +363,11 @@ class ThemedCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            appProvider.currentApp.primaryColor.withOpacity(0.9),
-            appProvider.currentApp.secondaryColor.withOpacity(0.9),
-            const Color(0xFFFFD23F).withOpacity(0.9),
+            appProvider.currentApp.primaryColor.withAlpha((0.9 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.9 * 255).round(),
+            ),
+            const Color(0xFFFFD23F).withAlpha((0.9 * 255).round()),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -306,7 +375,9 @@ class ThemedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.4),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.4 * 255).round(),
+            ),
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),

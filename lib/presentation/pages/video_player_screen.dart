@@ -9,7 +9,7 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool _isPlaying = false;
-  bool _showControls = true;
+  final bool _showControls = true;
   double _currentPosition = 0.0;
   double _volume = 0.7;
   bool _isFullscreen = false;
@@ -18,20 +18,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: _isFullscreen ? null : AppBar(
-        title: const Text('مشغل الفيديو'),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            onPressed: () {
-              _showFilePicker();
-            },
-          ),
-        ],
-      ),
+      appBar: _isFullscreen
+          ? null
+          : AppBar(
+              title: const Text('مشغل الفيديو'),
+              centerTitle: true,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.folder_open),
+                  onPressed: () {
+                    _showFilePicker();
+                  },
+                ),
+              ],
+            ),
       body: Stack(
         children: [
           // Video Player Area
@@ -41,8 +43,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[900],
-                  borderRadius: _isFullscreen 
-                      ? BorderRadius.zero 
+                  borderRadius: _isFullscreen
+                      ? BorderRadius.zero
                       : BorderRadius.circular(12),
                 ),
                 child: Stack(
@@ -76,10 +78,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         ],
                       ),
                     ),
-                    
+
                     // Controls overlay
-                    if (_showControls)
-                      _buildControlsOverlay(),
+                    if (_showControls) _buildControlsOverlay(),
                   ],
                 ),
               ),
@@ -106,14 +107,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(0.7),
+            Colors.black.withAlpha((0.7 * 255).round()),
             Colors.transparent,
             Colors.transparent,
-            Colors.black.withOpacity(0.7),
+            Colors.black.withAlpha((0.7 * 255).round()),
           ],
         ),
-        borderRadius: _isFullscreen 
-            ? BorderRadius.zero 
+        borderRadius: _isFullscreen
+            ? BorderRadius.zero
             : BorderRadius.circular(12),
       ),
       child: Stack(
@@ -131,7 +132,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withAlpha((0.6 * 255).round()),
                 ),
                 child: Icon(
                   _isPlaying ? Icons.pause : Icons.play_arrow,
@@ -177,7 +178,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 Row(
                   children: [
                     Text(
-                      _formatDuration(Duration(seconds: (_currentPosition * 3600).round())),
+                      _formatDuration(
+                        Duration(seconds: (_currentPosition * 3600).round()),
+                      ),
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Expanded(
@@ -189,7 +192,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           });
                         },
                         activeColor: Colors.red,
-                        inactiveColor: Colors.white.withOpacity(0.3),
+                        inactiveColor: Colors.white.withAlpha(
+                          (0.3 * 255).round(),
+                        ),
                       ),
                     ),
                     const Text(
@@ -202,7 +207,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.skip_previous, color: Colors.white),
+                      icon: const Icon(
+                        Icons.skip_previous,
+                        color: Colors.white,
+                      ),
                       onPressed: () {},
                     ),
                     IconButton(
@@ -266,9 +274,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               Text('${(_volume * 100).round()}%'),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Video info
           const ListTile(
             leading: Icon(Icons.video_file),
@@ -276,9 +284,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             subtitle: Text('لم يتم تحديد فيديو'),
             trailing: Icon(Icons.info_outline),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Action buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -319,9 +327,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('سيتم إضافة هذه الميزة قريباً'),
-                  ),
+                  const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
                 );
               },
             ),
@@ -331,9 +337,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('سيتم إضافة هذه الميزة قريباً'),
-                  ),
+                  const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
                 );
               },
             ),
@@ -371,9 +375,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('سيتم إضافة هذه الميزة قريباً'),
-                ),
+                const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
               );
             },
             child: const Text('تحميل'),

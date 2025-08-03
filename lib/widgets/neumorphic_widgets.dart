@@ -14,7 +14,7 @@ class NeumorphicCard extends StatelessWidget {
   final double depth;
 
   const NeumorphicCard({
-    Key? key,
+    super.key,
     required this.child,
     this.margin,
     this.padding,
@@ -23,7 +23,7 @@ class NeumorphicCard extends StatelessWidget {
     this.onTap,
     this.borderRadius = 12.0,
     this.depth = 20.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class NeumorphicButton extends StatelessWidget {
   final double depth;
 
   const NeumorphicButton({
-    Key? key,
+    super.key,
     required this.child,
     this.onPressed,
     this.padding,
@@ -77,7 +77,7 @@ class NeumorphicButton extends StatelessWidget {
     this.width,
     this.borderRadius = 12.0,
     this.depth = 15.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +99,9 @@ class NeumorphicButton extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(borderRadius),
           child: Container(
-            padding: padding ?? const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 12.0,
-            ),
+            padding:
+                padding ??
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             child: Center(child: child),
           ),
         ),
@@ -120,14 +119,14 @@ class NeumorphicIconButton extends StatelessWidget {
   final Color? iconColor;
 
   const NeumorphicIconButton({
-    Key? key,
+    super.key,
     required this.icon,
     this.onPressed,
     this.size = 48.0,
     this.borderRadius = 24.0,
     this.depth = 15.0,
     this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -135,9 +134,9 @@ class NeumorphicIconButton extends StatelessWidget {
     final backgroundColor = themeProvider.isDarkMode
         ? const Color(0xFF2D2D2D)
         : const Color(0xFFE6E6E6);
-    
-    final effectiveIconColor = iconColor ?? 
-        (themeProvider.isDarkMode ? Colors.white : Colors.black);
+
+    final effectiveIconColor =
+        iconColor ?? (themeProvider.isDarkMode ? Colors.white : Colors.black);
 
     return ClayContainer(
       color: backgroundColor,
@@ -151,11 +150,7 @@ class NeumorphicIconButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(borderRadius),
-          child: Icon(
-            icon,
-            color: effectiveIconColor,
-            size: size * 0.5,
-          ),
+          child: Icon(icon, color: effectiveIconColor, size: size * 0.5),
         ),
       ),
     );
@@ -173,7 +168,7 @@ class NeumorphicContainer extends StatelessWidget {
   final Color? backgroundColor;
 
   const NeumorphicContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.margin,
     this.padding,
@@ -182,12 +177,13 @@ class NeumorphicContainer extends StatelessWidget {
     this.borderRadius = 12.0,
     this.depth = 20.0,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final effectiveBackgroundColor = backgroundColor ??
+    final effectiveBackgroundColor =
+        backgroundColor ??
         (themeProvider.isDarkMode
             ? const Color(0xFF2D2D2D)
             : const Color(0xFFE6E6E6));
@@ -219,14 +215,14 @@ class NeumorphicSlider extends StatelessWidget {
   final double borderRadius;
 
   const NeumorphicSlider({
-    Key? key,
+    super.key,
     required this.value,
     this.min = 0.0,
     this.max = 1.0,
     this.onChanged,
     this.height = 8.0,
     this.borderRadius = 4.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +230,7 @@ class NeumorphicSlider extends StatelessWidget {
     final backgroundColor = themeProvider.isDarkMode
         ? const Color(0xFF2D2D2D)
         : const Color(0xFFE6E6E6);
-    
+
     final trackColor = themeProvider.isDarkMode
         ? const Color(0xFF1A1A1A)
         : const Color(0xFFD0D0D0);
@@ -250,22 +246,13 @@ class NeumorphicSlider extends StatelessWidget {
         child: SliderTheme(
           data: SliderTheme.of(context).copyWith(
             trackHeight: height,
-            thumbShape: RoundSliderThumbShape(
-              enabledThumbRadius: height + 2,
-            ),
-            overlayShape: RoundSliderOverlayShape(
-              overlayRadius: height + 6,
-            ),
+            thumbShape: RoundSliderThumbShape(enabledThumbRadius: height + 2),
+            overlayShape: RoundSliderOverlayShape(overlayRadius: height + 6),
             activeTrackColor: Theme.of(context).primaryColor,
             inactiveTrackColor: trackColor,
             thumbColor: backgroundColor,
           ),
-          child: Slider(
-            value: value,
-            min: min,
-            max: max,
-            onChanged: onChanged,
-          ),
+          child: Slider(value: value, min: min, max: max, onChanged: onChanged),
         ),
       ),
     );

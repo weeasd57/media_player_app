@@ -10,20 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:media_player_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App renders without crashing', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MediaPlayerApp());
+    await tester.pumpWidget(const UIKitCollectionApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    // await tester.tap(find.byIcon(Icons.add));
-    // await tester.pump();
-
-    // Verify that our counter has incremented.
-    // expect(find.text('0'), findsNothing);
-    // expect(find.text('1'), findsOneWidget);
+    // Verify that the app title is present (or any other basic element)
+    expect(find.text('UI Kit Collection'), findsOneWidget);
   });
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
@@ -37,23 +36,23 @@ class PerformanceMetrics {
 class PerformanceProvider extends ChangeNotifier {
   Timer? _performanceTimer;
   final List<PerformanceMetrics> _metricsHistory = [];
-  
+
   // إعدادات المراقبة
   bool _isMonitoringEnabled = kDebugMode;
   Duration _monitoringInterval = const Duration(seconds: 5);
-  int _maxHistorySize = 100;
-  
+  final int _maxHistorySize = 100;
+
   // معلومات الأداء الحالية
   PerformanceMetrics? _currentMetrics;
   double _averageMemoryUsage = 0.0;
   double _averageCpuUsage = 0.0;
   int _averageFrameRate = 60;
-  
+
   // تحذيرات الأداء
   bool _hasMemoryWarning = false;
   bool _hasCpuWarning = false;
   bool _hasFrameRateWarning = false;
-  
+
   // حدود التحذير
   double _memoryWarningThreshold = 100.0; // ميجابايت
   double _cpuWarningThreshold = 80.0; // نسبة مئوية
@@ -62,14 +61,16 @@ class PerformanceProvider extends ChangeNotifier {
   // Getters
   bool get isMonitoringEnabled => _isMonitoringEnabled;
   PerformanceMetrics? get currentMetrics => _currentMetrics;
-  List<PerformanceMetrics> get metricsHistory => List.unmodifiable(_metricsHistory);
+  List<PerformanceMetrics> get metricsHistory =>
+      List.unmodifiable(_metricsHistory);
   double get averageMemoryUsage => _averageMemoryUsage;
   double get averageCpuUsage => _averageCpuUsage;
   int get averageFrameRate => _averageFrameRate;
   bool get hasMemoryWarning => _hasMemoryWarning;
   bool get hasCpuWarning => _hasCpuWarning;
   bool get hasFrameRateWarning => _hasFrameRateWarning;
-  bool get hasAnyWarning => _hasMemoryWarning || _hasCpuWarning || _hasFrameRateWarning;
+  bool get hasAnyWarning =>
+      _hasMemoryWarning || _hasCpuWarning || _hasFrameRateWarning;
 
   /// بدء مراقبة الأداء
   void startMonitoring() {
@@ -92,13 +93,13 @@ class PerformanceProvider extends ChangeNotifier {
   /// تفعيل/إلغاء تفعيل المراقبة
   void toggleMonitoring() {
     _isMonitoringEnabled = !_isMonitoringEnabled;
-    
+
     if (_isMonitoringEnabled) {
       startMonitoring();
     } else {
       stopMonitoring();
     }
-    
+
     notifyListeners();
   }
 
@@ -130,7 +131,7 @@ class PerformanceProvider extends ChangeNotifier {
 
       _updateAverages();
       _checkWarnings();
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error collecting performance metrics: $e');
@@ -159,15 +160,11 @@ class PerformanceProvider extends ChangeNotifier {
     try {
       // هذا تقدير تقريبي - في التطبيقات الحقيقية يمكن استخدام مكتبات متخصصة
       final stopwatch = Stopwatch()..start();
-      
+
       // محاكاة عملية حسابية بسيطة
-      var sum = 0;
-      for (int i = 0; i < 10000; i++) {
-        sum += i;
-      }
-      
+
       stopwatch.stop();
-      
+
       // تحويل الوقت إلى نسبة مئوية تقريبية
       final cpuUsage = (stopwatch.elapsedMicroseconds / 1000).clamp(0.0, 100.0);
       return cpuUsage;
@@ -215,18 +212,19 @@ class PerformanceProvider extends ChangeNotifier {
     if (_metricsHistory.isEmpty) return;
 
     final recentMetrics = _metricsHistory.take(10).toList();
-    
-    _averageMemoryUsage = recentMetrics
-        .map((m) => m.memoryUsage)
-        .reduce((a, b) => a + b) / recentMetrics.length;
-    
-    _averageCpuUsage = recentMetrics
-        .map((m) => m.cpuUsage)
-        .reduce((a, b) => a + b) / recentMetrics.length;
-    
-    _averageFrameRate = (recentMetrics
-        .map((m) => m.frameRate)
-        .reduce((a, b) => a + b) / recentMetrics.length).round();
+
+    _averageMemoryUsage =
+        recentMetrics.map((m) => m.memoryUsage).reduce((a, b) => a + b) /
+        recentMetrics.length;
+
+    _averageCpuUsage =
+        recentMetrics.map((m) => m.cpuUsage).reduce((a, b) => a + b) /
+        recentMetrics.length;
+
+    _averageFrameRate =
+        (recentMetrics.map((m) => m.frameRate).reduce((a, b) => a + b) /
+                recentMetrics.length)
+            .round();
   }
 
   /// فحص التحذيرات
@@ -239,17 +237,22 @@ class PerformanceProvider extends ChangeNotifier {
 
     _hasMemoryWarning = _currentMetrics!.memoryUsage > _memoryWarningThreshold;
     _hasCpuWarning = _currentMetrics!.cpuUsage > _cpuWarningThreshold;
-    _hasFrameRateWarning = _currentMetrics!.frameRate < _frameRateWarningThreshold;
+    _hasFrameRateWarning =
+        _currentMetrics!.frameRate < _frameRateWarningThreshold;
 
     // إشعار بالتحذيرات الجديدة
     if (_hasMemoryWarning && !oldMemoryWarning) {
-      debugPrint('⚠️ Memory usage warning: ${_currentMetrics!.memoryUsage.toStringAsFixed(1)} MB');
+      debugPrint(
+        '⚠️ Memory usage warning: ${_currentMetrics!.memoryUsage.toStringAsFixed(1)} MB',
+      );
     }
-    
+
     if (_hasCpuWarning && !oldCpuWarning) {
-      debugPrint('⚠️ CPU usage warning: ${_currentMetrics!.cpuUsage.toStringAsFixed(1)}%');
+      debugPrint(
+        '⚠️ CPU usage warning: ${_currentMetrics!.cpuUsage.toStringAsFixed(1)}%',
+      );
     }
-    
+
     if (_hasFrameRateWarning && !oldFrameRateWarning) {
       debugPrint('⚠️ Frame rate warning: ${_currentMetrics!.frameRate} FPS');
     }
@@ -264,15 +267,15 @@ class PerformanceProvider extends ChangeNotifier {
     if (memoryThreshold != null && memoryThreshold > 0) {
       _memoryWarningThreshold = memoryThreshold;
     }
-    
+
     if (cpuThreshold != null && cpuThreshold > 0 && cpuThreshold <= 100) {
       _cpuWarningThreshold = cpuThreshold;
     }
-    
+
     if (frameRateThreshold != null && frameRateThreshold > 0) {
       _frameRateWarningThreshold = frameRateThreshold;
     }
-    
+
     // إعادة فحص التحذيرات مع الحدود الجديدة
     _checkWarnings();
     notifyListeners();
@@ -281,9 +284,9 @@ class PerformanceProvider extends ChangeNotifier {
   /// تعيين فترة المراقبة
   void setMonitoringInterval(Duration interval) {
     if (interval.inSeconds < 1) return;
-    
+
     _monitoringInterval = interval;
-    
+
     // إعادة تشغيل المراقبة بالفترة الجديدة
     if (_isMonitoringEnabled) {
       stopMonitoring();
@@ -308,17 +311,17 @@ class PerformanceProvider extends ChangeNotifier {
   Future<void> optimizeMemory() async {
     try {
       debugPrint('🧹 Starting memory optimization...');
-      
+
       // تشغيل garbage collector
       if (Platform.isAndroid || Platform.isIOS) {
         // يمكن إضافة تحسينات خاصة بالمنصة هنا
       }
-      
+
       // مسح الكاش المؤقت
       await _clearTemporaryCache();
-      
+
       debugPrint('✅ Memory optimization completed');
-      
+
       // جمع معلومات جديدة بعد التحسين
       await _collectMetrics();
     } catch (e) {

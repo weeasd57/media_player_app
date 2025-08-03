@@ -8,10 +8,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('الإعدادات'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('الإعدادات'), centerTitle: true),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return ListView(
@@ -36,16 +33,16 @@ class SettingsScreen extends StatelessWidget {
                         subtitle: const Text('تبديل بين الوضع الفاتح والداكن'),
                         value: themeProvider.isDarkMode,
                         onChanged: (value) {
-                          themeProvider.setTheme(value);
+                          themeProvider.setDarkMode(value);
                         },
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // App Info Section
               Card(
                 child: Padding(
@@ -74,9 +71,9 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // UI Demo Section
               Card(
                 child: Padding(
@@ -91,7 +88,9 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text('هذا التطبيق هو نموذج لعرض مكونات واجهة المستخدم'),
+                      const Text(
+                        'هذا التطبيق هو نموذج لعرض مكونات واجهة المستخدم',
+                      ),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: () {

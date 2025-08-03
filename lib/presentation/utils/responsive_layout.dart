@@ -27,9 +27,10 @@ class ResponsiveLayout {
     T? tablet,
     T? desktop,
   }) {
-    if (isDesktop(context) && desktop != null) {
+    final size = MediaQuery.of(context).size;
+    if (size.width >= desktopBreakpoint && desktop != null) {
       return desktop;
-    } else if (isTablet(context) && tablet != null) {
+    } else if (size.width >= mobileBreakpoint && tablet != null) {
       return tablet;
     }
     return mobile;
@@ -47,50 +48,25 @@ class ResponsiveLayout {
 
   // Get responsive grid columns
   static int getGridColumns(BuildContext context) {
-    return getValue(
-      context,
-      mobile: 2,
-      tablet: 3,
-      desktop: 4,
-    );
+    return getValue(context, mobile: 2, tablet: 3, desktop: 4);
   }
 
   // Get responsive font sizes
   static double getTitleFontSize(BuildContext context) {
-    return getValue(
-      context,
-      mobile: 24,
-      tablet: 28,
-      desktop: 32,
-    );
+    return getValue(context, mobile: 24, tablet: 28, desktop: 32);
   }
 
   static double getSubtitleFontSize(BuildContext context) {
-    return getValue(
-      context,
-      mobile: 16,
-      tablet: 18,
-      desktop: 20,
-    );
+    return getValue(context, mobile: 16, tablet: 18, desktop: 20);
   }
 
   static double getBodyFontSize(BuildContext context) {
-    return getValue(
-      context,
-      mobile: 14,
-      tablet: 16,
-      desktop: 16,
-    );
+    return getValue(context, mobile: 14, tablet: 16, desktop: 16);
   }
 
   // Get responsive icon sizes
   static double getIconSize(BuildContext context) {
-    return getValue(
-      context,
-      mobile: 24,
-      tablet: 28,
-      desktop: 32,
-    );
+    return getValue(context, mobile: 24, tablet: 28, desktop: 32);
   }
 
   // Get responsive app bar height
@@ -121,6 +97,21 @@ class ResponsiveLayout {
       },
     );
   }
+
+  // Check if device is small mobile
+  static bool isSmallMobile(BuildContext context) {
+    return MediaQuery.of(context).size.width < 400;
+  }
+
+  // Get safe button size based on screen size
+  static double getButtonSize(BuildContext context) {
+    return getValue(
+      context,
+      mobile: isSmallMobile(context) ? 40.0 : 48.0,
+      tablet: 56.0,
+      desktop: 64.0,
+    );
+  }
 }
 
 // Responsive container widget
@@ -143,12 +134,14 @@ class ResponsiveContainer extends StatelessWidget {
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(
-        maxWidth: maxWidth ?? ResponsiveLayout.getValue(
-          context,
-          mobile: double.infinity,
-          tablet: 800,
-          desktop: 1200,
-        ),
+        maxWidth:
+            maxWidth ??
+            ResponsiveLayout.getValue(
+              context,
+              mobile: double.infinity,
+              tablet: 800,
+              desktop: 1200,
+            ),
       ),
       padding: padding ?? ResponsiveLayout.getPadding(context),
       margin: margin,
@@ -166,6 +159,9 @@ class ResponsiveGrid extends StatelessWidget {
   final int? mobileColumns;
   final int? tabletColumns;
   final int? desktopColumns;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+  final EdgeInsetsGeometry? padding;
 
   const ResponsiveGrid({
     super.key,
@@ -176,6 +172,9 @@ class ResponsiveGrid extends StatelessWidget {
     this.mobileColumns,
     this.tabletColumns,
     this.desktopColumns,
+    this.shrinkWrap = false,
+    this.physics,
+    this.padding,
   });
 
   @override
@@ -192,6 +191,9 @@ class ResponsiveGrid extends StatelessWidget {
       crossAxisSpacing: spacing ?? 16,
       mainAxisSpacing: runSpacing ?? 16,
       childAspectRatio: childAspectRatio ?? 1.0,
+      shrinkWrap: shrinkWrap,
+      physics: physics,
+      padding: padding,
       children: children,
     );
   }
@@ -256,19 +258,23 @@ class ResponsivePlayerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
+
     final iconSize = ResponsiveLayout.getValue(
       context,
-      mobile: 32.0,
+      mobile: isSmallScreen ? 24.0 : 32.0,
       tablet: 40.0,
       desktop: 48.0,
     );
 
     final playIconSize = ResponsiveLayout.getValue(
       context,
-      mobile: 48.0,
+      mobile: isSmallScreen ? 32.0 : 44.0,
       tablet: 56.0,
       desktop: 64.0,
     );
+
+    final spacing = isSmallScreen ? 8.0 : 16.0;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -276,8 +282,12 @@ class ResponsivePlayerControls extends StatelessWidget {
         IconButton(
           onPressed: onPrevious,
           icon: Icon(Icons.skip_previous, size: iconSize),
+          padding: isSmallScreen
+              ? const EdgeInsets.all(4)
+              : const EdgeInsets.all(8),
+          constraints: BoxConstraints(minWidth: iconSize, minHeight: iconSize),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: spacing),
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -290,12 +300,23 @@ class ResponsivePlayerControls extends StatelessWidget {
               size: playIconSize,
               color: Colors.white,
             ),
+            padding: isSmallScreen
+                ? const EdgeInsets.all(4)
+                : const EdgeInsets.all(8),
+            constraints: BoxConstraints(
+              minWidth: playIconSize,
+              minHeight: playIconSize,
+            ),
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: spacing),
         IconButton(
           onPressed: onNext,
           icon: Icon(Icons.skip_next, size: iconSize),
+          padding: isSmallScreen
+              ? const EdgeInsets.all(4)
+              : const EdgeInsets.all(8),
+          constraints: BoxConstraints(minWidth: iconSize, minHeight: iconSize),
         ),
       ],
     );
@@ -334,10 +355,7 @@ class ResponsiveListItem extends StatelessWidget {
         padding: padding,
         child: Row(
           children: [
-            if (leading != null) ...[
-              leading!,
-              const SizedBox(width: 16),
-            ],
+            if (leading != null) ...[leading!, const SizedBox(width: 16)],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,10 +369,7 @@ class ResponsiveListItem extends StatelessWidget {
                 ],
               ),
             ),
-            if (trailing != null) ...[
-              const SizedBox(width: 16),
-              trailing!,
-            ],
+            if (trailing != null) ...[const SizedBox(width: 16), trailing!],
           ],
         ),
       ),
@@ -403,23 +418,29 @@ class ResponsiveBottomSheet {
         isDismissible: isDismissible,
         enableDrag: enableDrag,
         isScrollControlled: true,
-        builder: (context) => Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (title != null)
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.headlineSmall,
+        useSafeArea: true,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        builder: (context) => SafeArea(
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
-                ),
-              Flexible(child: child),
-            ],
+                Flexible(child: child),
+              ],
+            ),
           ),
         ),
       );

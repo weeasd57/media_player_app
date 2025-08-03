@@ -73,7 +73,11 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             selectedItemColor: themeProvider.currentTheme.colorScheme.primary,
-            unselectedItemColor: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
+            unselectedItemColor: themeProvider
+                .currentTheme
+                .colorScheme
+                .onSurface
+                .withAlpha((0.6 * 255).round()),
             backgroundColor: themeProvider.primaryBackgroundColor,
             items: [
               BottomNavigationBarItem(
@@ -82,19 +86,31 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.library_music),
-                label: localeProvider.getLocalizedText('مكتبتك', 'Your Library'),
+                label: localeProvider.getLocalizedText(
+                  'مكتبتك',
+                  'Your Library',
+                ),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.music_note),
-                label: localeProvider.getLocalizedText('ملفات صوتية', 'Audio Files'),
+                label: localeProvider.getLocalizedText(
+                  'ملفات صوتية',
+                  'Audio Files',
+                ),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.video_library),
-                label: localeProvider.getLocalizedText('ملفات فيديو', 'Video Files'),
+                label: localeProvider.getLocalizedText(
+                  'ملفات فيديو',
+                  'Video Files',
+                ),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.equalizer),
-                label: localeProvider.getLocalizedText('معادل الصوت', 'Equalizer'),
+                label: localeProvider.getLocalizedText(
+                  'معادل الصوت',
+                  'Equalizer',
+                ),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.settings),

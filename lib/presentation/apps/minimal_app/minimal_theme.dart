@@ -4,7 +4,7 @@ class MinimalTheme {
   static const primaryColor = Color(0xFF000000);
   static const secondaryColor = Color(0xFF6B7280);
   static const accentColor = Color(0xFF3B82F6);
-  
+
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
@@ -13,10 +13,10 @@ class MinimalTheme {
       tertiary: accentColor,
       surface: Color(0xFFFFFFFF),
       onSurface: Color(0xFF000000),
-      surfaceVariant: Color(0xFFF9FAFB),
+      surfaceContainerHighest: Color(0xFFF9FAFB),
       onSurfaceVariant: Color(0xFF374151),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
@@ -28,9 +28,7 @@ class MinimalTheme {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
@@ -45,10 +43,10 @@ class MinimalTheme {
       tertiary: accentColor,
       surface: Color(0xFF000000),
       onSurface: Color(0xFFFFFFFF),
-      surfaceVariant: Color(0xFF111827),
+      surfaceContainerHighest: Color(0xFF111827),
       onSurfaceVariant: Color(0xFFD1D5DB),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
@@ -60,9 +58,7 @@ class MinimalTheme {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),

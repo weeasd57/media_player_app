@@ -8,11 +8,8 @@ import '../providers/performance_provider.dart';
 /// يدير تهيئة المزودات والحالة العامة للتطبيق
 class AppWrapper extends StatefulWidget {
   final Widget child;
-  
-  const AppWrapper({
-    super.key,
-    required this.child,
-  });
+
+  const AppWrapper({super.key, required this.child});
 
   @override
   State<AppWrapper> createState() => _AppWrapperState();
@@ -44,6 +41,8 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
       // تهيئة مزود الحالة العامة
       await appStateProvider.initialize();
 
+      if (!mounted) return; // Check if the widget is still mounted
+
       // بدء مراقبة الأداء في وضع التطوير
       if (performanceProvider.isMonitoringEnabled) {
         performanceProvider.startMonitoring();
@@ -64,13 +63,15 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
       });
     } catch (e) {
       // في حالة فشل التهيئة، عرض الخطأ
+      if (!mounted) return; // Check if the widget is still mounted
+
       final errorHandlerProvider = context.read<ErrorHandlerProvider>();
       errorHandlerProvider.addSimpleError(
         'Failed to initialize app: $e',
         type: ErrorType.general,
         severity: ErrorSeverity.critical,
       );
-      
+
       setState(() {
         _isInitialized = true; // السماح بعرض التطبيق حتى مع الأخطاء
       });
@@ -80,9 +81,9 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     final performanceProvider = context.read<PerformanceProvider>();
-    
+
     switch (state) {
       case AppLifecycleState.resumed:
         // التطبيق أصبح نشطاً - بدء مراقبة الأداء
@@ -111,21 +112,24 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
       return const _LoadingScreen();
     }
 
-    return Consumer3<AppStateProvider, ErrorHandlerProvider, PerformanceProvider>(
+    return Consumer3<
+      AppStateProvider,
+      ErrorHandlerProvider,
+      PerformanceProvider
+    >(
       builder: (context, appState, errorHandler, performance, child) {
         return Stack(
           children: [
             // التطبيق الرئيسي
             widget.child,
-            
+
             // عرض شاشة التحميل إذا كان التطبيق في حالة تحميل
             if (appState.isLoading)
               _LoadingOverlay(message: appState.loadingMessage),
-            
+
             // عرض تحذيرات الأداء في وضع التطوير
-            if (performance.hasAnyWarning)
-              const _PerformanceWarningIndicator(),
-            
+            if (performance.hasAnyWarning) const _PerformanceWarningIndicator(),
+
             // عرض مؤشر الأخطاء الحرجة
             if (errorHandler.hasCriticalErrors())
               const _CriticalErrorIndicator(),
@@ -148,28 +152,18 @@ class _LoadingScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-              Color(0xFF6B73FF),
-            ],
+            colors: [Color(0xFF667eea), Color(0xFF764ba2), Color(0xFF6B73FF)],
           ),
         ),
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 3,
-              ),
+              CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
               SizedBox(height: 16),
               Text(
                 'Initializing App...',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           ),
@@ -182,13 +176,13 @@ class _LoadingScreen extends StatelessWidget {
 /// طبقة تحميل شفافة
 class _LoadingOverlay extends StatelessWidget {
   final String message;
-  
+
   const _LoadingOverlay({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withAlpha((0.5 * 255).round()),
       child: Center(
         child: Card(
           child: Padding(
@@ -228,11 +222,11 @@ class _PerformanceWarningIndicator extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.9),
+                color: Colors.orange.withAlpha((0.9 * 255).round()),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha((0.2 * 255).round()),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -241,11 +235,7 @@ class _PerformanceWarningIndicator extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.warning,
-                    color: Colors.white,
-                    size: 16,
-                  ),
+                  const Icon(Icons.warning, color: Colors.white, size: 16),
                   const SizedBox(width: 4),
                   Text(
                     'Performance',
@@ -264,7 +254,10 @@ class _PerformanceWarningIndicator extends StatelessWidget {
     );
   }
 
-  void _showPerformanceDialog(BuildContext context, PerformanceProvider performance) {
+  void _showPerformanceDialog(
+    BuildContext context,
+    PerformanceProvider performance,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -274,11 +267,17 @@ class _PerformanceWarningIndicator extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (performance.hasMemoryWarning)
-              Text('⚠️ High memory usage: ${performance.currentMetrics?.memoryUsage.toStringAsFixed(1)} MB'),
+              Text(
+                '⚠️ High memory usage: ${performance.currentMetrics?.memoryUsage.toStringAsFixed(1)} MB',
+              ),
             if (performance.hasCpuWarning)
-              Text('⚠️ High CPU usage: ${performance.currentMetrics?.cpuUsage.toStringAsFixed(1)}%'),
+              Text(
+                '⚠️ High CPU usage: ${performance.currentMetrics?.cpuUsage.toStringAsFixed(1)}%',
+              ),
             if (performance.hasFrameRateWarning)
-              Text('⚠️ Low frame rate: ${performance.currentMetrics?.frameRate} FPS'),
+              Text(
+                '⚠️ Low frame rate: ${performance.currentMetrics?.frameRate} FPS',
+              ),
           ],
         ),
         actions: [
@@ -311,17 +310,17 @@ class _CriticalErrorIndicator extends StatelessWidget {
       child: Consumer<ErrorHandlerProvider>(
         builder: (context, errorHandler, child) {
           final criticalErrors = errorHandler.getCriticalErrors();
-          
+
           return GestureDetector(
             onTap: () => _showCriticalErrorsDialog(context, criticalErrors),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.9),
+                color: Colors.red.withAlpha((0.9 * 255).round()),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha((0.2 * 255).round()),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -330,11 +329,7 @@ class _CriticalErrorIndicator extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.dangerous,
-                    color: Colors.white,
-                    size: 16,
-                  ),
+                  const Icon(Icons.dangerous, color: Colors.white, size: 16),
                   const SizedBox(width: 4),
                   Text(
                     '${criticalErrors.length} Critical',
@@ -398,7 +393,9 @@ class _CriticalErrorIndicator extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              context.read<ErrorHandlerProvider>().clearErrorsBySeverity(ErrorSeverity.critical);
+              context.read<ErrorHandlerProvider>().clearErrorsBySeverity(
+                ErrorSeverity.critical,
+              );
               Navigator.of(context).pop();
             },
             child: const Text('Clear All'),

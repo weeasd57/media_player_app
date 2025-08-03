@@ -41,10 +41,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
       body: Padding(
@@ -68,14 +65,18 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                           gradient: LinearGradient(
                             colors: [
                               Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withOpacity(0.7),
+                              Theme.of(
+                                context,
+                              ).primaryColor.withAlpha((0.7 * 255).round()),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withAlpha(
+                                (0.3 * 255).round(),
+                              ),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -108,17 +109,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   const SizedBox(height: 8),
                   Text(
                     'اسم الفنان',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'اسم الألبوم',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[500],
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -146,7 +147,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _formatDuration(Duration(seconds: (_currentPosition * 180).round())),
+                          _formatDuration(
+                            Duration(seconds: (_currentPosition * 180).round()),
+                          ),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
@@ -169,8 +172,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   IconButton(
                     icon: Icon(
                       _isShuffleEnabled ? Icons.shuffle : Icons.shuffle,
-                      color: _isShuffleEnabled 
-                          ? Theme.of(context).primaryColor 
+                      color: _isShuffleEnabled
+                          ? Theme.of(context).primaryColor
                           : Colors.grey[600],
                     ),
                     iconSize: 28,
@@ -193,7 +196,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                       color: Theme.of(context).primaryColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).primaryColor.withOpacity(0.3),
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withAlpha((0.3 * 255).round()),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -209,7 +214,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                         setState(() {
                           _isPlaying = !_isPlaying;
                         });
-                        
+
                         if (_isPlaying) {
                           _rotationController.repeat();
                         } else {
@@ -226,8 +231,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   IconButton(
                     icon: Icon(
                       _isRepeatEnabled ? Icons.repeat_one : Icons.repeat,
-                      color: _isRepeatEnabled 
-                          ? Theme.of(context).primaryColor 
+                      color: _isRepeatEnabled
+                          ? Theme.of(context).primaryColor
                           : Colors.grey[600],
                     ),
                     iconSize: 28,

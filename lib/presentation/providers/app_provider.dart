@@ -11,9 +11,14 @@ import '../pages/favorites_screen.dart';
 class AppProvider extends ChangeNotifier {
   int _selectedAppIndex = 0;
   int _selectedPageIndex = 0;
+  // استخدام حالة واحدة للشريط الجانبي: false = مفتوح، true = مخفي
+  bool _isSidebarHidden = false;
 
   int get selectedAppIndex => _selectedAppIndex;
   int get selectedPageIndex => _selectedPageIndex;
+  // نحتفظ بهذا للتوافق مع الكود السابق، لكن دائمًا يكون false
+  bool get isSidebarCollapsed => false;
+  bool get isSidebarHidden => _isSidebarHidden;
 
   AppItem get currentApp => apps[_selectedAppIndex];
   AppPage get currentPage => currentApp.pages[_selectedPageIndex];
@@ -412,9 +417,29 @@ class AppProvider extends ChangeNotifier {
   }
 
   void selectPage(int pageIndex) {
-    if (pageIndex != _selectedPageIndex && pageIndex < currentApp.pages.length) {
+    if (pageIndex != _selectedPageIndex &&
+        pageIndex < currentApp.pages.length) {
       _selectedPageIndex = pageIndex;
       notifyListeners();
     }
+  }
+
+  void toggleSidebar() {
+    // تبديل حالة الشريط الجانبي بين مفتوح ومخفي فقط
+    _isSidebarHidden = !_isSidebarHidden;
+    debugPrint("DEBUG: Sidebar ${_isSidebarHidden ? 'hidden' : 'visible'}");
+    notifyListeners();
+  }
+
+  // دالة لفتح الشريط الجانبي من حالة الإخفاء
+  void showSidebar() {
+    _isSidebarHidden = false; // فتح
+    notifyListeners();
+  }
+
+  // نحتفظ بهذه الدالة للتوافق مع الكود السابق
+  void expandSidebar() {
+    _isSidebarHidden = false; // فتح
+    notifyListeners();
   }
 }

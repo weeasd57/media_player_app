@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 
 class AppNavigationBar extends StatelessWidget {
   const AppNavigationBar({super.key});
@@ -14,24 +15,34 @@ class AppNavigationBar extends StatelessWidget {
       builder: (context, appProvider, themeProvider, localeProvider, child) {
         final currentApp = appProvider.currentApp;
         final isArabic = localeProvider.locale.languageCode == 'ar';
-        
+        final isSidebarCollapsed = appProvider.isSidebarCollapsed;
+
         if (currentApp.pages.length <= 1) {
           return const SizedBox.shrink();
         }
 
+        // Calculate edge insets for navigation bar based on sidebar state
+        final sidebarWidth = isSidebarCollapsed ? 70.0 : 280.0;
+        final edgeInsets = isArabic
+            ? EdgeInsets.only(right: sidebarWidth)
+            : EdgeInsets.only(left: sidebarWidth);
+
         return Container(
           height: 80,
+          margin: edgeInsets,
           decoration: BoxDecoration(
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(
               top: BorderSide(
-                color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
+                color: themeProvider.currentTheme.dividerColor.withAlpha(
+                  (0.1 * 255).round(),
+                ),
                 width: 1,
               ),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withAlpha((0.05 * 255).round()),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -56,29 +67,85 @@ class AppNavigationBar extends StatelessWidget {
     bool isArabic,
     String uiKitType,
   ) {
+    final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
     switch (uiKitType) {
       case 'modern':
-        return _buildModernNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildModernNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'glassmorphic':
-        return _buildGlassmorphicNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildGlassmorphicNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'neomorphic':
-        return _buildNeomorphicNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildNeomorphicNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'gradient':
-        return _buildGradientNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildGradientNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'minimal':
-        return _buildMinimalNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildMinimalNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'cyber':
-        return _buildCyberNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildCyberNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'nature':
-        return _buildNatureNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildNatureNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'retro':
-        return _buildRetroNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildRetroNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'ocean':
-        return _buildOceanNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildOceanNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       case 'sunset':
-        return _buildSunsetNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildSunsetNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       default:
-        return _buildModernNavigation(context, appProvider, themeProvider, isArabic);
+        return _buildModernNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        ); // Fallback
     }
   }
 
@@ -89,27 +156,34 @@ class AppNavigationBar extends StatelessWidget {
     ThemeProvider themeProvider,
     bool isArabic,
   ) {
+    final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12 : 24,
+        vertical: isSmallScreen ? 8 : 12,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: appProvider.currentApp.pages.asMap().entries.map((entry) {
           final index = entry.key;
           final page = entry.value;
           final isSelected = appProvider.selectedPageIndex == index;
-          
+
           return Expanded(
             child: GestureDetector(
               onTap: () => appProvider.selectPage(index),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 2 : 4),
+                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 8 : 12),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                    ? appProvider.currentApp.primaryColor.withOpacity(0.15)
-                    : Colors.transparent,
+                  color: isSelected
+                      ? appProvider.currentApp.primaryColor.withAlpha(
+                          (0.15 * 255).round(),
+                        )
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -117,31 +191,39 @@ class AppNavigationBar extends StatelessWidget {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
                       decoration: BoxDecoration(
-                        color: isSelected 
-                          ? appProvider.currentApp.primaryColor
-                          : Colors.transparent,
+                        color: isSelected
+                            ? appProvider.currentApp.primaryColor
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         page.icon,
-                        color: isSelected 
-                          ? Colors.white
-                          : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
+                        color: isSelected
+                            ? Colors.white
+                            : themeProvider.currentTheme.colorScheme.onSurface
+                                  .withAlpha((0.6 * 255).round()),
                         size: 20,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       isArabic ? page.nameAr : page.name,
-                      style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                        color: isSelected 
-                          ? appProvider.currentApp.primaryColor
-                          : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                        fontSize: 11,
-                      ),
+                      style: themeProvider.currentTheme.textTheme.labelSmall
+                          ?.copyWith(
+                            color: isSelected
+                                ? appProvider.currentApp.primaryColor
+                                : themeProvider
+                                      .currentTheme
+                                      .colorScheme
+                                      .onSurface
+                                      .withAlpha((0.6 * 255).round()),
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                            fontSize: 11,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -163,26 +245,35 @@ class AppNavigationBar extends StatelessWidget {
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(themeProvider.isDarkMode ? 0.1 : 0.7),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'glassmorphic'),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(
+                (themeProvider.isDarkMode ? (0.1 * 255) : (0.7 * 255)).round(),
+              ),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: Colors.white.withAlpha((0.2 * 255).round()),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha((0.1 * 255).round()),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: _buildNavigationItems(
+              appProvider,
+              themeProvider,
+              isArabic,
+              'glassmorphic',
+            ),
+          ),
         ),
       ),
     );
@@ -202,18 +293,27 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: themeProvider.isDarkMode ? Colors.black54 : Colors.grey.shade400,
+            color: themeProvider.isDarkMode
+                ? Colors.black54
+                : Colors.grey.shade400,
             offset: const Offset(8, 8),
             blurRadius: 15,
           ),
           BoxShadow(
-            color: themeProvider.isDarkMode ? Colors.grey.shade800 : Colors.white,
+            color: themeProvider.isDarkMode
+                ? Colors.grey.shade800
+                : Colors.white,
             offset: const Offset(-8, -8),
             blurRadius: 15,
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'neomorphic'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'neomorphic',
+      ),
     );
   }
 
@@ -229,8 +329,10 @@ class AppNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            appProvider.currentApp.primaryColor,
-            appProvider.currentApp.secondaryColor,
+            appProvider.currentApp.primaryColor.withAlpha((0.8 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.8 * 255).round(),
+            ),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -238,13 +340,20 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'gradient'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'gradient',
+      ),
     );
   }
 
@@ -263,7 +372,12 @@ class AppNavigationBar extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'minimal'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'minimal',
+      ),
     );
   }
 
@@ -284,12 +398,19 @@ class AppNavigationBar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.5),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.5 * 255).round(),
+            ),
             blurRadius: 20,
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'cyber'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'cyber',
+      ),
     );
   }
 
@@ -306,13 +427,20 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.2),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.2 * 255).round(),
+            ),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'nature'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'nature',
+      ),
     );
   }
 
@@ -332,7 +460,12 @@ class AppNavigationBar extends StatelessWidget {
           width: 3,
         ),
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'retro'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'retro',
+      ),
     );
   }
 
@@ -349,13 +482,20 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'ocean'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'ocean',
+      ),
     );
   }
 
@@ -370,9 +510,11 @@ class AppNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            appProvider.currentApp.primaryColor.withOpacity(0.8),
-            appProvider.currentApp.secondaryColor.withOpacity(0.8),
-            const Color(0xFFFFD23F).withOpacity(0.8),
+            appProvider.currentApp.primaryColor.withAlpha((0.8 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.8 * 255).round(),
+            ),
+            const Color(0xFFFFD23F).withAlpha((0.8 * 255).round()),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -380,13 +522,20 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withOpacity(0.4),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.4 * 255).round(),
+            ),
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),
         ],
       ),
-      child: _buildNavigationItems(appProvider, themeProvider, isArabic, 'sunset'),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'sunset',
+      ),
     );
   }
 
@@ -404,7 +553,7 @@ class AppNavigationBar extends StatelessWidget {
           final index = entry.key;
           final page = entry.value;
           final isSelected = appProvider.selectedPageIndex == index;
-          
+
           return Expanded(
             child: GestureDetector(
               onTap: () => appProvider.selectPage(index),
@@ -415,17 +564,30 @@ class AppNavigationBar extends StatelessWidget {
                   children: [
                     Icon(
                       page.icon,
-                      color: _getIconColor(isSelected, style, appProvider, themeProvider),
+                      color: _getIconColor(
+                        isSelected,
+                        style,
+                        appProvider,
+                        themeProvider,
+                      ),
                       size: 24,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       isArabic ? page.nameAr : page.name,
-                      style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                        color: _getTextColor(isSelected, style, appProvider, themeProvider),
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                        fontSize: 10,
-                      ),
+                      style: themeProvider.currentTheme.textTheme.labelSmall
+                          ?.copyWith(
+                            color: _getTextColor(
+                              isSelected,
+                              style,
+                              appProvider,
+                              themeProvider,
+                            ),
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                            fontSize: 10,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -438,21 +600,35 @@ class AppNavigationBar extends StatelessWidget {
     );
   }
 
-  Color _getIconColor(bool isSelected, String style, AppProvider appProvider, ThemeProvider themeProvider) {
+  Color _getIconColor(
+    bool isSelected,
+    String style,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     if (style == 'gradient' || style == 'sunset') {
       return Colors.white;
     }
-    return isSelected 
-      ? appProvider.currentApp.primaryColor
-      : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6);
+    return isSelected
+        ? appProvider.currentApp.primaryColor
+        : themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
+            (0.6 * 255).round(),
+          );
   }
 
-  Color _getTextColor(bool isSelected, String style, AppProvider appProvider, ThemeProvider themeProvider) {
+  Color _getTextColor(
+    bool isSelected,
+    String style,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     if (style == 'gradient' || style == 'sunset') {
       return Colors.white;
     }
-    return isSelected 
-      ? appProvider.currentApp.primaryColor
-      : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6);
+    return isSelected
+        ? appProvider.currentApp.primaryColor
+        : themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
+            (0.6 * 255).round(),
+          );
   }
 }

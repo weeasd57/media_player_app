@@ -12,156 +12,155 @@ class AppSidebar extends StatelessWidget {
     return Consumer3<AppProvider, ThemeProvider, LocaleProvider>(
       builder: (context, appProvider, themeProvider, localeProvider, child) {
         final isArabic = localeProvider.locale.languageCode == 'ar';
-        
-        return Container(
-          width: 280,
+        // بما أن لدينا حالتين فقط، لا حاجة إلى حالة الطي
+        // final isCollapsed = appProvider.isSidebarCollapsed;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOutCubic,
+          width: 280, // عرض ثابت
           decoration: BoxDecoration(
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(
               right: BorderSide(
-                color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
+                color: themeProvider.currentTheme.dividerColor.withAlpha(
+                  (0.1 * 255).round(),
+                ),
                 width: 1,
               ),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withAlpha((0.05 * 255).round()),
                 blurRadius: 20,
                 offset: const Offset(2, 0),
               ),
             ],
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // Toggle button - وضع حجم محدد للزر
               Container(
-                height: 70,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
-                      width: 1,
-                    ),
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 24,
+                  onPressed: () {
+                    debugPrint("DEBUG: Toggle sidebar button pressed");
+                    appProvider.toggleSidebar();
+                    // Show visual feedback to confirm click
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          appProvider.isSidebarHidden
+                              ? 'تم إخفاء القائمة'
+                              : 'تم إظهار القائمة',
+                        ),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  tooltip: appProvider.isSidebarHidden
+                      ? 'فتح القائمة الجانبية'
+                      : 'إخفاء القائمة الجانبية',
+                  icon: Icon(
+                    appProvider.isSidebarHidden
+                        ? (isArabic ? Icons.chevron_left : Icons.chevron_right)
+                        : (isArabic ? Icons.chevron_right : Icons.chevron_left),
+                    color: themeProvider.currentTheme.colorScheme.primary,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    // Logo
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF667EEA).withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.widgets_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    
-                    // Title
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isArabic ? 'مجموعة واجهات' : 'UI Kit Collection',
-                            style: themeProvider.currentTheme.textTheme.titleMedium?.copyWith(
-                              color: themeProvider.currentTheme.colorScheme.onSurface,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            '10 ${isArabic ? 'أنماط مختلفة' : 'Different Styles'}',
-                            style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                              color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ),
-              
               // Apps Grid
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.1,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.3, // زيادة النسبة لتقليل الارتفاع
+                        ),
                     itemCount: appProvider.apps.length,
                     itemBuilder: (context, index) {
                       final app = appProvider.apps[index];
                       final isSelected = appProvider.selectedAppIndex == index;
-                      
+
                       return GestureDetector(
                         onTap: () => appProvider.selectApp(index),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOutCubic,
                           decoration: BoxDecoration(
-                            color: isSelected 
-                              ? app.primaryColor.withOpacity(0.1)
-                              : themeProvider.currentTheme.colorScheme.surfaceVariant.withOpacity(0.3),
+                            color: isSelected
+                                ? app.primaryColor.withAlpha(
+                                    (0.1 * 255).round(),
+                                  )
+                                : themeProvider
+                                      .currentTheme
+                                      .colorScheme
+                                      .surfaceContainerHighest
+                                      .withAlpha((0.3 * 255).round()),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSelected 
-                                ? app.primaryColor.withOpacity(0.5)
-                                : Colors.transparent,
+                              color: isSelected
+                                  ? app.primaryColor.withAlpha(
+                                      (0.5 * 255).round(),
+                                    )
+                                  : Colors.transparent,
                               width: 2,
                             ),
-                            boxShadow: isSelected ? [
-                              BoxShadow(
-                                color: app.primaryColor.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ] : [],
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: app.primaryColor.withAlpha(
+                                        (0.2 * 255).round(),
+                                      ),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ]
+                                : [],
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(
+                              12,
+                            ), // تقليل المساحة الداخلية
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize:
+                                  MainAxisSize.min, // تقليل الحجم للأدنى
                               children: [
                                 // App Icon
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
-                                  width: isSelected ? 44 : 40,
-                                  height: isSelected ? 44 : 40,
+                                  width: isSelected ? 40 : 36, // تصغير الأيقونة
+                                  height: isSelected
+                                      ? 40
+                                      : 36, // تصغير الأيقونة
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [app.primaryColor, app.secondaryColor],
+                                      colors: [
+                                        app.primaryColor,
+                                        app.secondaryColor,
+                                      ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: app.primaryColor.withOpacity(isSelected ? 0.4 : 0.2),
-                                        blurRadius: isSelected ? 16 : 8,
+                                        color: app.primaryColor.withAlpha(
+                                          ((isSelected ? 0.4 : 0.2) * 255)
+                                              .round(),
+                                        ),
+                                        blurRadius: (isSelected ? 16 : 8)
+                                            .toDouble(),
                                         offset: const Offset(0, 4),
                                       ),
                                     ],
@@ -172,51 +171,76 @@ class AppSidebar extends StatelessWidget {
                                     size: isSelected ? 22 : 20,
                                   ),
                                 ),
-                                
-                                const SizedBox(height: 12),
-                                
+
+                                const SizedBox(height: 8), // تقليل المسافة
                                 // App Name
                                 Text(
                                   isArabic ? app.nameAr : app.name,
-                                  style: themeProvider.currentTheme.textTheme.titleSmall?.copyWith(
-                                    color: isSelected 
-                                      ? app.primaryColor
-                                      : themeProvider.currentTheme.colorScheme.onSurface,
-                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                                    fontSize: 13,
-                                  ),
+                                  style: themeProvider
+                                      .currentTheme
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: isSelected
+                                            ? app.primaryColor
+                                            : themeProvider
+                                                  .currentTheme
+                                                  .colorScheme
+                                                  .onSurface,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w600,
+                                        fontSize: 13,
+                                      ),
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                
-                                const SizedBox(height: 4),
-                                
+
+                                const SizedBox(height: 2), // تقليل المسافة
                                 // UI Kit Type
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: isSelected 
-                                      ? app.primaryColor.withOpacity(0.2)
-                                      : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.1),
+                                    color: isSelected
+                                        ? app.primaryColor.withAlpha(
+                                            (0.2 * 255).round(),
+                                          )
+                                        : themeProvider
+                                              .currentTheme
+                                              .colorScheme
+                                              .onSurface
+                                              .withAlpha((0.1 * 255).round()),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     app.uiKitType.toUpperCase(),
-                                    style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                                      color: isSelected 
-                                        ? app.primaryColor
-                                        : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 9,
-                                      letterSpacing: 0.5,
-                                    ),
+                                    style: themeProvider
+                                        .currentTheme
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: isSelected
+                                              ? app.primaryColor
+                                              : themeProvider
+                                                    .currentTheme
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withAlpha(
+                                                      (0.6 * 255).round(),
+                                                    ),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 9,
+                                          letterSpacing: 0.5,
+                                        ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                
-                                const SizedBox(height: 8),
-                                
+
+                                const SizedBox(height: 4), // تقليل المسافة
                                 // Pages Count
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -224,15 +248,27 @@ class AppSidebar extends StatelessWidget {
                                     Icon(
                                       Icons.widgets_outlined,
                                       size: 12,
-                                      color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.5),
+                                      color: themeProvider
+                                          .currentTheme
+                                          .colorScheme
+                                          .onSurface
+                                          .withAlpha((0.5 * 255).round()),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       '${app.pages.length} ${isArabic ? 'صفحات' : 'pages'}',
-                                      style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                                        color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.5),
-                                        fontSize: 10,
-                                      ),
+                                      style: themeProvider
+                                          .currentTheme
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha((0.5 * 255).round()),
+                                            fontSize: 10,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -245,14 +281,16 @@ class AppSidebar extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Footer
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Divider(
-                      color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
+                      color: themeProvider.currentTheme.dividerColor.withAlpha(
+                        (0.1 * 255).round(),
+                      ),
                       height: 1,
                     ),
                     const SizedBox(height: 12),
@@ -261,18 +299,30 @@ class AppSidebar extends StatelessWidget {
                         Icon(
                           Icons.palette_outlined,
                           size: 16,
-                          color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
+                          color: themeProvider
+                              .currentTheme
+                              .colorScheme
+                              .onSurface
+                              .withAlpha((0.6 * 255).round()),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            isArabic 
-                              ? 'مجموعة شاملة من أنماط واجهات المستخدم'
-                              : 'Complete UI Kit Collection',
-                            style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
-                              color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
-                              fontSize: 11,
-                            ),
+                            isArabic
+                                ? 'مجموعة شاملة من أنماط واجهات المستخدم'
+                                : 'Complete UI Kit Collection',
+                            style: themeProvider
+                                .currentTheme
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: themeProvider
+                                      .currentTheme
+                                      .colorScheme
+                                      .onSurface
+                                      .withAlpha((0.6 * 255).round()),
+                                  fontSize: 11,
+                                ),
                           ),
                         ),
                       ],

@@ -11,7 +11,7 @@ class NeumorphicCard extends StatelessWidget {
   final bool isPressed;
 
   const NeumorphicCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.width,
@@ -19,7 +19,7 @@ class NeumorphicCard extends StatelessWidget {
     this.borderRadius,
     this.onTap,
     this.isPressed = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,14 +80,14 @@ class NeumorphicButton extends StatefulWidget {
   final double? size;
 
   const NeumorphicButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.onTap,
     this.isLarge = false,
     this.isSelected = false,
     this.iconColor,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicButton> createState() => _NeumorphicButtonState();
@@ -145,7 +145,8 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
         ),
         child: Icon(
           widget.icon,
-          color: widget.iconColor ??
+          color:
+              widget.iconColor ??
               (widget.isSelected
                   ? neumorphicColors.accentColor
                   : neumorphicColors.textColor),
@@ -163,12 +164,12 @@ class NeumorphicIcon extends StatefulWidget {
   final double? size;
 
   const NeumorphicIcon({
-    Key? key,
+    super.key,
     required this.icon,
     required this.isSelected,
     required this.onTap,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicIcon> createState() => _NeumorphicIconState();
@@ -245,7 +246,7 @@ class NeumorphicContainer extends StatelessWidget {
   final bool isInset;
 
   const NeumorphicContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.margin,
@@ -253,7 +254,7 @@ class NeumorphicContainer extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.isInset = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -308,11 +309,11 @@ class NeumorphicBottomNavigationBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   const NeumorphicBottomNavigationBar({
-    Key? key,
+    super.key,
     required this.items,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -347,12 +348,12 @@ class NeumorphicAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool centerTitle;
 
   const NeumorphicAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.actions,
     this.leading,
     this.centerTitle = true,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -373,7 +374,8 @@ class NeumorphicAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: neumorphicColors.bgColor,
       elevation: 0,
       centerTitle: centerTitle,
-      leading: leading ??
+      leading:
+          leading ??
           (Navigator.canPop(context)
               ? NeumorphicButton(
                   icon: Icons.arrow_back,
@@ -395,7 +397,7 @@ class NeumorphicListTile extends StatefulWidget {
   final BorderRadius? borderRadius;
 
   const NeumorphicListTile({
-    Key? key,
+    super.key,
     this.leading,
     this.title,
     this.subtitle,
@@ -403,7 +405,7 @@ class NeumorphicListTile extends StatefulWidget {
     this.onTap,
     this.contentPadding,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicListTile> createState() => _NeumorphicListTileState();
@@ -444,14 +446,14 @@ class NeumorphicCustomButton extends StatefulWidget {
   final BorderRadius? borderRadius;
 
   const NeumorphicCustomButton({
-    Key? key,
+    super.key,
     required this.child,
     this.onPressed,
     this.width,
     this.height,
     this.padding,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicCustomButton> createState() => _NeumorphicCustomButtonState();
@@ -467,9 +469,15 @@ class _NeumorphicCustomButtonState extends State<NeumorphicCustomButton> {
     final radius = widget.borderRadius ?? BorderRadius.circular(16);
 
     return GestureDetector(
-      onTapDown: widget.onPressed != null ? (_) => setState(() => _isPressed = true) : null,
-      onTapUp: widget.onPressed != null ? (_) => setState(() => _isPressed = false) : null,
-      onTapCancel: widget.onPressed != null ? () => setState(() => _isPressed = false) : null,
+      onTapDown: widget.onPressed != null
+          ? (_) => setState(() => _isPressed = true)
+          : null,
+      onTapUp: widget.onPressed != null
+          ? (_) => setState(() => _isPressed = false)
+          : null,
+      onTapCancel: widget.onPressed != null
+          ? () => setState(() => _isPressed = false)
+          : null,
       onTap: widget.onPressed,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
@@ -521,13 +529,13 @@ class NeumorphicSlider extends StatefulWidget {
   final int? divisions;
 
   const NeumorphicSlider({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
     this.min = 0.0,
     this.max = 1.0,
     this.divisions,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicSlider> createState() => _NeumorphicSliderState();
@@ -547,9 +555,13 @@ class _NeumorphicSliderState extends State<NeumorphicSlider> {
       child: SliderTheme(
         data: SliderTheme.of(context).copyWith(
           activeTrackColor: neumorphicColors.accentColor,
-          inactiveTrackColor: neumorphicColors.textColor.withOpacity(0.3),
+          inactiveTrackColor: neumorphicColors.textColor.withAlpha(
+            (0.3 * 255).round(),
+          ),
           thumbColor: neumorphicColors.accentColor,
-          overlayColor: neumorphicColors.accentColor.withOpacity(0.2),
+          overlayColor: neumorphicColors.accentColor.withAlpha(
+            (0.2 * 255).round(),
+          ),
           trackHeight: 6,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
         ),

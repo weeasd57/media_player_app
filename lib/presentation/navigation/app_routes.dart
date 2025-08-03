@@ -33,7 +33,7 @@ class AppRoutes {
 
   /// خريطة جميع المسارات
   static Map<String, WidgetBuilder> get routes => {
-    home: (context) => const HomeScreen(),
+    home: (context) => HomeScreen(),
     audioPlayer: (context) => const AudioPlayerScreen(),
     videoPlayer: (context) => const VideoPlayerScreen(),
     settings: (context) => const SettingsScreen(),
@@ -55,11 +55,7 @@ class AppRoutes {
     String routeName, {
     Object? arguments,
   }) {
-    return Navigator.pushNamed<T>(
-      context,
-      routeName,
-      arguments: arguments,
-    );
+    return Navigator.pushNamed<T>(context, routeName, arguments: arguments);
   }
 
   /// التنقل مع استبدال الصفحة الحالية
@@ -119,9 +115,10 @@ class AppRoutes {
           pageBuilder: (context, animation, _) => page,
           transitionsBuilder: (context, animation, _, child) {
             return ScaleTransition(
-              scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(parent: animation, curve: curve),
-              ),
+              scale: Tween<double>(
+                begin: 0.0,
+                end: 1.0,
+              ).animate(CurvedAnimation(parent: animation, curve: curve)),
               child: child,
             );
           },
@@ -129,7 +126,6 @@ class AppRoutes {
         );
         break;
       case TransitionType.slide:
-      default:
         route = PageRouteBuilder<T>(
           pageBuilder: (context, animation, _) => page,
           transitionsBuilder: (context, animation, _, child) {
@@ -137,9 +133,7 @@ class AppRoutes {
               position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
-              ).animate(
-                CurvedAnimation(parent: animation, curve: curve),
-              ),
+              ).animate(CurvedAnimation(parent: animation, curve: curve)),
               child: child,
             );
           },
@@ -152,7 +146,8 @@ class AppRoutes {
   }
 
   /// إنشاء مسار مخصص
-  static Route<T> createRoute<T>(Widget page, {
+  static Route<T> createRoute<T>(
+    Widget page, {
     Duration duration = const Duration(milliseconds: 300),
     TransitionType transitionType = TransitionType.slide,
   }) {
@@ -169,15 +164,11 @@ class AppRoutes {
         return PageRouteBuilder<T>(
           pageBuilder: (context, animation, _) => page,
           transitionsBuilder: (context, animation, _, child) {
-            return ScaleTransition(
-              scale: animation,
-              child: child,
-            );
+            return ScaleTransition(scale: animation, child: child);
           },
           transitionDuration: duration,
         );
       case TransitionType.slide:
-      default:
         return PageRouteBuilder<T>(
           pageBuilder: (context, animation, _) => page,
           transitionsBuilder: (context, animation, _, child) {
@@ -196,11 +187,7 @@ class AppRoutes {
 }
 
 /// أنواع الانتقالات المتاحة
-enum TransitionType {
-  slide,
-  fade,
-  scale,
-}
+enum TransitionType { slide, fade, scale }
 
 /// فئة مساعدة للتنقل السريع
 class NavigationHelper {

@@ -24,12 +24,16 @@ class ThemedButton extends StatelessWidget {
     return Consumer2<AppProvider, ThemeProvider>(
       builder: (context, appProvider, themeProvider, child) {
         final uiKitType = appProvider.currentApp.uiKitType;
-        
+
         switch (uiKitType) {
           case 'modern':
             return _buildModernButton(context, appProvider, themeProvider);
           case 'glassmorphic':
-            return _buildGlassmorphicButton(context, appProvider, themeProvider);
+            return _buildGlassmorphicButton(
+              context,
+              appProvider,
+              themeProvider,
+            );
           case 'neomorphic':
             return _buildNeomorphicButton(context, appProvider, themeProvider);
           case 'gradient':
@@ -53,25 +57,32 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildModernButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildModernButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isOutlined 
-            ? Colors.transparent 
-            : appProvider.currentApp.primaryColor,
-          foregroundColor: isOutlined 
-            ? appProvider.currentApp.primaryColor 
-            : Colors.white,
+          backgroundColor: isOutlined
+              ? Colors.transparent
+              : appProvider.currentApp.primaryColor,
+          foregroundColor: isOutlined
+              ? appProvider.currentApp.primaryColor
+              : Colors.white,
           elevation: isOutlined ? 0 : 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: isOutlined 
-              ? BorderSide(color: appProvider.currentApp.primaryColor, width: 2)
-              : BorderSide.none,
+            side: isOutlined
+                ? BorderSide(
+                    color: appProvider.currentApp.primaryColor,
+                    width: 2,
+                  )
+                : BorderSide.none,
           ),
         ),
         child: Row(
@@ -83,10 +94,7 @@ class ThemedButton extends StatelessWidget {
             ],
             Text(
               text,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ],
         ),
@@ -94,15 +102,21 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassmorphicButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildGlassmorphicButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(themeProvider.isDarkMode ? 0.1 : 0.2),
+          color: Colors.white.withAlpha(
+            ((themeProvider.isDarkMode ? 0.1 : 0.2) * 255).round(),
+          ),
           borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withAlpha((0.2 * 255).round()),
             width: 1.5,
           ),
         ),
@@ -138,7 +152,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildNeomorphicButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildNeomorphicButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -147,12 +165,16 @@ class ThemedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: themeProvider.isDarkMode ? Colors.black54 : Colors.grey.shade400,
+              color: themeProvider.isDarkMode
+                  ? Colors.black54
+                  : Colors.grey.shade400,
               offset: const Offset(4, 4),
               blurRadius: 8,
             ),
             BoxShadow(
-              color: themeProvider.isDarkMode ? Colors.grey.shade800 : Colors.white,
+              color: themeProvider.isDarkMode
+                  ? Colors.grey.shade800
+                  : Colors.white,
               offset: const Offset(-4, -4),
               blurRadius: 8,
             ),
@@ -170,7 +192,11 @@ class ThemedButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: appProvider.currentApp.primaryColor),
+                    Icon(
+                      icon,
+                      size: 20,
+                      color: appProvider.currentApp.primaryColor,
+                    ),
                     const SizedBox(width: 8),
                   ],
                   Text(
@@ -190,7 +216,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildGradientButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildGradientButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -206,7 +236,9 @@ class ThemedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
-              color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+              color: appProvider.currentApp.primaryColor.withAlpha(
+                (0.3 * 255).round(),
+              ),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -244,16 +276,17 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildMinimalButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildMinimalButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
         decoration: BoxDecoration(
           color: isOutlined ? Colors.transparent : Colors.black,
-          border: Border.all(
-            color: Colors.black,
-            width: 1,
-          ),
+          border: Border.all(color: Colors.black, width: 1),
         ),
         child: Material(
           color: Colors.transparent,
@@ -266,7 +299,11 @@ class ThemedButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: isOutlined ? Colors.black : Colors.white),
+                    Icon(
+                      icon,
+                      size: 20,
+                      color: isOutlined ? Colors.black : Colors.white,
+                    ),
                     const SizedBox(width: 8),
                   ],
                   Text(
@@ -286,7 +323,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildCyberButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildCyberButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -299,7 +340,9 @@ class ThemedButton extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: appProvider.currentApp.primaryColor.withOpacity(0.5),
+              color: appProvider.currentApp.primaryColor.withAlpha(
+                (0.5 * 255).round(),
+              ),
               blurRadius: 15,
             ),
           ],
@@ -316,7 +359,11 @@ class ThemedButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: appProvider.currentApp.primaryColor),
+                    Icon(
+                      icon,
+                      size: 20,
+                      color: appProvider.currentApp.primaryColor,
+                    ),
                     const SizedBox(width: 8),
                   ],
                   Text(
@@ -337,7 +384,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildNatureButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildNatureButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -346,7 +397,9 @@ class ThemedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+              color: appProvider.currentApp.primaryColor.withAlpha(
+                (0.3 * 255).round(),
+              ),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -384,7 +437,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildRetroButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildRetroButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -397,7 +454,7 @@ class ThemedButton extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withAlpha((0.3 * 255).round()),
               blurRadius: 8,
               offset: const Offset(4, 4),
             ),
@@ -435,7 +492,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildOceanButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildOceanButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -444,7 +505,9 @@ class ThemedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
-              color: appProvider.currentApp.primaryColor.withOpacity(0.3),
+              color: appProvider.currentApp.primaryColor.withAlpha(
+                (0.3 * 255).round(),
+              ),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -482,7 +545,11 @@ class ThemedButton extends StatelessWidget {
     );
   }
 
-  Widget _buildSunsetButton(BuildContext context, AppProvider appProvider, ThemeProvider themeProvider) {
+  Widget _buildSunsetButton(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+  ) {
     return SizedBox(
       width: width,
       child: Container(
@@ -499,7 +566,9 @@ class ThemedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: appProvider.currentApp.primaryColor.withOpacity(0.4),
+              color: appProvider.currentApp.primaryColor.withAlpha(
+                (0.4 * 255).round(),
+              ),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

@@ -4,7 +4,7 @@ class CyberTheme {
   static const primaryColor = Color(0xFF00FF9F);
   static const secondaryColor = Color(0xFFFF0080);
   static const accentColor = Color(0xFF00D7FF);
-  
+
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
@@ -13,10 +13,10 @@ class CyberTheme {
       tertiary: accentColor,
       surface: Color(0xFFF0F0F3),
       onSurface: Color(0xFF1A1A1A),
-      surfaceVariant: Color(0xFFE8E8E8),
+      surfaceContainerHighest: Color(0xFFE8E8E8),
       onSurfaceVariant: Color(0xFF2D2D30),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -34,6 +34,15 @@ class CyberTheme {
         ),
         backgroundColor: Colors.transparent,
         foregroundColor: primaryColor,
+        minimumSize: const Size(0, 48), // Add minimum size to prevent overflow
+      ),
+    ),
+    buttonTheme: const ButtonThemeData(minWidth: 0, height: 48),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(const Size(40, 40)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStateProperty.all(EdgeInsets.zero),
       ),
     ),
   );
@@ -46,10 +55,10 @@ class CyberTheme {
       tertiary: accentColor,
       surface: Color(0xFF0D1117),
       onSurface: Color(0xFF00FF9F),
-      surfaceVariant: Color(0xFF161B22),
+      surfaceContainerHighest: Color(0xFF161B22),
       onSurfaceVariant: Color(0xFF00FF9F),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -67,6 +76,15 @@ class CyberTheme {
         ),
         backgroundColor: Colors.transparent,
         foregroundColor: primaryColor,
+        minimumSize: const Size(0, 48), // Add minimum size to prevent overflow
+      ),
+    ),
+    buttonTheme: const ButtonThemeData(minWidth: 0, height: 48),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(const Size(40, 40)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStateProperty.all(EdgeInsets.zero),
       ),
     ),
   );

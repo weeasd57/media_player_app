@@ -17,14 +17,20 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDarkMode => _isDarkMode;
   String get currentUiKit => _currentUiKit;
 
+  Color get primaryBackgroundColor => currentTheme.colorScheme.surface;
+
   ThemeData get currentTheme {
     switch (_currentUiKit) {
       case 'modern':
         return _isDarkMode ? ModernTheme.darkTheme : ModernTheme.lightTheme;
       case 'glassmorphic':
-        return _isDarkMode ? GlassmorphicTheme.darkTheme : GlassmorphicTheme.lightTheme;
+        return _isDarkMode
+            ? GlassmorphicTheme.darkTheme
+            : GlassmorphicTheme.lightTheme;
       case 'neomorphic':
-        return _isDarkMode ? NeomorphicTheme.darkTheme : NeomorphicTheme.lightTheme;
+        return _isDarkMode
+            ? NeomorphicTheme.darkTheme
+            : NeomorphicTheme.lightTheme;
       case 'gradient':
         return _isDarkMode ? GradientTheme.darkTheme : GradientTheme.lightTheme;
       case 'minimal':

@@ -4,13 +4,13 @@ class SunsetTheme {
   static const primaryColor = Color(0xFFFF6B35);
   static const secondaryColor = Color(0xFFF7931E);
   static const accentColor = Color(0xFFFFD23F);
-  
+
   static const sunsetGradient = LinearGradient(
     colors: [Color(0xFFFF6B35), Color(0xFFF7931E), Color(0xFFFFD23F)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
@@ -19,23 +19,19 @@ class SunsetTheme {
       tertiary: accentColor,
       surface: Color(0xFFFFFBF0),
       onSurface: Color(0xFF8B4000),
-      surfaceVariant: Color(0xFFFFF8E1),
+      surfaceContainerHighest: Color(0xFFFFF8E1),
       onSurfaceVariant: Color(0xFFBF6000),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 4,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
@@ -50,23 +46,19 @@ class SunsetTheme {
       tertiary: accentColor,
       surface: Color(0xFF1A0E00),
       onSurface: Color(0xFFFFD23F),
-      surfaceVariant: Color(0xFF2D1B00),
+      surfaceContainerHighest: Color(0xFF2D1B00),
       onSurfaceVariant: Color(0xFFF7931E),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: const Color(0xFF2D1B00),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 4,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
