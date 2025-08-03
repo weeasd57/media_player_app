@@ -334,15 +334,15 @@ class AppLayout extends StatelessWidget {
                   bottom: 0,
                   right: isArabic
                       ? (appProvider.isSidebarHidden
-                            ? -280 // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
                             : 0)
                       : null,
                   left: isArabic
                       ? null
                       : (appProvider.isSidebarHidden
-                            ? -280 // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
                             : 0),
-                  width: appProvider.isSidebarCollapsed ? 70 : 280,
+                  width: ResponsiveLayout.getSidebarWidth(context),
                   child: Material(
                     elevation: 8,
                     color: Colors.transparent,

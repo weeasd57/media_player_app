@@ -89,6 +89,37 @@ class ResponsiveLayout {
     );
   }
 
+  // Get responsive sidebar width
+  static double getSidebarWidth(BuildContext context) {
+    return getValue(
+      context,
+      mobile: 260.0, // أصغر للموبايل
+      tablet: 280.0,
+      desktop: 320.0, // أكبر للديسكتوب
+    );
+  }
+
+  // Get responsive sidebar grid columns
+  static int getSidebarGridColumns(BuildContext context) {
+    return getValue(
+      context,
+      mobile: isSmallMobile(context) ? 1 : 2, // عمود واحد للشاشات الصغيرة جداً
+      tablet: 2,
+      desktop: 2, // يمكن زيادتها لـ 3 للديسكتوب
+    );
+  }
+
+  // Get responsive card icon size for sidebar
+  static double getSidebarCardIconSize(BuildContext context, bool isSelected) {
+    final baseSize = getValue(
+      context,
+      mobile: isSmallMobile(context) ? 18.0 : 20.0,
+      tablet: 22.0,
+      desktop: 24.0,
+    );
+    return isSelected ? baseSize + 2 : baseSize;
+  }
+
   // Get responsive app bar height
   static double getAppBarHeight(BuildContext context) {
     return getValue(
