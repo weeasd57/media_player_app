@@ -9,7 +9,10 @@ class DarkMatterTheme {
         primary: Color(0xFF1A1A1A),
         secondary: Color(0xFF333333),
         surface: Color(0xFFF5F5F5),
+        surfaceContainer: Color(0xFFE8E8E8),
+        surfaceContainerHighest: Color(0xFFDDDDDD),
         onSurface: Color(0xFF1A1A1A),
+        outline: Color(0xFF757575),
       ),
     );
   }
@@ -22,7 +25,10 @@ class DarkMatterTheme {
         primary: Color(0xFF666666),
         secondary: Color(0xFF888888),
         surface: Color(0xFF0A0A0A),
+        surfaceContainer: Color(0xFF1A1A1A),
+        surfaceContainerHighest: Color(0xFF2A2A2A),
         onSurface: Color(0xFFFFFFFF),
+        outline: Color(0xFF757575),
       ),
     );
   }
