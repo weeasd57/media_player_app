@@ -94,8 +94,8 @@ class ResponsiveLayout {
     return getValue(
       context,
       mobile: 260.0, // أصغر للموبايل
-      tablet: 280.0,
-      desktop: 320.0, // أكبر للديسكتوب
+      tablet: 320.0, // أكبر للتابلت لاستيعاب 3 أعمدة
+      desktop: 380.0, // أكبر للديسكتوب لاستيعاب 4 أعمدة
     );
   }
 
@@ -104,8 +104,8 @@ class ResponsiveLayout {
     return getValue(
       context,
       mobile: isSmallMobile(context) ? 1 : 2, // عمود واحد للشاشات الصغيرة جداً
-      tablet: 2,
-      desktop: 3, // ثلاثة أعمدة للديسكتوب
+      tablet: 3, // ثلاثة أعمدة للتابلت
+      desktop: 4, // أربعة أعمدة للديسكتوب لاستيعاب 20 تطبيق
     );
   }
 

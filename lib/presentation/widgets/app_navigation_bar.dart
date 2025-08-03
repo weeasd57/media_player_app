@@ -139,6 +139,76 @@ class AppNavigationBar extends StatelessWidget {
           themeProvider,
           isArabic,
         );
+      case 'neon':
+        return _buildNeonNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'material_you':
+        return _buildMaterialYouNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'dark_matter':
+        return _buildDarkMatterNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'holographic':
+        return _buildHolographicNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'vintage':
+        return _buildVintageNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'crystal':
+        return _buildCrystalNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'synthwave':
+        return _buildSynthwaveNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'nordic':
+        return _buildNordicNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'cosmic':
+        return _buildCosmicNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
+      case 'brutalist':
+        return _buildBrutalistNavigation(
+          context,
+          appProvider,
+          themeProvider,
+          isArabic,
+        );
       default:
         return _buildModernNavigation(
           context,
@@ -656,5 +726,340 @@ class AppNavigationBar extends StatelessWidget {
         : themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
             (0.6 * 255).round(),
           );
+  }
+
+  // 11. Neon Navigation
+  Widget _buildNeonNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: appProvider.currentApp.primaryColor,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: appProvider.currentApp.primaryColor.withAlpha((0.8 * 255).round()),
+            blurRadius: 25,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'neon',
+      ),
+    );
+  }
+
+  // 12. Material You Navigation
+  Widget _buildMaterialYouNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: themeProvider.currentTheme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: themeProvider.currentTheme.colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'material_you',
+      ),
+    );
+  }
+
+  // 13. Dark Matter Navigation
+  Widget _buildDarkMatterNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A0A0A),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF333333),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((0.9 * 255).round()),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'dark_matter',
+      ),
+    );
+  }
+
+  // 14. Holographic Navigation
+  Widget _buildHolographicNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            appProvider.currentApp.primaryColor.withAlpha((0.3 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha((0.3 * 255).round()),
+            Colors.transparent,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withAlpha((0.3 * 255).round()),
+          width: 1,
+        ),
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'holographic',
+      ),
+    );
+  }
+
+  // 15. Vintage Navigation
+  Widget _buildVintageNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: themeProvider.currentTheme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: appProvider.currentApp.primaryColor,
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.brown.withAlpha((0.3 * 255).round()),
+            blurRadius: 15,
+            offset: const Offset(3, 3),
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'vintage',
+      ),
+    );
+  }
+
+  // 16. Crystal Navigation
+  Widget _buildCrystalNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha((0.1 * 255).round()),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: appProvider.currentApp.primaryColor.withAlpha((0.5 * 255).round()),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: appProvider.currentApp.primaryColor.withAlpha((0.2 * 255).round()),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'crystal',
+      ),
+    );
+  }
+
+  // 17. Synthwave Navigation
+  Widget _buildSynthwaveNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1A1A2E),
+            const Color(0xFF16213E),
+            const Color(0xFF0F3460),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: appProvider.currentApp.primaryColor,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: appProvider.currentApp.primaryColor.withAlpha((0.6 * 255).round()),
+            blurRadius: 20,
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'synthwave',
+      ),
+    );
+  }
+
+  // 18. Nordic Navigation
+  Widget _buildNordicNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: themeProvider.currentTheme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF90A4AE),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withAlpha((0.2 * 255).round()),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'nordic',
+      ),
+    );
+  }
+
+  // 19. Cosmic Navigation
+  Widget _buildCosmicNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          colors: [
+            appProvider.currentApp.primaryColor.withAlpha((0.3 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha((0.2 * 255).round()),
+            Colors.black.withAlpha((0.8 * 255).round()),
+          ],
+          center: Alignment.center,
+          radius: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: appProvider.currentApp.primaryColor.withAlpha((0.4 * 255).round()),
+            blurRadius: 25,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'cosmic',
+      ),
+    );
+  }
+
+  // 20. Brutalist Navigation
+  Widget _buildBrutalistNavigation(
+    BuildContext context,
+    AppProvider appProvider,
+    ThemeProvider themeProvider,
+    bool isArabic,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: themeProvider.currentTheme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(0), // Sharp edges
+        border: Border.all(
+          color: Colors.black,
+          width: 4,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((0.5 * 255).round()),
+            blurRadius: 0,
+            offset: const Offset(6, 6),
+          ),
+        ],
+      ),
+      child: _buildNavigationItems(
+        appProvider,
+        themeProvider,
+        isArabic,
+        'brutalist',
+      ),
+    );
   }
 }
