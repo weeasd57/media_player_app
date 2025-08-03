@@ -15,20 +15,10 @@ class AppNavigationBar extends StatelessWidget {
       builder: (context, appProvider, themeProvider, localeProvider, child) {
         final currentApp = appProvider.currentApp;
         final isArabic = localeProvider.locale.languageCode == 'ar';
-        final isSidebarCollapsed = appProvider.isSidebarCollapsed;
-        final isSidebarHidden = appProvider.isSidebarHidden;
 
         if (currentApp.pages.length <= 1) {
           return const SizedBox.shrink();
         }
-
-        // Calculate responsive margins for navigation bar
-        final edgeInsets = ResponsiveLayout.getNavigationBarMargin(
-          context,
-          isSidebarCollapsed: isSidebarCollapsed,
-          isSidebarHidden: isSidebarHidden,
-          isArabic: isArabic,
-        );
 
         // Responsive height for navigation bar
         final navigationHeight = ResponsiveLayout.getValue(
@@ -39,8 +29,8 @@ class AppNavigationBar extends StatelessWidget {
         );
 
         return Container(
+          width: double.infinity,
           height: navigationHeight,
-          margin: edgeInsets,
           decoration: BoxDecoration(
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(

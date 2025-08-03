@@ -133,24 +133,7 @@ class ResponsiveLayout {
     );
   }
 
-  // Calculate navigation bar margins based on sidebar state
-  static EdgeInsets getNavigationBarMargin(
-    BuildContext context, {
-    required bool isSidebarCollapsed,
-    required bool isSidebarHidden, 
-    required bool isArabic,
-  }) {
-    if (isSidebarHidden) {
-      return EdgeInsets.zero;
-    }
-    
-    final sidebarWidth = isSidebarCollapsed ? 70.0 : 280.0;
-    final additionalMargin = getValue(context, mobile: 0.0, tablet: 8.0, desktop: 16.0);
-    
-    return isArabic
-        ? EdgeInsets.only(right: sidebarWidth + additionalMargin)
-        : EdgeInsets.only(left: sidebarWidth + additionalMargin);
-  }
+
 }
 
 // Responsive container widget
