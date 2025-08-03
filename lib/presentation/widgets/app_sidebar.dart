@@ -85,7 +85,7 @@ class AppSidebar extends StatelessWidget {
                           crossAxisCount: ResponsiveLayout.getSidebarGridColumns(context),
                           mainAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
                           crossAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
-                          childAspectRatio: ResponsiveLayout.getValue(context, mobile: 1.1, tablet: 1.3, desktop: 1.4),
+                          childAspectRatio: ResponsiveLayout.getValue(context, mobile: 0.9, tablet: 1.0, desktop: 1.1),
                         ),
                     itemCount: appProvider.apps.length,
                     itemBuilder: (context, index) {
@@ -129,19 +129,20 @@ class AppSidebar extends StatelessWidget {
                                 : [],
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(
-                              12,
-                            ), // تقليل المساحة الداخلية
+                            padding: EdgeInsets.all(
+                              ResponsiveLayout.getValue(context, mobile: 8, tablet: 10, desktop: 12),
+                            ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize:
-                                  MainAxisSize.min, // تقليل الحجم للأدنى
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 // App Icon
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  width: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
-                                  height: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
+                                Flexible(
+                                  flex: 3,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    width: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
+                                    height: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
@@ -171,14 +172,21 @@ class AppSidebar extends StatelessWidget {
                                       color: Colors.white,
                                       size: ResponsiveLayout.getSidebarCardIconSize(context, isSelected) * 0.6,
                                     ),
+                                                                      ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 8), // تقليل المسافة
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 4),
+                                ),
                                 // App Name
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
+                                Flexible(
+                                  flex: 2,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
                                     isArabic ? app.nameAr : app.name,
                                     style: themeProvider
                                         .currentTheme
@@ -202,18 +210,25 @@ class AppSidebar extends StatelessWidget {
                                           ),
                                         ),
                                     textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 2), // تقليل المسافة
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 2),
+                                ),
                                 // UI Kit Type
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
+                                Flexible(
+                                  flex: 1,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveLayout.getValue(context, mobile: 6, tablet: 8, desktop: 10),
+                                      vertical: ResponsiveLayout.getValue(context, mobile: 1, tablet: 2, desktop: 3),
+                                    ),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? app.primaryColor.withAlpha(
@@ -254,15 +269,22 @@ class AppSidebar extends StatelessWidget {
                                             letterSpacing: 0.5,
                                           ),
                                       textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ),
++                                  ),
                                 ),
 
-                                const SizedBox(height: 4), // تقليل المسافة
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 2),
+                                ),
                                 // Pages Count
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Row(
+                                Flexible(
+                                  flex: 1,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -304,10 +326,11 @@ class AppSidebar extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
+                                                                      ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                       );
                     },
                   ),

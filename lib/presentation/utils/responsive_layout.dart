@@ -105,7 +105,7 @@ class ResponsiveLayout {
       context,
       mobile: isSmallMobile(context) ? 1 : 2, // عمود واحد للشاشات الصغيرة جداً
       tablet: 2,
-      desktop: 2, // يمكن زيادتها لـ 3 للديسكتوب
+      desktop: 3, // ثلاثة أعمدة للديسكتوب
     );
   }
 
@@ -113,11 +113,11 @@ class ResponsiveLayout {
   static double getSidebarCardIconSize(BuildContext context, bool isSelected) {
     final baseSize = getValue(
       context,
-      mobile: isSmallMobile(context) ? 18.0 : 20.0,
-      tablet: 22.0,
-      desktop: 24.0,
+      mobile: isSmallMobile(context) ? 28.0 : 32.0,
+      tablet: 36.0,
+      desktop: 40.0,
     );
-    return isSelected ? baseSize + 2 : baseSize;
+    return isSelected ? baseSize + 4 : baseSize;
   }
 
   // Get responsive app bar height
