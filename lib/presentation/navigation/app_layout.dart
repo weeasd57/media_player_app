@@ -75,10 +75,13 @@ class AppLayout extends StatelessWidget {
                                       appProvider.showSidebar();
                                       debugPrint("Show sidebar button pressed");
                                     },
-                                    child: Icon(
-                                      Icons.menu,
-                                      color: currentApp.primaryColor,
-                                      size: 24,
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Icon(
+                                        Icons.menu,
+                                        color: currentApp.primaryColor,
+                                        size: ResponsiveLayout.getNavigationIconSize(context),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -108,10 +111,13 @@ class AppLayout extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: Icon(
-                                currentApp.icon,
-                                color: Colors.white,
-                                size: 20,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Icon(
+                                  currentApp.icon,
+                                  color: Colors.white,
+                                  size: ResponsiveLayout.getSmallIconSize(context),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 16),

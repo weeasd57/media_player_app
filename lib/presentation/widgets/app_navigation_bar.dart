@@ -16,19 +16,30 @@ class AppNavigationBar extends StatelessWidget {
         final currentApp = appProvider.currentApp;
         final isArabic = localeProvider.locale.languageCode == 'ar';
         final isSidebarCollapsed = appProvider.isSidebarCollapsed;
+        final isSidebarHidden = appProvider.isSidebarHidden;
 
         if (currentApp.pages.length <= 1) {
           return const SizedBox.shrink();
         }
 
-        // Calculate edge insets for navigation bar based on sidebar state
-        final sidebarWidth = isSidebarCollapsed ? 70.0 : 280.0;
-        final edgeInsets = isArabic
-            ? EdgeInsets.only(right: sidebarWidth)
-            : EdgeInsets.only(left: sidebarWidth);
+        // Calculate responsive margins for navigation bar
+        final edgeInsets = ResponsiveLayout.getNavigationBarMargin(
+          context,
+          isSidebarCollapsed: isSidebarCollapsed,
+          isSidebarHidden: isSidebarHidden,
+          isArabic: isArabic,
+        );
+
+        // Responsive height for navigation bar
+        final navigationHeight = ResponsiveLayout.getValue(
+          context,
+          mobile: 70.0,
+          tablet: 80.0,
+          desktop: 90.0,
+        );
 
         return Container(
-          height: 80,
+          height: navigationHeight,
           margin: edgeInsets,
           decoration: BoxDecoration(
             color: themeProvider.currentTheme.colorScheme.surface,
@@ -198,33 +209,46 @@ class AppNavigationBar extends StatelessWidget {
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(
-                        page.icon,
-                        color: isSelected
-                            ? Colors.white
-                            : themeProvider.currentTheme.colorScheme.onSurface
-                                  .withAlpha((0.6 * 255).round()),
-                        size: 20,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(
+                          page.icon,
+                          color: isSelected
+                              ? Colors.white
+                              : themeProvider.currentTheme.colorScheme.onSurface
+                                    .withAlpha((0.6 * 255).round()),
+                          size: ResponsiveLayout.getNavigationIconSize(context),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      isArabic ? page.nameAr : page.name,
-                      style: themeProvider.currentTheme.textTheme.labelSmall
-                          ?.copyWith(
-                            color: isSelected
-                                ? appProvider.currentApp.primaryColor
-                                : themeProvider
-                                      .currentTheme
-                                      .colorScheme
-                                      .onSurface
-                                      .withAlpha((0.6 * 255).round()),
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                            fontSize: 11,
-                          ),
-                      textAlign: TextAlign.center,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        isArabic ? page.nameAr : page.name,
+                        style: themeProvider.currentTheme.textTheme.labelSmall
+                            ?.copyWith(
+                              color: isSelected
+                                  ? appProvider.currentApp.primaryColor
+                                  : themeProvider
+                                        .currentTheme
+                                        .colorScheme
+                                        .onSurface
+                                        .withAlpha((0.6 * 255).round()),
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              fontSize: ResponsiveLayout.getValue(
+                                context,
+                                mobile: isSmallScreen ? 9 : 10,
+                                tablet: 11,
+                                desktop: 12,
+                              ),
+                            ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -562,33 +586,46 @@ class AppNavigationBar extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      page.icon,
-                      color: _getIconColor(
-                        isSelected,
-                        style,
-                        appProvider,
-                        themeProvider,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Icon(
+                        page.icon,
+                        color: _getIconColor(
+                          isSelected,
+                          style,
+                          appProvider,
+                          themeProvider,
+                        ),
+                        size: ResponsiveLayout.getNavigationIconSize(context),
                       ),
-                      size: 24,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      isArabic ? page.nameAr : page.name,
-                      style: themeProvider.currentTheme.textTheme.labelSmall
-                          ?.copyWith(
-                            color: _getTextColor(
-                              isSelected,
-                              style,
-                              appProvider,
-                              themeProvider,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        isArabic ? page.nameAr : page.name,
+                        style: themeProvider.currentTheme.textTheme.labelSmall
+                            ?.copyWith(
+                              color: _getTextColor(
+                                isSelected,
+                                style,
+                                appProvider,
+                                themeProvider,
+                              ),
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              fontSize: ResponsiveLayout.getValue(
+                                context,
+                                mobile: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
+                                tablet: 11,
+                                desktop: 12,
+                              ),
                             ),
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                            fontSize: 10,
-                          ),
-                      textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

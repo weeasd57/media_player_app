@@ -69,6 +69,26 @@ class ResponsiveLayout {
     return getValue(context, mobile: 24, tablet: 28, desktop: 32);
   }
 
+  // Get responsive navigation icon sizes
+  static double getNavigationIconSize(BuildContext context) {
+    return getValue(
+      context, 
+      mobile: isSmallMobile(context) ? 18 : 20, 
+      tablet: 22, 
+      desktop: 24
+    );
+  }
+
+  // Get responsive small icon sizes
+  static double getSmallIconSize(BuildContext context) {
+    return getValue(
+      context, 
+      mobile: isSmallMobile(context) ? 16 : 18, 
+      tablet: 20, 
+      desktop: 22
+    );
+  }
+
   // Get responsive app bar height
   static double getAppBarHeight(BuildContext context) {
     return getValue(
@@ -111,6 +131,25 @@ class ResponsiveLayout {
       tablet: 56.0,
       desktop: 64.0,
     );
+  }
+
+  // Calculate navigation bar margins based on sidebar state
+  static EdgeInsets getNavigationBarMargin(
+    BuildContext context, {
+    required bool isSidebarCollapsed,
+    required bool isSidebarHidden, 
+    required bool isArabic,
+  }) {
+    if (isSidebarHidden) {
+      return EdgeInsets.zero;
+    }
+    
+    final sidebarWidth = isSidebarCollapsed ? 70.0 : 280.0;
+    final additionalMargin = getValue(context, mobile: 0.0, tablet: 8.0, desktop: 16.0);
+    
+    return isArabic
+        ? EdgeInsets.only(right: sidebarWidth + additionalMargin)
+        : EdgeInsets.only(left: sidebarWidth + additionalMargin);
   }
 }
 

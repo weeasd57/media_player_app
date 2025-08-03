@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
@@ -47,7 +48,7 @@ class AppSidebar extends StatelessWidget {
                 alignment: Alignment.center,
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  iconSize: 24,
+                  iconSize: ResponsiveLayout.getNavigationIconSize(context),
                   onPressed: () {
                     debugPrint("DEBUG: Toggle sidebar button pressed");
                     appProvider.toggleSidebar();
