@@ -7,27 +7,40 @@ import 'presentation/providers/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MediaPlayerApp());
+  runApp(const UIKitCollectionApp());
 }
 
-class MediaPlayerApp extends StatelessWidget {
-  const MediaPlayerApp({super.key});
+class UIKitCollectionApp extends StatelessWidget {
+  const UIKitCollectionApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => LocaleProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, child) {
           return MaterialApp(
-            title: 'Media Player UI Kit',
+            title: 'UI Kit Collection',
             theme: themeProvider.currentTheme,
+            locale: localeProvider.locale,
             home: const AppLayout(),
             debugShowCheckedModeBanner: false,
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('ar', 'SA'),
+            ],
+            builder: (context, child) {
+              return Directionality(
+                textDirection: localeProvider.locale.languageCode == 'ar' 
+                  ? TextDirection.rtl 
+                  : TextDirection.ltr,
+                child: child!,
+              );
+            },
           );
         },
       ),
