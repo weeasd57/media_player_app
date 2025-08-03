@@ -17,6 +17,11 @@ class AppLayout extends StatelessWidget {
         final currentApp = appProvider.currentApp;
         final currentPage = appProvider.currentPage;
         
+        // تحديث UI Kit حسب التطبيق المختار
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          themeProvider.setUiKit(currentApp.uiKitType);
+        });
+        
         return Scaffold(
           backgroundColor: themeProvider.currentTheme.colorScheme.surface,
           body: Directionality(
@@ -32,7 +37,7 @@ class AppLayout extends StatelessWidget {
                     children: [
                       // App Header
                       Container(
-                        height: 60,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: themeProvider.currentTheme.colorScheme.surface,
                           border: Border(
@@ -43,58 +48,100 @@ class AppLayout extends StatelessWidget {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Row(
                             children: [
-                              // App Icon
+                              // App Icon with Modern Design
                               Container(
-                                width: 32,
-                                height: 32,
+                                width: 40,
+                                height: 40,
                                 decoration: BoxDecoration(
-                                  color: currentApp.primaryColor.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(8),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      currentApp.primaryColor,
+                                      currentApp.secondaryColor,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: currentApp.primaryColor.withOpacity(0.3),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
                                 child: Icon(
                                   currentApp.icon,
-                                  color: currentApp.primaryColor,
-                                  size: 18,
+                                  color: Colors.white,
+                                  size: 20,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               
-                              // App Name
-                              Text(
-                                isArabic ? currentApp.nameAr : currentApp.name,
-                                style: themeProvider.currentTheme.textTheme.titleMedium?.copyWith(
-                                  color: themeProvider.currentTheme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              
-                              // Separator
-                              if (currentApp.pages.length > 1) ...[
-                                const SizedBox(width: 8),
-                                Icon(
-                                  Icons.keyboard_arrow_right,
-                                  color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.4),
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 8),
-                                
-                                // Current Page Name
-                                Text(
-                                  isArabic ? currentPage.nameAr : currentPage.name,
-                                  style: themeProvider.currentTheme.textTheme.titleMedium?.copyWith(
-                                    color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.7),
-                                    fontWeight: FontWeight.w400,
+                              // App Name and UI Kit Type
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isArabic ? currentApp.nameAr : currentApp.name,
+                                    style: themeProvider.currentTheme.textTheme.titleLarge?.copyWith(
+                                      color: themeProvider.currentTheme.colorScheme.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                    ),
                                   ),
+                                  Text(
+                                    '${currentApp.uiKitType.toUpperCase()} UI KIT',
+                                    style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
+                                      color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              
+                              // Separator and Current Page
+                              if (currentApp.pages.length > 1) ...[
+                                const SizedBox(width: 16),
+                                Container(
+                                  width: 1,
+                                  height: 30,
+                                  color: themeProvider.currentTheme.dividerColor.withOpacity(0.2),
+                                ),
+                                const SizedBox(width: 16),
+                                
+                                // Current Page Info
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Current Page',
+                                      style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
+                                        color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.5),
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    Text(
+                                      isArabic ? currentPage.nameAr : currentPage.name,
+                                      style: themeProvider.currentTheme.textTheme.bodyMedium?.copyWith(
+                                        color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.8),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                               
@@ -103,25 +150,45 @@ class AppLayout extends StatelessWidget {
                               // Action Buttons
                               Row(
                                 children: [
-                                  // Theme Toggle
-                                  IconButton(
-                                    icon: Icon(
-                                      themeProvider.isDarkMode 
-                                        ? Icons.light_mode 
-                                        : Icons.dark_mode,
-                                      size: 20,
+                                  // Theme Toggle with Modern Design
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: themeProvider.currentTheme.colorScheme.surfaceVariant.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    onPressed: () => themeProvider.toggleTheme(),
-                                    tooltip: isArabic 
-                                      ? (themeProvider.isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن')
-                                      : (themeProvider.isDarkMode ? 'Light Mode' : 'Dark Mode'),
+                                    child: IconButton(
+                                      icon: AnimatedSwitcher(
+                                        duration: const Duration(milliseconds: 300),
+                                        child: Icon(
+                                          themeProvider.isDarkMode 
+                                            ? Icons.light_mode_rounded 
+                                            : Icons.dark_mode_rounded,
+                                          key: ValueKey(themeProvider.isDarkMode),
+                                          size: 22,
+                                          color: themeProvider.currentTheme.colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      onPressed: () => themeProvider.toggleTheme(),
+                                      tooltip: isArabic 
+                                        ? (themeProvider.isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن')
+                                        : (themeProvider.isDarkMode ? 'Light Mode' : 'Dark Mode'),
+                                    ),
                                   ),
                                   
+                                  const SizedBox(width: 8),
+                                  
                                   // Language Toggle
-                                  IconButton(
-                                    icon: const Icon(Icons.language, size: 20),
-                                    onPressed: () => localeProvider.toggleLocale(),
-                                    tooltip: isArabic ? 'English' : 'العربية',
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: themeProvider.currentTheme.colorScheme.surfaceVariant.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.language_rounded, size: 22),
+                                      onPressed: () => localeProvider.toggleLocale(),
+                                      tooltip: isArabic ? 'English' : 'العربية',
+                                      color: themeProvider.currentTheme.colorScheme.onSurface,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -133,13 +200,13 @@ class AppLayout extends StatelessWidget {
                       // Page Content
                       Expanded(
                         child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 400),
                           transitionBuilder: (child, animation) {
                             return FadeTransition(
                               opacity: animation,
                               child: SlideTransition(
                                 position: Tween<Offset>(
-                                  begin: const Offset(0.1, 0),
+                                  begin: const Offset(0.05, 0),
                                   end: Offset.zero,
                                 ).animate(CurvedAnimation(
                                   parent: animation,

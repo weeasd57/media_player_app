@@ -9,6 +9,7 @@ class AppItem {
   final List<AppPage> pages;
   final Color primaryColor;
   final Color secondaryColor;
+  final String uiKitType;
 
   const AppItem({
     required this.id,
@@ -18,6 +19,7 @@ class AppItem {
     required this.pages,
     required this.primaryColor,
     required this.secondaryColor,
+    required this.uiKitType,
   });
 }
 
