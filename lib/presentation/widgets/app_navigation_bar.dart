@@ -68,7 +68,6 @@ class AppNavigationBar extends StatelessWidget {
     bool isArabic,
     String uiKitType,
   ) {
-    final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
     switch (uiKitType) {
       case 'modern':
         return _buildModernNavigation(

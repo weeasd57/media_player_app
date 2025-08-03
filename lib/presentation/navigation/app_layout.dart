@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 import '../widgets/app_sidebar.dart';
 import '../widgets/app_navigation_bar.dart';
 
