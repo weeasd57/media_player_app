@@ -68,14 +68,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                           gradient: LinearGradient(
                             colors: [
                               Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                              Theme.of(context).primaryColor.withOpacity(0.7),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Colors.black.withOpacity(0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -193,7 +193,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                       color: Theme.of(context).primaryColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                          color: Theme.of(context).primaryColor.withOpacity(0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

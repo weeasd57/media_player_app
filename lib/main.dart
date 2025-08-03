@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'presentation/navigation/app_layout.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/app_provider.dart';
+import 'presentation/providers/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ class MediaPlayerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(create: (context) => LocaleProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

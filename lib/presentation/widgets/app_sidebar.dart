@@ -19,13 +19,13 @@ class AppSidebar extends StatelessWidget {
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(
               right: BorderSide(
-                color: themeProvider.currentTheme.dividerColor.withValues(alpha: 0.1),
+                color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
                 width: 1,
               ),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 10,
                 offset: const Offset(2, 0),
               ),
@@ -37,10 +37,10 @@ class AppSidebar extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: themeProvider.currentTheme.colorScheme.primary.withValues(alpha: 0.1),
+                  color: themeProvider.currentTheme.colorScheme.primary.withOpacity(0.1),
                   border: Border(
                     bottom: BorderSide(
-                      color: themeProvider.currentTheme.dividerColor.withValues(alpha: 0.1),
+                      color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
                       width: 1,
                     ),
                   ),
@@ -78,7 +78,7 @@ class AppSidebar extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         color: isSelected 
-                          ? app.primaryColor.withValues(alpha: 0.1)
+                          ? app.primaryColor.withOpacity(0.1)
                           : Colors.transparent,
                       ),
                       child: Material(
@@ -99,7 +99,7 @@ class AppSidebar extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: isSelected 
                                       ? app.primaryColor 
-                                      : app.primaryColor.withValues(alpha: 0.2),
+                                      : app.primaryColor.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
@@ -130,7 +130,7 @@ class AppSidebar extends StatelessWidget {
                                       Text(
                                         '${app.pages.length} ${isArabic ? 'صفحة' : 'pages'}',
                                         style: themeProvider.currentTheme.textTheme.bodySmall?.copyWith(
-                                          color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                          color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
                                         ),
                                       ),
                                     ],
@@ -158,7 +158,7 @@ class AppSidebar extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
-                      color: themeProvider.currentTheme.dividerColor.withValues(alpha: 0.1),
+                      color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
                       width: 1,
                     ),
                   ),
@@ -167,7 +167,7 @@ class AppSidebar extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: themeProvider.currentTheme.colorScheme.primary.withValues(alpha: 0.1),
+                      backgroundColor: themeProvider.currentTheme.colorScheme.primary.withOpacity(0.1),
                       child: Icon(
                         Icons.person,
                         color: themeProvider.currentTheme.colorScheme.primary,
@@ -179,7 +179,7 @@ class AppSidebar extends StatelessWidget {
                       child: Text(
                         isArabic ? 'المستخدم' : 'User',
                         style: themeProvider.currentTheme.textTheme.bodyMedium?.copyWith(
-                          color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.8),
+                          color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.8),
                         ),
                       ),
                     ),

@@ -37,13 +37,13 @@ class AppLayout extends StatelessWidget {
                           color: themeProvider.currentTheme.colorScheme.surface,
                           border: Border(
                             bottom: BorderSide(
-                              color: themeProvider.currentTheme.dividerColor.withValues(alpha: 0.1),
+                              color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
                               width: 1,
                             ),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
+                              color: Colors.black.withOpacity(0.03),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             ),
@@ -58,7 +58,7 @@ class AppLayout extends StatelessWidget {
                                 width: 32,
                                 height: 32,
                                 decoration: BoxDecoration(
-                                  color: currentApp.primaryColor.withValues(alpha: 0.15),
+                                  color: currentApp.primaryColor.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -83,7 +83,7 @@ class AppLayout extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.keyboard_arrow_right,
-                                  color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.4),
+                                  color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.4),
                                   size: 16,
                                 ),
                                 const SizedBox(width: 8),
@@ -92,7 +92,7 @@ class AppLayout extends StatelessWidget {
                                 Text(
                                   isArabic ? currentPage.nameAr : currentPage.name,
                                   style: themeProvider.currentTheme.textTheme.titleMedium?.copyWith(
-                                    color: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.7),
+                                    color: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.7),
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),

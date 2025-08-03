@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../widgets/neumorphic_components.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onNavigateToTab;
+  
+  const HomeScreen({super.key, this.onNavigateToTab});
 
   @override
   Widget build(BuildContext context) {
