@@ -7,7 +7,7 @@ import '../pages/video_player_screen.dart';
 import '../pages/settings_screen.dart';
 import '../pages/equalizer_screen.dart';
 import '../providers/theme_provider.dart';
-import '../../generated/app_localizations.dart';
+import '../providers/locale_provider.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -49,9 +49,8 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, LocaleProvider>(
+      builder: (context, themeProvider, localeProvider, child) {
         return Scaffold(
           body: PageView(
             controller: _pageController,
@@ -74,32 +73,32 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             selectedItemColor: themeProvider.currentTheme.colorScheme.primary,
-            unselectedItemColor: themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+            unselectedItemColor: themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
             backgroundColor: themeProvider.primaryBackgroundColor,
             items: [
               BottomNavigationBarItem(
                 icon: const Icon(Icons.home),
-                label: l10n.home,
+                label: localeProvider.home,
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.library_music),
-                label: l10n.yourLibrary,
+                label: localeProvider.getLocalizedText('مكتبتك', 'Your Library'),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.music_note),
-                label: l10n.audioFiles,
+                label: localeProvider.getLocalizedText('ملفات صوتية', 'Audio Files'),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.video_library),
-                label: l10n.videoFiles,
+                label: localeProvider.getLocalizedText('ملفات فيديو', 'Video Files'),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.equalizer),
-                label: l10n.equalizer,
+                label: localeProvider.getLocalizedText('معادل الصوت', 'Equalizer'),
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.settings),
-                label: l10n.settings,
+                label: localeProvider.settings,
               ),
             ],
           ),

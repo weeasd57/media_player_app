@@ -547,9 +547,9 @@ class _NeumorphicSliderState extends State<NeumorphicSlider> {
       child: SliderTheme(
         data: SliderTheme.of(context).copyWith(
           activeTrackColor: neumorphicColors.accentColor,
-          inactiveTrackColor: neumorphicColors.textColor.withValues(alpha: 0.3),
+          inactiveTrackColor: neumorphicColors.textColor.withOpacity(0.3),
           thumbColor: neumorphicColors.accentColor,
-          overlayColor: neumorphicColors.accentColor.withValues(alpha: 0.2),
+          overlayColor: neumorphicColors.accentColor.withOpacity(0.2),
           trackHeight: 6,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
         ),

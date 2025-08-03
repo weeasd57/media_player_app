@@ -106,10 +106,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withValues(alpha: 0.7),
+            Colors.black.withOpacity(0.7),
             Colors.transparent,
             Colors.transparent,
-            Colors.black.withValues(alpha: 0.7),
+            Colors.black.withOpacity(0.7),
           ],
         ),
         borderRadius: _isFullscreen 
@@ -131,7 +131,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.black.withValues(alpha: 0.6),
+                  color: Colors.black.withOpacity(0.6),
                 ),
                 child: Icon(
                   _isPlaying ? Icons.pause : Icons.play_arrow,
@@ -189,7 +189,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           });
                         },
                         activeColor: Colors.red,
-                        inactiveColor: Colors.white.withValues(alpha: 0.3),
+                        inactiveColor: Colors.white.withOpacity(0.3),
                       ),
                     ),
                     const Text(

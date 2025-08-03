@@ -24,13 +24,13 @@ class AppNavigationBar extends StatelessWidget {
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(
               top: BorderSide(
-                color: themeProvider.currentTheme.dividerColor.withValues(alpha: 0.1),
+                color: themeProvider.currentTheme.dividerColor.withOpacity(0.1),
                 width: 1,
               ),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
@@ -57,7 +57,7 @@ class AppNavigationBar extends StatelessWidget {
                             height: 36,
                             decoration: BoxDecoration(
                               color: isSelected 
-                                ? currentApp.primaryColor.withValues(alpha: 0.15)
+                                ? currentApp.primaryColor.withOpacity(0.15)
                                 : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -65,7 +65,7 @@ class AppNavigationBar extends StatelessWidget {
                               page.icon,
                               color: isSelected 
                                 ? currentApp.primaryColor 
-                                : themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
                               size: 20,
                             ),
                           ),
@@ -75,7 +75,7 @@ class AppNavigationBar extends StatelessWidget {
                             style: themeProvider.currentTheme.textTheme.labelSmall?.copyWith(
                               color: isSelected 
                                 ? currentApp.primaryColor 
-                                : themeProvider.currentTheme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                : themeProvider.currentTheme.colorScheme.onSurface.withOpacity(0.6),
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                             ),
                             textAlign: TextAlign.center,
