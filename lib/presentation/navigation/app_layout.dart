@@ -54,7 +54,9 @@ class AppLayout extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveLayout.isSmallMobile(context) ? 12 : 16
+                          horizontal: ResponsiveLayout.isSmallMobile(context)
+                              ? 12
+                              : 16,
                         ),
                         child: Row(
                           children: [
@@ -65,8 +67,14 @@ class AppLayout extends StatelessWidget {
                                 height: 36,
                                 margin: const EdgeInsets.only(right: 6),
                                 decoration: BoxDecoration(
-                                  color: currentApp.primaryColor.withOpacity(
-                                    0.1,
+                                  color: currentApp.primaryColor.withValues(
+                                    alpha:
+                                        ((currentApp.primaryColor.a *
+                                                        0.1 *
+                                                        255.0)
+                                                    .round() &
+                                                0xff)
+                                            as double?,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -83,7 +91,10 @@ class AppLayout extends StatelessWidget {
                                       child: Icon(
                                         Icons.menu,
                                         color: currentApp.primaryColor,
-                                        size: ResponsiveLayout.getNavigationIconSize(context),
+                                        size:
+                                            ResponsiveLayout.getNavigationIconSize(
+                                              context,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -92,8 +103,12 @@ class AppLayout extends StatelessWidget {
 
                             // App Icon with Modern Design
                             Container(
-                              width: ResponsiveLayout.isSmallMobile(context) ? 32 : 40,
-                              height: ResponsiveLayout.isSmallMobile(context) ? 32 : 40,
+                              width: ResponsiveLayout.isSmallMobile(context)
+                                  ? 32
+                                  : 40,
+                              height: ResponsiveLayout.isSmallMobile(context)
+                                  ? 32
+                                  : 40,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
@@ -107,7 +122,9 @@ class AppLayout extends StatelessWidget {
                                 boxShadow: [
                                   BoxShadow(
                                     color: currentApp.primaryColor.withAlpha(
-                                      (0.3 * 255).round(),
+                                      ((currentApp.primaryColor.a * 0.3 * 255.0)
+                                              .round() &
+                                          0xff),
                                     ),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
@@ -119,11 +136,17 @@ class AppLayout extends StatelessWidget {
                                 child: Icon(
                                   currentApp.icon,
                                   color: Colors.white,
-                                  size: ResponsiveLayout.getSmallIconSize(context),
+                                  size: ResponsiveLayout.getSmallIconSize(
+                                    context,
+                                  ),
                                 ),
                               ),
                             ),
-                            SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
+                            SizedBox(
+                              width: ResponsiveLayout.isSmallMobile(context)
+                                  ? 8
+                                  : 12,
+                            ),
 
                             // App Name and UI Kit Type
                             Expanded(
@@ -148,7 +171,12 @@ class AppLayout extends StatelessWidget {
                                                 .colorScheme
                                                 .onSurface,
                                             fontWeight: FontWeight.w700,
-                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 16 : 18,
+                                            fontSize:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 16
+                                                : 18,
                                           ),
                                     ),
                                   ),
@@ -169,7 +197,12 @@ class AppLayout extends StatelessWidget {
                                                 .withAlpha((0.6 * 255).round()),
                                             fontWeight: FontWeight.w500,
                                             letterSpacing: 0.8,
-                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
+                                            fontSize:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 9
+                                                : 10,
                                           ),
                                     ),
                                   ),
@@ -179,14 +212,22 @@ class AppLayout extends StatelessWidget {
 
                             // Separator and Current Page
                             if (currentApp.pages.length > 1) ...[
-                              SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
+                              SizedBox(
+                                width: ResponsiveLayout.isSmallMobile(context)
+                                    ? 8
+                                    : 12,
+                              ),
                               Container(
                                 width: 1,
                                 height: 24,
                                 color: themeProvider.currentTheme.dividerColor
                                     .withAlpha((0.2 * 255).round()),
                               ),
-                              SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
+                              SizedBox(
+                                width: ResponsiveLayout.isSmallMobile(context)
+                                    ? 8
+                                    : 12,
+                              ),
 
                               // Current Page Info
                               Column(
@@ -207,7 +248,12 @@ class AppLayout extends StatelessWidget {
                                                 .colorScheme
                                                 .onSurface
                                                 .withAlpha((0.5 * 255).round()),
-                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 8 : 10,
+                                            fontSize:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 8
+                                                : 10,
                                           ),
                                     ),
                                   ),
@@ -228,7 +274,12 @@ class AppLayout extends StatelessWidget {
                                                 .onSurface
                                                 .withAlpha((0.8 * 255).round()),
                                             fontWeight: FontWeight.w600,
-                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 10 : 12,
+                                            fontSize:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 10
+                                                : 12,
                                           ),
                                     ),
                                   ),
@@ -236,7 +287,11 @@ class AppLayout extends StatelessWidget {
                               ),
                             ],
 
-                            SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 6 : 8),
+                            SizedBox(
+                              width: ResponsiveLayout.isSmallMobile(context)
+                                  ? 6
+                                  : 8,
+                            ),
 
                             // Action Buttons
                             Row(
@@ -262,7 +317,12 @@ class AppLayout extends StatelessWidget {
                                             ? Icons.light_mode_rounded
                                             : Icons.dark_mode_rounded,
                                         key: ValueKey(themeProvider.isDarkMode),
-                                        size: ResponsiveLayout.isSmallMobile(context) ? 20 : 22,
+                                        size:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                            ? 20
+                                            : 22,
                                         color: themeProvider
                                             .currentTheme
                                             .colorScheme
@@ -278,13 +338,18 @@ class AppLayout extends StatelessWidget {
                                         : (themeProvider.isDarkMode
                                               ? 'Light Mode'
                                               : 'Dark Mode'),
-                                    padding: ResponsiveLayout.isSmallMobile(context) 
-                                        ? const EdgeInsets.all(4) 
+                                    padding:
+                                        ResponsiveLayout.isSmallMobile(context)
+                                        ? const EdgeInsets.all(4)
                                         : const EdgeInsets.all(8),
                                   ),
                                 ),
 
-                                SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 6 : 8),
+                                SizedBox(
+                                  width: ResponsiveLayout.isSmallMobile(context)
+                                      ? 6
+                                      : 8,
+                                ),
 
                                 // Language Toggle
                                 Container(
@@ -299,7 +364,12 @@ class AppLayout extends StatelessWidget {
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.language_rounded,
-                                      size: ResponsiveLayout.isSmallMobile(context) ? 20 : 22,
+                                      size:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                          ? 20
+                                          : 22,
                                     ),
                                     onPressed: () =>
                                         localeProvider.toggleLocale(),
@@ -308,8 +378,9 @@ class AppLayout extends StatelessWidget {
                                         .currentTheme
                                         .colorScheme
                                         .onSurface,
-                                    padding: ResponsiveLayout.isSmallMobile(context) 
-                                        ? const EdgeInsets.all(4) 
+                                    padding:
+                                        ResponsiveLayout.isSmallMobile(context)
+                                        ? const EdgeInsets.all(4)
                                         : const EdgeInsets.all(8),
                                   ),
                                 ),
@@ -362,13 +433,17 @@ class AppLayout extends StatelessWidget {
                   bottom: 0,
                   right: isArabic
                       ? (appProvider.isSidebarHidden
-                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(
+                                context,
+                              ) // Move completely off-screen
                             : 0)
                       : null,
                   left: isArabic
                       ? null
                       : (appProvider.isSidebarHidden
-                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(
+                                context,
+                              ) // Move completely off-screen
                             : 0),
                   width: ResponsiveLayout.getSidebarWidth(context),
                   child: Material(

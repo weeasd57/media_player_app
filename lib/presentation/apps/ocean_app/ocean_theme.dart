@@ -34,9 +34,9 @@ class OceanTheme {
     buttonTheme: const ButtonThemeData(minWidth: 0, height: 48),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all(const Size(48, 48)),
+        minimumSize: WidgetStateProperty.all(const Size(48, 48)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: MaterialStateProperty.all(EdgeInsets.zero),
+        padding: WidgetStateProperty.all(EdgeInsets.zero),
       ),
     ),
   );
@@ -70,9 +70,9 @@ class OceanTheme {
     buttonTheme: const ButtonThemeData(minWidth: 0, height: 48),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all(const Size(48, 48)),
+        minimumSize: WidgetStateProperty.all(const Size(48, 48)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: MaterialStateProperty.all(EdgeInsets.zero),
+        padding: WidgetStateProperty.all(EdgeInsets.zero),
       ),
     ),
   );

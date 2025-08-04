@@ -62,13 +62,13 @@ class SidebarTransition extends StatelessWidget {
   final Curve curve;
 
   const SidebarTransition({
-    Key? key,
+    super.key,
     required this.child,
     required this.isCollapsed,
     this.isRtl = false,
     this.duration = const Duration(milliseconds: 300),
     this.curve = Curves.easeInOutCubic,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +100,13 @@ class ContentTransition extends StatelessWidget {
   final Curve curve;
 
   const ContentTransition({
-    Key? key,
+    super.key,
     required this.child,
     required this.isSidebarCollapsed,
     this.isRtl = false,
     this.duration = const Duration(milliseconds: 300),
     this.curve = Curves.easeInOutCubic,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
