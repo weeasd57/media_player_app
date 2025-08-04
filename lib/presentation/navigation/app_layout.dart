@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 import '../widgets/app_sidebar.dart';
 import '../widgets/app_navigation_bar.dart';
 
@@ -75,10 +76,13 @@ class AppLayout extends StatelessWidget {
                                       appProvider.showSidebar();
                                       debugPrint("Show sidebar button pressed");
                                     },
-                                    child: Icon(
-                                      Icons.menu,
-                                      color: currentApp.primaryColor,
-                                      size: 24,
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Icon(
+                                        Icons.menu,
+                                        color: currentApp.primaryColor,
+                                        size: ResponsiveLayout.getNavigationIconSize(context),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -108,10 +112,13 @@ class AppLayout extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: Icon(
-                                currentApp.icon,
-                                color: Colors.white,
-                                size: 20,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Icon(
+                                  currentApp.icon,
+                                  color: Colors.white,
+                                  size: ResponsiveLayout.getSmallIconSize(context),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -328,15 +335,15 @@ class AppLayout extends StatelessWidget {
                   bottom: 0,
                   right: isArabic
                       ? (appProvider.isSidebarHidden
-                            ? -280 // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
                             : 0)
                       : null,
                   left: isArabic
                       ? null
                       : (appProvider.isSidebarHidden
-                            ? -280 // Move completely off-screen
+                            ? -ResponsiveLayout.getSidebarWidth(context) // Move completely off-screen
                             : 0),
-                  width: appProvider.isSidebarCollapsed ? 70 : 280,
+                  width: ResponsiveLayout.getSidebarWidth(context),
                   child: Material(
                     elevation: 8,
                     color: Colors.transparent,

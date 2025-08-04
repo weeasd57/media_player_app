@@ -69,6 +69,57 @@ class ResponsiveLayout {
     return getValue(context, mobile: 24, tablet: 28, desktop: 32);
   }
 
+  // Get responsive navigation icon sizes
+  static double getNavigationIconSize(BuildContext context) {
+    return getValue(
+      context, 
+      mobile: isSmallMobile(context) ? 18 : 20, 
+      tablet: 22, 
+      desktop: 24
+    );
+  }
+
+  // Get responsive small icon sizes
+  static double getSmallIconSize(BuildContext context) {
+    return getValue(
+      context, 
+      mobile: isSmallMobile(context) ? 16 : 18, 
+      tablet: 20, 
+      desktop: 22
+    );
+  }
+
+  // Get responsive sidebar width
+  static double getSidebarWidth(BuildContext context) {
+    return getValue(
+      context,
+      mobile: 260.0, // أصغر للموبايل
+      tablet: 320.0, // أكبر للتابلت لاستيعاب 3 أعمدة
+      desktop: 380.0, // أكبر للديسكتوب لاستيعاب 4 أعمدة
+    );
+  }
+
+  // Get responsive sidebar grid columns
+  static int getSidebarGridColumns(BuildContext context) {
+    return getValue(
+      context,
+      mobile: isSmallMobile(context) ? 1 : 2, // عمود واحد للشاشات الصغيرة جداً
+      tablet: 3, // ثلاثة أعمدة للتابلت
+      desktop: 4, // أربعة أعمدة للديسكتوب لاستيعاب 20 تطبيق
+    );
+  }
+
+  // Get responsive card icon size for sidebar
+  static double getSidebarCardIconSize(BuildContext context, bool isSelected) {
+    final baseSize = getValue(
+      context,
+      mobile: isSmallMobile(context) ? 28.0 : 32.0,
+      tablet: 36.0,
+      desktop: 40.0,
+    );
+    return isSelected ? baseSize + 4 : baseSize;
+  }
+
   // Get responsive app bar height
   static double getAppBarHeight(BuildContext context) {
     return getValue(
@@ -112,6 +163,8 @@ class ResponsiveLayout {
       desktop: 64.0,
     );
   }
+
+
 }
 
 // Responsive container widget

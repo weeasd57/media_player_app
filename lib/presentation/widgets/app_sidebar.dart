@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
@@ -18,7 +19,7 @@ class AppSidebar extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOutCubic,
-          width: 280, // عرض ثابت
+          width: ResponsiveLayout.getSidebarWidth(context), // عرض responsive
           decoration: BoxDecoration(
             color: themeProvider.currentTheme.colorScheme.surface,
             border: Border(
@@ -47,7 +48,7 @@ class AppSidebar extends StatelessWidget {
                 alignment: Alignment.center,
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  iconSize: 24,
+                  iconSize: ResponsiveLayout.getNavigationIconSize(context),
                   onPressed: () {
                     debugPrint("DEBUG: Toggle sidebar button pressed");
                     appProvider.toggleSidebar();
@@ -77,14 +78,14 @@ class AppSidebar extends StatelessWidget {
               // Apps Grid
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: ResponsiveLayout.getPadding(context),
                   child: GridView.builder(
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 1.3, // زيادة النسبة لتقليل الارتفاع
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: ResponsiveLayout.getSidebarGridColumns(context),
+                          mainAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
+                          crossAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
+                          childAspectRatio: ResponsiveLayout.getValue(context, mobile: 0.9, tablet: 1.0, desktop: 1.1),
                         ),
                     itemCount: appProvider.apps.length,
                     itemBuilder: (context, index) {
@@ -128,21 +129,20 @@ class AppSidebar extends StatelessWidget {
                                 : [],
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(
-                              12,
-                            ), // تقليل المساحة الداخلية
+                            padding: EdgeInsets.all(
+                              ResponsiveLayout.getValue(context, mobile: 8, tablet: 10, desktop: 12),
+                            ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize:
-                                  MainAxisSize.min, // تقليل الحجم للأدنى
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 // App Icon
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  width: isSelected ? 40 : 36, // تصغير الأيقونة
-                                  height: isSelected
-                                      ? 40
-                                      : 36, // تصغير الأيقونة
+                                Flexible(
+                                  flex: 3,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    width: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
+                                    height: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
@@ -165,45 +165,70 @@ class AppSidebar extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  child: Icon(
-                                    app.icon,
-                                    color: Colors.white,
-                                    size: isSelected ? 22 : 20,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Icon(
+                                      app.icon,
+                                      color: Colors.white,
+                                      size: ResponsiveLayout.getSidebarCardIconSize(context, isSelected) * 0.6,
+                                    ),
+                                                                      ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 8), // تقليل المسافة
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 4),
+                                ),
                                 // App Name
-                                Text(
-                                  isArabic ? app.nameAr : app.name,
-                                  style: themeProvider
-                                      .currentTheme
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                        color: isSelected
-                                            ? app.primaryColor
-                                            : themeProvider
-                                                  .currentTheme
-                                                  .colorScheme
-                                                  .onSurface,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w700
-                                            : FontWeight.w600,
-                                        fontSize: 13,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                Flexible(
+                                  flex: 2,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                    isArabic ? app.nameAr : app.name,
+                                    style: themeProvider
+                                        .currentTheme
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                          color: isSelected
+                                              ? app.primaryColor
+                                              : themeProvider
+                                                    .currentTheme
+                                                    .colorScheme
+                                                    .onSurface,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w700
+                                              : FontWeight.w600,
+                                          fontSize: ResponsiveLayout.getValue(
+                                            context,
+                                            mobile: ResponsiveLayout.isSmallMobile(context) ? 11 : 12,
+                                            tablet: 13,
+                                            desktop: 14,
+                                          ),
+                                        ),
+                                    textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ),
 
-                                const SizedBox(height: 2), // تقليل المسافة
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 2),
+                                ),
                                 // UI Kit Type
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
+                                Flexible(
+                                  flex: 1,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveLayout.getValue(context, mobile: 6, tablet: 8, desktop: 10),
+                                      vertical: ResponsiveLayout.getValue(context, mobile: 1, tablet: 2, desktop: 3),
+                                    ),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? app.primaryColor.withAlpha(
@@ -216,61 +241,90 @@ class AppSidebar extends StatelessWidget {
                                               .withAlpha((0.1 * 255).round()),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Text(
-                                    app.uiKitType.toUpperCase(),
-                                    style: themeProvider
-                                        .currentTheme
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: isSelected
-                                              ? app.primaryColor
-                                              : themeProvider
-                                                    .currentTheme
-                                                    .colorScheme
-                                                    .onSurface
-                                                    .withAlpha(
-                                                      (0.6 * 255).round(),
-                                                    ),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 9,
-                                          letterSpacing: 0.5,
-                                        ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 4), // تقليل المسافة
-                                // Pages Count
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.widgets_outlined,
-                                      size: 12,
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .onSurface
-                                          .withAlpha((0.5 * 255).round()),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${app.pages.length} ${isArabic ? 'صفحات' : 'pages'}',
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      app.uiKitType.toUpperCase(),
                                       style: themeProvider
                                           .currentTheme
                                           .textTheme
                                           .labelSmall
                                           ?.copyWith(
-                                            color: themeProvider
-                                                .currentTheme
-                                                .colorScheme
-                                                .onSurface
-                                                .withAlpha((0.5 * 255).round()),
-                                            fontSize: 10,
+                                            color: isSelected
+                                                ? app.primaryColor
+                                                : themeProvider
+                                                      .currentTheme
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withAlpha(
+                                                        (0.6 * 255).round(),
+                                                      ),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: ResponsiveLayout.getValue(
+                                              context,
+                                              mobile: ResponsiveLayout.isSmallMobile(context) ? 8 : 9,
+                                              tablet: 10,
+                                              desktop: 11,
+                                            ),
+                                            letterSpacing: 0.5,
                                           ),
+                                      textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ],
++                                  ),
+                                ),
+
+                                // Flexible spacing
+                                const Flexible(
+                                  flex: 1,
+                                  child: SizedBox(height: 2),
+                                ),
+                                // Pages Count
+                                Flexible(
+                                  flex: 1,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.widgets_outlined,
+                                        size: ResponsiveLayout.getValue(
+                                          context,
+                                          mobile: ResponsiveLayout.isSmallMobile(context) ? 10 : 12,
+                                          tablet: 13,
+                                          desktop: 14,
+                                        ),
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .onSurface
+                                            .withAlpha((0.5 * 255).round()),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${app.pages.length} ${isArabic ? 'صفحات' : 'pages'}',
+                                        style: themeProvider
+                                            .currentTheme
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                              color: themeProvider
+                                                  .currentTheme
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withAlpha((0.5 * 255).round()),
+                                              fontSize: ResponsiveLayout.getValue(
+                                                context,
+                                                mobile: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
+                                                tablet: 11,
+                                                desktop: 12,
+                                              ),
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -284,7 +338,7 @@ class AppSidebar extends StatelessWidget {
 
               // Footer
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: ResponsiveLayout.getPadding(context),
                 child: Column(
                   children: [
                     Divider(
@@ -296,33 +350,45 @@ class AppSidebar extends StatelessWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(
-                          Icons.palette_outlined,
-                          size: 16,
-                          color: themeProvider
-                              .currentTheme
-                              .colorScheme
-                              .onSurface
-                              .withAlpha((0.6 * 255).round()),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Icon(
+                            Icons.palette_outlined,
+                            size: ResponsiveLayout.getSmallIconSize(context),
+                            color: themeProvider
+                                .currentTheme
+                                .colorScheme
+                                .onSurface
+                                .withAlpha((0.6 * 255).round()),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            isArabic
-                                ? 'مجموعة شاملة من أنماط واجهات المستخدم'
-                                : 'Complete UI Kit Collection',
-                            style: themeProvider
-                                .currentTheme
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(
-                                  color: themeProvider
-                                      .currentTheme
-                                      .colorScheme
-                                      .onSurface
-                                      .withAlpha((0.6 * 255).round()),
-                                  fontSize: 11,
-                                ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              isArabic
+                                  ? 'مجموعة شاملة من أنماط واجهات المستخدم'
+                                  : 'Complete UI Kit Collection',
+                              style: themeProvider
+                                  .currentTheme
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: themeProvider
+                                        .currentTheme
+                                        .colorScheme
+                                        .onSurface
+                                        .withAlpha((0.6 * 255).round()),
+                                    fontSize: ResponsiveLayout.getValue(
+                                      context,
+                                      mobile: ResponsiveLayout.isSmallMobile(context) ? 10 : 11,
+                                      tablet: 12,
+                                      desktop: 13,
+                                    ),
+                                  ),
+                            ),
                           ),
                         ),
                       ],

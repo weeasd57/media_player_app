@@ -9,6 +9,17 @@ import '../apps/nature_app/nature_theme.dart';
 import '../apps/retro_app/retro_theme.dart';
 import '../apps/ocean_app/ocean_theme.dart';
 import '../apps/sunset_app/sunset_theme.dart';
+// New Themes
+import '../apps/neon_app/neon_theme.dart';
+import '../apps/material_you_app/material_you_theme.dart';
+import '../apps/dark_matter_app/dark_matter_theme.dart';
+import '../apps/holographic_app/holographic_theme.dart';
+import '../apps/vintage_app/vintage_theme.dart';
+import '../apps/crystal_app/crystal_theme.dart';
+import '../apps/synthwave_app/synthwave_theme.dart';
+import '../apps/nordic_app/nordic_theme.dart';
+import '../apps/cosmic_app/cosmic_theme.dart';
+import '../apps/brutalist_app/brutalist_theme.dart';
 
 class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = false;
@@ -45,6 +56,26 @@ class ThemeProvider extends ChangeNotifier {
         return _isDarkMode ? OceanTheme.darkTheme : OceanTheme.lightTheme;
       case 'sunset':
         return _isDarkMode ? SunsetTheme.darkTheme : SunsetTheme.lightTheme;
+      case 'neon':
+        return _isDarkMode ? NeonTheme.darkTheme : NeonTheme.lightTheme;
+      case 'material_you':
+        return _isDarkMode ? MaterialYouTheme.darkTheme : MaterialYouTheme.lightTheme;
+      case 'dark_matter':
+        return _isDarkMode ? DarkMatterTheme.darkTheme : DarkMatterTheme.lightTheme;
+      case 'holographic':
+        return _isDarkMode ? HolographicTheme.darkTheme : HolographicTheme.lightTheme;
+      case 'vintage':
+        return _isDarkMode ? VintageTheme.darkTheme : VintageTheme.lightTheme;
+      case 'crystal':
+        return _isDarkMode ? CrystalTheme.darkTheme : CrystalTheme.lightTheme;
+      case 'synthwave':
+        return _isDarkMode ? SynthwaveTheme.darkTheme : SynthwaveTheme.lightTheme;
+      case 'nordic':
+        return _isDarkMode ? NordicTheme.darkTheme : NordicTheme.lightTheme;
+      case 'cosmic':
+        return _isDarkMode ? CosmicTheme.darkTheme : CosmicTheme.lightTheme;
+      case 'brutalist':
+        return _isDarkMode ? BrutalistTheme.darkTheme : BrutalistTheme.lightTheme;
       default:
         return _isDarkMode ? ModernTheme.darkTheme : ModernTheme.lightTheme;
     }

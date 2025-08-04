@@ -406,6 +406,346 @@ class AppProvider extends ChangeNotifier {
         ),
       ],
     ),
+
+    // 11. Neon UI Kit
+    AppItem(
+      id: 'neon_app',
+      name: 'Neon',
+      nameAr: 'نيون',
+      icon: Icons.electric_bolt,
+      primaryColor: const Color(0xFFFF0080),
+      secondaryColor: const Color(0xFF00FFFF),
+      uiKitType: 'neon',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Neon Home',
+          nameAr: 'نيون الرئيسية',
+          icon: Icons.flash_on,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'audio',
+          name: 'Neon Audio',
+          nameAr: 'نيون الصوت',
+          icon: Icons.music_note,
+          screen: const AudioPlayerScreen(),
+        ),
+        AppPage(
+          id: 'video',
+          name: 'Neon Video',
+          nameAr: 'نيون الفيديو',
+          icon: Icons.videocam,
+          screen: const VideoPlayerScreen(),
+        ),
+      ],
+    ),
+
+    // 12. Material You UI Kit
+    AppItem(
+      id: 'material_you_app',
+      name: 'Material You',
+      nameAr: 'ماتيريال يو',
+      icon: Icons.palette,
+      primaryColor: const Color(0xFF6750A4),
+      secondaryColor: const Color(0xFF625B71),
+      uiKitType: 'material_you',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Material Home',
+          nameAr: 'ماتيريال الرئيسية',
+          icon: Icons.home,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'library',
+          name: 'Material Library',
+          nameAr: 'ماتيريال المكتبة',
+          icon: Icons.library_books,
+          screen: const LibraryScreen(),
+        ),
+        AppPage(
+          id: 'favorites',
+          name: 'Material Favorites',
+          nameAr: 'ماتيريال المفضلة',
+          icon: Icons.favorite,
+          screen: const FavoritesScreen(),
+        ),
+      ],
+    ),
+
+    // 13. Dark Matter UI Kit
+    AppItem(
+      id: 'dark_matter_app',
+      name: 'Dark Matter',
+      nameAr: 'المادة المظلمة',
+      icon: Icons.dark_mode,
+      primaryColor: const Color(0xFF1A1A1A),
+      secondaryColor: const Color(0xFF333333),
+      uiKitType: 'dark_matter',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Dark Home',
+          nameAr: 'المظلم الرئيسية',
+          icon: Icons.nights_stay,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'audio',
+          name: 'Dark Audio',
+          nameAr: 'المظلم الصوت',
+          icon: Icons.audiotrack,
+          screen: const AudioPlayerScreen(),
+        ),
+        AppPage(
+          id: 'settings',
+          name: 'Dark Settings',
+          nameAr: 'المظلم الإعدادات',
+          icon: Icons.settings,
+          screen: const SettingsScreen(),
+        ),
+      ],
+    ),
+
+    // 14. Holographic UI Kit
+    AppItem(
+      id: 'holographic_app',
+      name: 'Holographic',
+      nameAr: 'هولوجرافيك',
+      icon: Icons.auto_awesome,
+      primaryColor: const Color(0xFF9C27B0),
+      secondaryColor: const Color(0xFF673AB7),
+      uiKitType: 'holographic',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Holo Home',
+          nameAr: 'هولو الرئيسية',
+          icon: Icons.blur_on,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'video',
+          name: 'Holo Video',
+          nameAr: 'هولو الفيديو',
+          icon: Icons.video_library,
+          screen: const VideoPlayerScreen(),
+        ),
+        AppPage(
+          id: 'equalizer',
+          name: 'Holo Equalizer',
+          nameAr: 'هولو المعادل',
+          icon: Icons.equalizer,
+          screen: const EqualizerScreen(),
+        ),
+      ],
+    ),
+
+    // 15. Vintage UI Kit
+    AppItem(
+      id: 'vintage_app',
+      name: 'Vintage',
+      nameAr: 'فينتاج',
+      icon: Icons.camera_alt,
+      primaryColor: const Color(0xFF8D6E63),
+      secondaryColor: const Color(0xFFA1887F),
+      uiKitType: 'vintage',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Vintage Home',
+          nameAr: 'فينتاج الرئيسية',
+          icon: Icons.home_outlined,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'library',
+          name: 'Vintage Library',
+          nameAr: 'فينتاج المكتبة',
+          icon: Icons.library_music,
+          screen: const LibraryScreen(),
+        ),
+        AppPage(
+          id: 'audio',
+          name: 'Vintage Audio',
+          nameAr: 'فينتاج الصوت',
+          icon: Icons.radio,
+          screen: const AudioPlayerScreen(),
+        ),
+      ],
+    ),
+
+    // 16. Crystal UI Kit
+    AppItem(
+      id: 'crystal_app',
+      name: 'Crystal',
+      nameAr: 'كريستال',
+      icon: Icons.diamond,
+      primaryColor: const Color(0xFF00BCD4),
+      secondaryColor: const Color(0xFF26C6DA),
+      uiKitType: 'crystal',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Crystal Home',
+          nameAr: 'كريستال الرئيسية',
+          icon: Icons.home_max,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'video',
+          name: 'Crystal Video',
+          nameAr: 'كريستال الفيديو',
+          icon: Icons.video_collection,
+          screen: const VideoPlayerScreen(),
+        ),
+        AppPage(
+          id: 'favorites',
+          name: 'Crystal Favorites',
+          nameAr: 'كريستال المفضلة',
+          icon: Icons.favorite_border,
+          screen: const FavoritesScreen(),
+        ),
+      ],
+    ),
+
+    // 17. Synthwave UI Kit
+    AppItem(
+      id: 'synthwave_app',
+      name: 'Synthwave',
+      nameAr: 'سينث ويف',
+      icon: Icons.waves,
+      primaryColor: const Color(0xFFFF6EC7),
+      secondaryColor: const Color(0xFF00D4FF),
+      uiKitType: 'synthwave',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Synth Home',
+          nameAr: 'سينث الرئيسية',
+          icon: Icons.graphic_eq,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'audio',
+          name: 'Synth Audio',
+          nameAr: 'سينث الصوت',
+          icon: Icons.music_video,
+          screen: const AudioPlayerScreen(),
+        ),
+        AppPage(
+          id: 'equalizer',
+          name: 'Synth Equalizer',
+          nameAr: 'سينث المعادل',
+          icon: Icons.tune,
+          screen: const EqualizerScreen(),
+        ),
+      ],
+    ),
+
+    // 18. Nordic UI Kit
+    AppItem(
+      id: 'nordic_app',
+      name: 'Nordic',
+      nameAr: 'نورديك',
+      icon: Icons.ac_unit,
+      primaryColor: const Color(0xFF37474F),
+      secondaryColor: const Color(0xFF546E7A),
+      uiKitType: 'nordic',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Nordic Home',
+          nameAr: 'نورديك الرئيسية',
+          icon: Icons.cottage,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'library',
+          name: 'Nordic Library',
+          nameAr: 'نورديك المكتبة',
+          icon: Icons.menu_book,
+          screen: const LibraryScreen(),
+        ),
+        AppPage(
+          id: 'settings',
+          name: 'Nordic Settings',
+          nameAr: 'نورديك الإعدادات',
+          icon: Icons.settings_outlined,
+          screen: const SettingsScreen(),
+        ),
+      ],
+    ),
+
+    // 19. Cosmic UI Kit
+    AppItem(
+      id: 'cosmic_app',
+      name: 'Cosmic',
+      nameAr: 'كوني',
+      icon: Icons.stars,
+      primaryColor: const Color(0xFF3F51B5),
+      secondaryColor: const Color(0xFF9C27B0),
+      uiKitType: 'cosmic',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Cosmic Home',
+          nameAr: 'كوني الرئيسية',
+          icon: Icons.rocket_launch,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'video',
+          name: 'Cosmic Video',
+          nameAr: 'كوني الفيديو',
+          icon: Icons.movie,
+          screen: const VideoPlayerScreen(),
+        ),
+        AppPage(
+          id: 'favorites',
+          name: 'Cosmic Favorites',
+          nameAr: 'كوني المفضلة',
+          icon: Icons.star_rate,
+          screen: const FavoritesScreen(),
+        ),
+      ],
+    ),
+
+    // 20. Brutalist UI Kit
+    AppItem(
+      id: 'brutalist_app',
+      name: 'Brutalist',
+      nameAr: 'بروتاليست',
+      icon: Icons.architecture,
+      primaryColor: const Color(0xFF424242),
+      secondaryColor: const Color(0xFF616161),
+      uiKitType: 'brutalist',
+      pages: [
+        AppPage(
+          id: 'home',
+          name: 'Brutal Home',
+          nameAr: 'بروتال الرئيسية',
+          icon: Icons.construction,
+          screen: HomeScreen(onNavigateToTab: (index) {}),
+        ),
+        AppPage(
+          id: 'audio',
+          name: 'Brutal Audio',
+          nameAr: 'بروتال الصوت',
+          icon: Icons.speaker,
+          screen: const AudioPlayerScreen(),
+        ),
+        AppPage(
+          id: 'library',
+          name: 'Brutal Library',
+          nameAr: 'بروتال المكتبة',
+          icon: Icons.folder,
+          screen: const LibraryScreen(),
+        ),
+      ],
+    ),
   ];
 
   void selectApp(int appIndex) {
