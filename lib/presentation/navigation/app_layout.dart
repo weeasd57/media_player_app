@@ -109,84 +109,15 @@ class AppLayout extends StatelessWidget {
                                   ),
                                 ),
 
-                              // App Icon with Modern Design
-                              Container(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 32
-                                    : 40,
-                                height: ResponsiveLayout.isSmallMobile(context)
-                                    ? 32
-                                    : 40,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      currentApp.primaryColor,
-                                      currentApp.secondaryColor,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: currentApp.primaryColor.withAlpha(
-                                        ((currentApp.primaryColor.a *
-                                                    0.3 *
-                                                    255.0)
-                                                .round() &
-                                            0xff),
-                                      ),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Icon(
-                                    currentApp.icon,
-                                    color: Colors.white,
-                                    size: ResponsiveLayout.getSmallIconSize(
-                                      context,
-                                    ),
-                                  ),
+                              // App Title
+                              Text(
+                                isArabic ? 'مشغل الوسائط' : 'Media Player',
+                                style: themeProvider.currentTheme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: currentApp.primaryColor,
                                 ),
                               ),
-                              SizedBox(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 8
-                                    : 12,
-                              ),
-
-                              // Removed App Name and UI Kit Type
-
-                              // Separator and Current Page
-                              if (currentApp.pages.length > 1) ...[
-                                SizedBox(
-                                  width: ResponsiveLayout.isSmallMobile(context)
-                                      ? 8
-                                      : 12,
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 24,
-                                  color: themeProvider.currentTheme.dividerColor
-                                      .withAlpha((0.2 * 255).round()),
-                                ),
-                                SizedBox(
-                                  width: ResponsiveLayout.isSmallMobile(context)
-                                      ? 8
-                                      : 12,
-                                ),
-
-                                // Removed Current Page Info
-                              ],
-
-                              SizedBox(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 6
-                                    : 8,
-                              ),
+                              const Spacer(),
 
                               // Action Buttons
                               Row(

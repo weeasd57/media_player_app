@@ -13,6 +13,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   double _currentPosition = 0.0;
   double _volume = 0.7;
   bool _isFullscreen = false;
+  bool _showBottomSheet = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   icon: const Icon(Icons.folder_open),
                   onPressed: () {
                     _showFilePicker();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {
+                    _showVideoSettings();
                   },
                 ),
               ],
@@ -383,6 +390,342 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         ],
       ),
     );
+  }
+
+  void _showVideoSettings() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => _buildVideoSettingsSheet(),
+    );
+  }
+
+  Widget _buildVideoSettingsSheet() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Handle
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                const Icon(Icons.settings, size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'إعدادات الفيديو',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Playback Settings
+                  _buildSettingsSection(
+                    'إعدادات التشغيل',
+                    [
+                      _buildSettingTile(
+                        'سرعة التشغيل',
+                        '1.0x',
+                        Icons.speed,
+                        () => _showSpeedDialog(),
+                      ),
+                      _buildSettingTile(
+                        'جودة الفيديو',
+                        'تلقائي',
+                        Icons.high_quality,
+                        () => _showQualityDialog(),
+                      ),
+                      _buildSettingTile(
+                        'التشغيل التلقائي',
+                        _isPlaying ? 'مفعل' : 'معطل',
+                        Icons.play_circle_outline,
+                        () => _toggleAutoPlay(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Audio Settings
+                  _buildSettingsSection(
+                    'إعدادات الصوت',
+                    [
+                      _buildSliderTile(
+                        'مستوى الصوت',
+                        _volume,
+                        Icons.volume_up,
+                        (value) => _updateVolume(value),
+                      ),
+                      _buildSettingTile(
+                        'معادل الصوت',
+                        'عادي',
+                        Icons.equalizer,
+                        () => _showEqualizer(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Display Settings
+                  _buildSettingsSection(
+                    'إعدادات العرض',
+                    [
+                      _buildSettingTile(
+                        'الوضع الكامل',
+                        _isFullscreen ? 'مفعل' : 'معطل',
+                        Icons.fullscreen,
+                        () => _toggleFullscreen(),
+                      ),
+                      _buildSettingTile(
+                        'السطوع',
+                        'متوسط',
+                        Icons.brightness_6,
+                        () => _showBrightnessDialog(),
+                      ),
+                      _buildSettingTile(
+                        'التباين',
+                        'عادي',
+                        Icons.contrast,
+                        () => _showContrastDialog(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Advanced Settings
+                  _buildSettingsSection(
+                    'إعدادات متقدمة',
+                    [
+                      _buildSettingTile(
+                        'التخزين المؤقت',
+                        '1GB',
+                        Icons.storage,
+                        () => _showCacheSettings(),
+                      ),
+                      _buildSettingTile(
+                        'تنسيق الفيديو',
+                        'MP4',
+                        Icons.video_file,
+                        () => _showFormatSettings(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: children,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingTile(String title, String value, IconData icon, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.blue),
+      title: Text(title),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 14,
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: Colors.grey),
+        ],
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildSliderTile(String title, double value, IconData icon, ValueChanged<double> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.blue),
+              const SizedBox(width: 12),
+              Text(title),
+              const Spacer(),
+              Text('${(value * 100).round()}%'),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Slider(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Colors.blue,
+            inactiveColor: Colors.grey[300],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSpeedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('سرعة التشغيل'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildSpeedOption('0.5x'),
+            _buildSpeedOption('0.75x'),
+            _buildSpeedOption('1.0x', isSelected: true),
+            _buildSpeedOption('1.25x'),
+            _buildSpeedOption('1.5x'),
+            _buildSpeedOption('2.0x'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpeedOption(String speed, {bool isSelected = false}) {
+    return ListTile(
+      title: Text(speed),
+      trailing: isSelected ? const Icon(Icons.check, color: Colors.blue) : null,
+      onTap: () {
+        Navigator.pop(context);
+        // Apply speed
+      },
+    );
+  }
+
+  void _showQualityDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('جودة الفيديو'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildQualityOption('تلقائي', isSelected: true),
+            _buildQualityOption('1080p'),
+            _buildQualityOption('720p'),
+            _buildQualityOption('480p'),
+            _buildQualityOption('360p'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQualityOption(String quality, {bool isSelected = false}) {
+    return ListTile(
+      title: Text(quality),
+      trailing: isSelected ? const Icon(Icons.check, color: Colors.blue) : null,
+      onTap: () {
+        Navigator.pop(context);
+        // Apply quality
+      },
+    );
+  }
+
+  void _toggleAutoPlay() {
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+  }
+
+  void _updateVolume(double value) {
+    setState(() {
+      _volume = value;
+    });
+  }
+
+  void _showEqualizer() {
+    // Show equalizer
+  }
+
+  void _toggleFullscreen() {
+    setState(() {
+      _isFullscreen = !_isFullscreen;
+    });
+    Navigator.pop(context);
+  }
+
+  void _showBrightnessDialog() {
+    // Show brightness dialog
+  }
+
+  void _showContrastDialog() {
+    // Show contrast dialog
+  }
+
+  void _showCacheSettings() {
+    // Show cache settings
+  }
+
+  void _showFormatSettings() {
+    // Show format settings
   }
 
   String _formatDuration(Duration duration) {

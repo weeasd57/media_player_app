@@ -41,25 +41,45 @@ class AppSidebar extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Toggle button - وضع حجم محدد للزر
+              // Toggle button - تحسين تصميم زر الإخفاء
               Container(
                 width: 48,
                 height: 48,
-                alignment: Alignment.center,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: ResponsiveLayout.getNavigationIconSize(context),
-                  onPressed: () {
-                    appProvider.showSidebar();
-                  },
-                  tooltip: appProvider.isSidebarHidden
-                      ? 'فتح القائمة الجانبية'
-                      : 'إخفاء القائمة الجانبية',
-                  icon: Icon(
-                    appProvider.isSidebarHidden
-                        ? (isArabic ? Icons.chevron_left : Icons.chevron_right)
-                        : (isArabic ? Icons.chevron_right : Icons.chevron_left),
-                    color: themeProvider.currentTheme.colorScheme.primary,
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: themeProvider.currentTheme.colorScheme.surfaceContainerHighest.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: themeProvider.currentTheme.colorScheme.outline.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      appProvider.hideSidebar();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: AnimatedRotation(
+                        turns: isArabic ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 300),
+                        child: Icon(
+                          Icons.chevron_left,
+                          color: themeProvider.currentTheme.colorScheme.primary,
+                          size: 24,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
