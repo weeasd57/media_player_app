@@ -13,12 +13,17 @@ class AppProvider extends ChangeNotifier {
   int _selectedPageIndex = 0;
   // استخدام حالة واحدة للشريط الجانبي: false = مفتوح، true = مخفي
   bool _isSidebarHidden = true;
+  // إضافة متغيرات للتنقل إلى المفضلة والإعدادات
+  bool _showFavorites = false;
+  bool _showSettings = false;
 
   int get selectedAppIndex => _selectedAppIndex;
   int get selectedPageIndex => _selectedPageIndex;
   // نحتفظ بهذا للتوافق مع الكود السابق، لكن دائمًا يكون false
   bool get isSidebarCollapsed => false;
   bool get isSidebarHidden => _isSidebarHidden;
+  bool get showFavorites => _showFavorites;
+  bool get showSettings => _showSettings;
 
   AppItem get currentApp => apps[_selectedAppIndex];
   AppPage get currentPage => currentApp.pages[_selectedPageIndex];
@@ -50,13 +55,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite_rounded,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio Player',
           nameAr: 'مشغل الصوت',
@@ -76,13 +74,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل',
           icon: Icons.equalizer_rounded,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Settings',
-          nameAr: 'الإعدادات',
-          icon: Icons.settings_rounded,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -112,13 +103,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite_outline,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio',
           nameAr: 'الصوت',
@@ -138,13 +122,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل',
           icon: Icons.equalizer_outlined,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Settings',
-          nameAr: 'الإعدادات',
-          icon: Icons.settings_outlined,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -174,13 +151,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite_border,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio Player',
           nameAr: 'مشغل الصوت',
@@ -200,13 +170,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Settings',
-          nameAr: 'الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -236,13 +199,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio Player',
           nameAr: 'مشغل الصوت',
@@ -262,13 +218,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Settings',
-          nameAr: 'الإعدادات',
-          icon: Icons.tune,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -298,13 +247,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite_border,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio Player',
           nameAr: 'مشغل الصوت',
@@ -324,13 +266,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Settings',
-          nameAr: 'الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -360,13 +295,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Audio Matrix',
           nameAr: 'مصفوفة الصوت',
@@ -386,13 +314,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'مصفوفة المعادل',
           icon: Icons.waves,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'System Settings',
-          nameAr: 'إعدادات النظام',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -422,13 +343,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Nature Sounds',
           nameAr: 'أصوات الطبيعة',
@@ -448,13 +362,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'معادل الطبيعة',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Nature Settings',
-          nameAr: 'إعدادات الطبيعة',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -484,13 +391,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Favorites',
-          nameAr: 'المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Vinyl Player',
           nameAr: 'مشغل الفينيل',
@@ -510,13 +410,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المعادل الكلاسيكي',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Retro Settings',
-          nameAr: 'الإعدادات الكلاسيكية',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -546,13 +439,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Treasures',
-          nameAr: 'الكنوز',
-          icon: Icons.diamond,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Ocean Sounds',
           nameAr: 'أصوات المحيط',
@@ -572,13 +458,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'معادل المحيط',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Ocean Settings',
-          nameAr: 'إعدادات المحيط',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -608,13 +487,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Golden Moments',
-          nameAr: 'اللحظات الذهبية',
-          icon: Icons.star,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Sunset Audio',
           nameAr: 'صوت الغروب',
@@ -634,13 +506,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'معادل الغروب',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Camera Settings',
-          nameAr: 'إعدادات الكاميرا',
-          icon: Icons.camera_alt,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -670,13 +535,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Neon Favorites',
-          nameAr: 'نيون المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Neon Audio',
           nameAr: 'نيون الصوت',
@@ -696,13 +554,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'نيون المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Neon Settings',
-          nameAr: 'إعدادات النيون',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -732,13 +583,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Material Favorites',
-          nameAr: 'ماتيريال المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Material Audio',
           nameAr: 'ماتيريال الصوت',
@@ -758,13 +602,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'ماتيريال المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Material Settings',
-          nameAr: 'إعدادات ماتيريال',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -794,13 +631,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Dark Favorites',
-          nameAr: 'المظلم المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Dark Audio',
           nameAr: 'المظلم الصوت',
@@ -820,13 +650,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'المظلم المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Dark Settings',
-          nameAr: 'المظلم الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -856,13 +679,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Holo Favorites',
-          nameAr: 'هولو المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Holo Audio',
           nameAr: 'هولو الصوت',
@@ -882,13 +698,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'هولو المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Holo Settings',
-          nameAr: 'هولو الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -918,13 +727,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Vintage Favorites',
-          nameAr: 'فينتاج المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Vintage Audio',
           nameAr: 'فينتاج الصوت',
@@ -944,13 +746,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'فينتاج المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Vintage Settings',
-          nameAr: 'فينتاج الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -980,13 +775,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Crystal Favorites',
-          nameAr: 'كريستال المفضلة',
-          icon: Icons.favorite_border,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Crystal Audio',
           nameAr: 'كريستال الصوت',
@@ -1006,13 +794,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'كريستال المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Crystal Settings',
-          nameAr: 'كريستال الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -1042,13 +823,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Synth Favorites',
-          nameAr: 'سينث المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Synth Audio',
           nameAr: 'سينث الصوت',
@@ -1068,13 +842,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'سينث المعادل',
           icon: Icons.tune,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Synth Settings',
-          nameAr: 'سينث الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -1104,13 +871,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Nordic Favorites',
-          nameAr: 'نورديك المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Nordic Audio',
           nameAr: 'نورديك الصوت',
@@ -1130,13 +890,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'نورديك المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Nordic Settings',
-          nameAr: 'نورديك الإعدادات',
-          icon: Icons.settings_outlined,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -1166,13 +919,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Cosmic Favorites',
-          nameAr: 'كوني المفضلة',
-          icon: Icons.star_rate,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Cosmic Audio',
           nameAr: 'كوني الصوت',
@@ -1192,13 +938,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'كوني المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Cosmic Settings',
-          nameAr: 'كوني الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -1228,13 +967,6 @@ class AppProvider extends ChangeNotifier {
           screen: const LibraryScreen(),
         ),
         AppPage(
-          id: 'favorites',
-          name: 'Brutal Favorites',
-          nameAr: 'بروتال المفضلة',
-          icon: Icons.favorite,
-          screen: const FavoritesScreen(),
-        ),
-        AppPage(
           id: 'audio',
           name: 'Brutal Audio',
           nameAr: 'بروتال الصوت',
@@ -1254,13 +986,6 @@ class AppProvider extends ChangeNotifier {
           nameAr: 'بروتال المعادل',
           icon: Icons.equalizer,
           screen: const EqualizerScreen(),
-        ),
-        AppPage(
-          id: 'settings',
-          name: 'Brutal Settings',
-          nameAr: 'بروتال الإعدادات',
-          icon: Icons.settings,
-          screen: const SettingsScreen(),
         ),
       ],
     ),
@@ -1303,6 +1028,27 @@ class AppProvider extends ChangeNotifier {
   // نحتفظ بهذه الدالة للتوافق مع الكود السابق
   void expandSidebar() {
     _isSidebarHidden = false; // فتح
+    notifyListeners();
+  }
+
+  // دالة للتنقل إلى المفضلة
+  void navigateToFavorites() {
+    _showFavorites = true;
+    _showSettings = false;
+    notifyListeners();
+  }
+
+  // دالة للتنقل إلى الإعدادات
+  void navigateToSettings() {
+    _showSettings = true;
+    _showFavorites = false;
+    notifyListeners();
+  }
+
+  // دالة للعودة إلى الصفحة الرئيسية
+  void navigateToHome() {
+    _showFavorites = false;
+    _showSettings = false;
     notifyListeners();
   }
 }

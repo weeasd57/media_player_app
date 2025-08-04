@@ -46,7 +46,9 @@ class UIKitCollectionApp extends StatelessWidget {
             title: 'UI Kit Collection',
             theme: themeProvider.currentTheme,
             locale: localeProvider.locale,
-            home: const AppLayout(),
+            home: const SafeArea(
+              child: AppLayout(),
+            ),
             debugShowCheckedModeBanner: false,
             supportedLocales: const [
               Locale('en', 'US'), 
