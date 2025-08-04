@@ -191,19 +191,22 @@ class HomeScreen extends StatelessWidget {
     bool isArabic,
     currentApp,
   ) {
+    final isSmallMobile = MediaQuery.of(context).size.width < 400;
+    
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isSmallMobile ? 12 : 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 16),
           _buildHeader(context, themeProvider, isArabic, currentApp),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallMobile ? 16 : 20),
           _buildQuickStats(context, themeProvider, isArabic, currentApp),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallMobile ? 16 : 20),
           _buildQuickActions(context, themeProvider, isArabic, currentApp),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallMobile ? 16 : 20),
           _buildRecentActivity(context, themeProvider, isArabic, currentApp),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallMobile ? 16 : 20),
           _buildFeatures(context, themeProvider, isArabic, currentApp),
         ],
       ),
@@ -258,10 +261,10 @@ class HomeScreen extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: isMobile ? 2 : 4,
-          mainAxisSpacing: isSmallMobile ? 8 : 16,
-          crossAxisSpacing: isSmallMobile ? 8 : 16,
-          childAspectRatio: isSmallMobile ? 1.0 : (isMobile ? 1.2 : 1.5),
-          padding: EdgeInsets.all(isSmallMobile ? 8 : 16),
+          mainAxisSpacing: isSmallMobile ? 2 : 6,
+          crossAxisSpacing: isSmallMobile ? 2 : 6,
+          childAspectRatio: isSmallMobile ? 0.7 : (isMobile ? 0.9 : 1.1),
+          padding: EdgeInsets.all(isSmallMobile ? 1 : 2),
           children: [
             _buildStatCard(
               context,
@@ -318,17 +321,17 @@ class HomeScreen extends StatelessWidget {
     
     return ThemedCard(
       child: Padding(
-        padding: EdgeInsets.all(isSmallMobile ? 8 : 12),
+        padding: EdgeInsets.all(isSmallMobile ? 4 : 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon, 
-              size: isSmallMobile ? 24 : 32, 
+              size: isSmallMobile ? 18 : 24, 
               color: currentApp.primaryColor
             ),
-            SizedBox(height: isSmallMobile ? 8 : 12),
+            SizedBox(height: isSmallMobile ? 4 : 6),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -336,11 +339,11 @@ class HomeScreen extends StatelessWidget {
                 style: themeProvider.currentTheme.textTheme.headlineSmall?.copyWith(
                   color: themeProvider.currentTheme.colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
-                  fontSize: isSmallMobile ? 16 : 20,
+                  fontSize: isSmallMobile ? 12 : 16,
                 ),
               ),
             ),
-            SizedBox(height: isSmallMobile ? 2 : 4),
+            SizedBox(height: isSmallMobile ? 1 : 2),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -350,7 +353,7 @@ class HomeScreen extends StatelessWidget {
                     (0.6 * 255).round(),
                   ),
                   fontWeight: FontWeight.w500,
-                  fontSize: isSmallMobile ? 10 : 12,
+                  fontSize: isSmallMobile ? 8 : 10,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
