@@ -258,7 +258,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisCount: isMobile ? 2 : 4,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: isMobile ? 1.2 : 1.5,
+          childAspectRatio: isMobile ? 1.4 : 1.5,
           children: [
             _buildStatCard(
               context,
@@ -474,6 +474,8 @@ class HomeScreen extends StatelessWidget {
                                     .onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           activity['subtitle'] as String,
@@ -485,6 +487,8 @@ class HomeScreen extends StatelessWidget {
                                     .onSurface
                                     .withAlpha((0.6 * 255).round()),
                               ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -587,6 +591,8 @@ class HomeScreen extends StatelessWidget {
                                     .onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -599,6 +605,8 @@ class HomeScreen extends StatelessWidget {
                                     .onSurface
                                     .withAlpha((0.6 * 255).round()),
                               ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

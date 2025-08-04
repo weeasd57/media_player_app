@@ -230,8 +230,8 @@ class AppNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 12 : 24,
-        vertical: isSmallScreen ? 8 : 12,
+        horizontal: isSmallScreen ? 8 : 24,
+        vertical: isSmallScreen ? 6 : 12,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -246,8 +246,8 @@ class AppNavigationBar extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
-                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 2 : 4),
-                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 8 : 12),
+                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 1 : 4),
+                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 6 : 12),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? appProvider.currentApp.primaryColor.withAlpha(
@@ -261,7 +261,7 @@ class AppNavigationBar extends StatelessWidget {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
+                      padding: EdgeInsets.all(isSmallScreen ? 4 : 8),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? appProvider.currentApp.primaryColor
@@ -299,7 +299,7 @@ class AppNavigationBar extends StatelessWidget {
                                   : FontWeight.w400,
                               fontSize: ResponsiveLayout.getValue(
                                 context,
-                                mobile: isSmallScreen ? 9 : 10,
+                                mobile: isSmallScreen ? 8 : 10,
                                 tablet: 11,
                                 desktop: 12,
                               ),
@@ -351,6 +351,7 @@ class AppNavigationBar extends StatelessWidget {
               ],
             ),
             child: _buildNavigationItems(
+              context,
               appProvider,
               themeProvider,
               isArabic,
@@ -392,6 +393,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -432,6 +434,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -456,6 +459,7 @@ class AppNavigationBar extends StatelessWidget {
         ),
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -489,6 +493,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -519,6 +524,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -544,6 +550,7 @@ class AppNavigationBar extends StatelessWidget {
         ),
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -574,6 +581,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -614,6 +622,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -623,6 +632,7 @@ class AppNavigationBar extends StatelessWidget {
   }
 
   Widget _buildNavigationItems(
+    BuildContext context,
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
@@ -676,7 +686,9 @@ class AppNavigationBar extends StatelessWidget {
                                   : FontWeight.w400,
                               fontSize: ResponsiveLayout.getValue(
                                 context,
-                                mobile: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
+                                mobile: ResponsiveLayout.isSmallMobile(context)
+                                    ? 9
+                                    : 10,
                                 tablet: 11,
                                 desktop: 12,
                               ),
@@ -746,13 +758,16 @@ class AppNavigationBar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withAlpha((0.8 * 255).round()),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.8 * 255).round(),
+            ),
             blurRadius: 25,
             spreadRadius: 2,
           ),
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -779,6 +794,7 @@ class AppNavigationBar extends StatelessWidget {
         ),
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -799,10 +815,7 @@ class AppNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF0A0A0A),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF333333),
-          width: 2,
-        ),
+        border: Border.all(color: const Color(0xFF333333), width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha((0.9 * 255).round()),
@@ -812,6 +825,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -833,7 +847,9 @@ class AppNavigationBar extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             appProvider.currentApp.primaryColor.withAlpha((0.3 * 255).round()),
-            appProvider.currentApp.secondaryColor.withAlpha((0.3 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.3 * 255).round(),
+            ),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
@@ -846,6 +862,7 @@ class AppNavigationBar extends StatelessWidget {
         ),
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -879,6 +896,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -900,18 +918,23 @@ class AppNavigationBar extends StatelessWidget {
         color: Colors.white.withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: appProvider.currentApp.primaryColor.withAlpha((0.5 * 255).round()),
+          color: appProvider.currentApp.primaryColor.withAlpha(
+            (0.5 * 255).round(),
+          ),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withAlpha((0.2 * 255).round()),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.2 * 255).round(),
+            ),
             blurRadius: 20,
             spreadRadius: 1,
           ),
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -946,12 +969,15 @@ class AppNavigationBar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withAlpha((0.6 * 255).round()),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.6 * 255).round(),
+            ),
             blurRadius: 20,
           ),
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -972,10 +998,7 @@ class AppNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: themeProvider.currentTheme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF90A4AE),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF90A4AE), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withAlpha((0.2 * 255).round()),
@@ -985,6 +1008,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -1006,7 +1030,9 @@ class AppNavigationBar extends StatelessWidget {
         gradient: RadialGradient(
           colors: [
             appProvider.currentApp.primaryColor.withAlpha((0.3 * 255).round()),
-            appProvider.currentApp.secondaryColor.withAlpha((0.2 * 255).round()),
+            appProvider.currentApp.secondaryColor.withAlpha(
+              (0.2 * 255).round(),
+            ),
             Colors.black.withAlpha((0.8 * 255).round()),
           ],
           center: Alignment.center,
@@ -1015,13 +1041,16 @@ class AppNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: appProvider.currentApp.primaryColor.withAlpha((0.4 * 255).round()),
+            color: appProvider.currentApp.primaryColor.withAlpha(
+              (0.4 * 255).round(),
+            ),
             blurRadius: 25,
             spreadRadius: 2,
           ),
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,
@@ -1042,10 +1071,7 @@ class AppNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: themeProvider.currentTheme.colorScheme.surface,
         borderRadius: BorderRadius.circular(0), // Sharp edges
-        border: Border.all(
-          color: Colors.black,
-          width: 4,
-        ),
+        border: Border.all(color: Colors.black, width: 4),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha((0.5 * 255).round()),
@@ -1055,6 +1081,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       ),
       child: _buildNavigationItems(
+        context,
         appProvider,
         themeProvider,
         isArabic,

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class NeonTheme {
   static const Color _neonPink = Color(0xFFFF0080);
   static const Color _neonCyan = Color(0xFF00FFFF);
-  static const Color _neonPurple = Color(0xFF8000FF);
-  static const Color _neonGreen = Color(0xFF00FF00);
+  // static const Color _neonPurple = Color(0xFF8000FF);
+  // static const Color _neonGreen = Color(0xFF00FF00);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -25,7 +25,7 @@ class NeonTheme {
         foregroundColor: Color(0xFF1A1A1A),
         elevation: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: const Color(0xFFFFFFFF),
         elevation: 4,
         shadowColor: _neonPink.withOpacity(0.2),
@@ -67,7 +67,7 @@ class NeonTheme {
         foregroundColor: Color(0xFFFFFFFF),
         elevation: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: const Color(0xFF1A1A1A),
         elevation: 8,
         shadowColor: _neonPink.withOpacity(0.5),

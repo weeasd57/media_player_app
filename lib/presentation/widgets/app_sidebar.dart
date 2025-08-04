@@ -80,13 +80,29 @@ class AppSidebar extends StatelessWidget {
                 child: Padding(
                   padding: ResponsiveLayout.getPadding(context),
                   child: GridView.builder(
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: ResponsiveLayout.getSidebarGridColumns(context),
-                          mainAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
-                          crossAxisSpacing: ResponsiveLayout.getValue(context, mobile: 8, tablet: 12, desktop: 16),
-                          childAspectRatio: ResponsiveLayout.getValue(context, mobile: 0.9, tablet: 1.0, desktop: 1.1),
-                        ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: ResponsiveLayout.getSidebarGridColumns(
+                        context,
+                      ),
+                      mainAxisSpacing: ResponsiveLayout.getValue(
+                        context,
+                        mobile: 8,
+                        tablet: 12,
+                        desktop: 16,
+                      ),
+                      crossAxisSpacing: ResponsiveLayout.getValue(
+                        context,
+                        mobile: 8,
+                        tablet: 12,
+                        desktop: 16,
+                      ),
+                      childAspectRatio: ResponsiveLayout.getValue(
+                        context,
+                        mobile: 0.9,
+                        tablet: 1.0,
+                        desktop: 1.1,
+                      ),
+                    ),
                     itemCount: appProvider.apps.length,
                     itemBuilder: (context, index) {
                       final app = appProvider.apps[index];
@@ -122,7 +138,8 @@ class AppSidebar extends StatelessWidget {
                                       color: app.primaryColor.withAlpha(
                                         (0.2 * 255).round(),
                                       ),
-                                      blurRadius: 20,
+                                      blurRadius: (isSelected ? 16 : 8)
+                                          .toDouble(),
                                       offset: const Offset(0, 8),
                                     ),
                                   ]
@@ -130,7 +147,12 @@ class AppSidebar extends StatelessWidget {
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(
-                              ResponsiveLayout.getValue(context, mobile: 8, tablet: 10, desktop: 12),
+                              ResponsiveLayout.getValue(
+                                context,
+                                mobile: 8,
+                                tablet: 10,
+                                desktop: 12,
+                              ),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -141,189 +163,227 @@ class AppSidebar extends StatelessWidget {
                                   flex: 3,
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
-                                    width: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
-                                    height: ResponsiveLayout.getSidebarCardIconSize(context, isSelected),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        app.primaryColor,
-                                        app.secondaryColor,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: app.primaryColor.withAlpha(
-                                          ((isSelected ? 0.4 : 0.2) * 255)
-                                              .round(),
+                                    width:
+                                        ResponsiveLayout.getSidebarCardIconSize(
+                                          context,
+                                          isSelected,
                                         ),
-                                        blurRadius: (isSelected ? 16 : 8)
-                                            .toDouble(),
-                                        offset: const Offset(0, 4),
+                                    height:
+                                        ResponsiveLayout.getSidebarCardIconSize(
+                                          context,
+                                          isSelected,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          app.primaryColor,
+                                          app.secondaryColor,
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
                                       ),
-                                    ],
-                                  ),
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Icon(
-                                      app.icon,
-                                      color: Colors.white,
-                                      size: ResponsiveLayout.getSidebarCardIconSize(context, isSelected) * 0.6,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: app.primaryColor.withAlpha(
+                                            ((isSelected ? 0.4 : 0.2) * 255)
+                                                .round(),
+                                          ),
+                                          blurRadius: (isSelected ? 16 : 8)
+                                              .toDouble(),
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
-                                                                      ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Icon(
+                                        app.icon,
+                                        color: Colors.white,
+                                        size:
+                                            ResponsiveLayout.getSidebarCardIconSize(
+                                              context,
+                                              isSelected,
+                                            ) *
+                                            0.6,
+                                      ),
+                                    ),
                                   ),
                                 ),
 
-                                // Flexible spacing
-                                const Flexible(
-                                  flex: 1,
-                                  child: SizedBox(height: 4),
-                                ),
+                                // Spacing
+                                SizedBox(height: 4),
                                 // App Name
                                 Flexible(
                                   flex: 2,
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
-                                    isArabic ? app.nameAr : app.name,
-                                    style: themeProvider
-                                        .currentTheme
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(
-                                          color: isSelected
-                                              ? app.primaryColor
-                                              : themeProvider
-                                                    .currentTheme
-                                                    .colorScheme
-                                                    .onSurface,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w700
-                                              : FontWeight.w600,
-                                          fontSize: ResponsiveLayout.getValue(
-                                            context,
-                                            mobile: ResponsiveLayout.isSmallMobile(context) ? 11 : 12,
-                                            tablet: 13,
-                                            desktop: 14,
-                                          ),
-                                        ),
-                                    textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-
-                                // Flexible spacing
-                                const Flexible(
-                                  flex: 1,
-                                  child: SizedBox(height: 2),
-                                ),
-                                // UI Kit Type
-                                Flexible(
-                                  flex: 1,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: ResponsiveLayout.getValue(context, mobile: 6, tablet: 8, desktop: 10),
-                                      vertical: ResponsiveLayout.getValue(context, mobile: 1, tablet: 2, desktop: 3),
-                                    ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? app.primaryColor.withAlpha(
-                                            (0.2 * 255).round(),
-                                          )
-                                        : themeProvider
-                                              .currentTheme
-                                              .colorScheme
-                                              .onSurface
-                                              .withAlpha((0.1 * 255).round()),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      app.uiKitType.toUpperCase(),
+                                      isArabic ? app.nameAr : app.name,
                                       style: themeProvider
                                           .currentTheme
                                           .textTheme
-                                          .labelSmall
+                                          .titleSmall
                                           ?.copyWith(
                                             color: isSelected
                                                 ? app.primaryColor
                                                 : themeProvider
                                                       .currentTheme
                                                       .colorScheme
-                                                      .onSurface
-                                                      .withAlpha(
-                                                        (0.6 * 255).round(),
-                                                      ),
-                                            fontWeight: FontWeight.w600,
+                                                      .onSurface,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w700
+                                                : FontWeight.w600,
                                             fontSize: ResponsiveLayout.getValue(
                                               context,
-                                              mobile: ResponsiveLayout.isSmallMobile(context) ? 8 : 9,
-                                              tablet: 10,
-                                              desktop: 11,
+                                              mobile:
+                                                  ResponsiveLayout.isSmallMobile(
+                                                    context,
+                                                  )
+                                                  ? 11
+                                                  : 12,
+                                              tablet: 13,
+                                              desktop: 14,
                                             ),
-                                            letterSpacing: 0.5,
                                           ),
                                       textAlign: TextAlign.center,
-                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-+                                  ),
+                                  ),
                                 ),
 
-                                // Flexible spacing
-                                const Flexible(
+                                // Spacing
+                                SizedBox(height: 2),
+                                // UI Kit Type
+                                Flexible(
                                   flex: 1,
-                                  child: SizedBox(height: 2),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveLayout.getValue(
+                                        context,
+                                        mobile: 6,
+                                        tablet: 8,
+                                        desktop: 10,
+                                      ),
+                                      vertical: ResponsiveLayout.getValue(
+                                        context,
+                                        mobile: 1,
+                                        tablet: 2,
+                                        desktop: 3,
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? app.primaryColor.withAlpha(
+                                              (0.2 * 255).round(),
+                                            )
+                                          : themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha((0.1 * 255).round()),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        app.uiKitType.toUpperCase(),
+                                        style: themeProvider
+                                            .currentTheme
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                              color: isSelected
+                                                  ? app.primaryColor
+                                                  : themeProvider
+                                                        .currentTheme
+                                                        .colorScheme
+                                                        .onSurface
+                                                        .withAlpha(
+                                                          (0.6 * 255).round(),
+                                                        ),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ResponsiveLayout.getValue(
+                                                context,
+                                                mobile:
+                                                    ResponsiveLayout.isSmallMobile(
+                                                      context,
+                                                    )
+                                                    ? 8
+                                                    : 9,
+                                                tablet: 10,
+                                                desktop: 11,
+                                              ),
+                                              letterSpacing: 0.5,
+                                            ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
                                 ),
+
+                                // Spacing
+                                SizedBox(height: 2),
                                 // Pages Count
                                 Flexible(
                                   flex: 1,
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.widgets_outlined,
-                                        size: ResponsiveLayout.getValue(
-                                          context,
-                                          mobile: ResponsiveLayout.isSmallMobile(context) ? 10 : 12,
-                                          tablet: 13,
-                                          desktop: 14,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.widgets_outlined,
+                                          size: ResponsiveLayout.getValue(
+                                            context,
+                                            mobile:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 10
+                                                : 12,
+                                            tablet: 13,
+                                            desktop: 14,
+                                          ),
+                                          color: themeProvider
+                                              .currentTheme
+                                              .colorScheme
+                                              .onSurface
+                                              .withAlpha((0.5 * 255).round()),
                                         ),
-                                        color: themeProvider
-                                            .currentTheme
-                                            .colorScheme
-                                            .onSurface
-                                            .withAlpha((0.5 * 255).round()),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${app.pages.length} ${isArabic ? 'صفحات' : 'pages'}',
-                                        style: themeProvider
-                                            .currentTheme
-                                            .textTheme
-                                            .labelSmall
-                                            ?.copyWith(
-                                              color: themeProvider
-                                                  .currentTheme
-                                                  .colorScheme
-                                                  .onSurface
-                                                  .withAlpha((0.5 * 255).round()),
-                                              fontSize: ResponsiveLayout.getValue(
-                                                context,
-                                                mobile: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
-                                                tablet: 11,
-                                                desktop: 12,
+                                        SizedBox(width: 4),
+                                        Text(
+                                          '${app.pages.length} ${isArabic ? 'صفحات' : 'pages'}',
+                                          style: themeProvider
+                                              .currentTheme
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
+                                                color: themeProvider
+                                                    .currentTheme
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withAlpha(
+                                                      (0.5 * 255).round(),
+                                                    ),
+                                                fontSize: ResponsiveLayout.getValue(
+                                                  context,
+                                                  mobile:
+                                                      ResponsiveLayout.isSmallMobile(
+                                                        context,
+                                                      )
+                                                      ? 9
+                                                      : 10,
+                                                  tablet: 11,
+                                                  desktop: 12,
+                                                ),
                                               ),
-                                            ),
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -383,7 +443,12 @@ class AppSidebar extends StatelessWidget {
                                         .withAlpha((0.6 * 255).round()),
                                     fontSize: ResponsiveLayout.getValue(
                                       context,
-                                      mobile: ResponsiveLayout.isSmallMobile(context) ? 10 : 11,
+                                      mobile:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                          ? 10
+                                          : 11,
                                       tablet: 12,
                                       desktop: 13,
                                     ),
