@@ -72,20 +72,20 @@ class ResponsiveLayout {
   // Get responsive navigation icon sizes
   static double getNavigationIconSize(BuildContext context) {
     return getValue(
-      context, 
-      mobile: isSmallMobile(context) ? 18 : 20, 
-      tablet: 22, 
-      desktop: 24
+      context,
+      mobile: isSmallMobile(context) ? 10 : 20,
+      tablet: 20,
+      desktop: 20,
     );
   }
 
   // Get responsive small icon sizes
   static double getSmallIconSize(BuildContext context) {
     return getValue(
-      context, 
-      mobile: isSmallMobile(context) ? 16 : 18, 
-      tablet: 20, 
-      desktop: 22
+      context,
+      mobile: isSmallMobile(context) ? 16 : 18,
+      tablet: 20,
+      desktop: 22,
     );
   }
 
@@ -163,8 +163,6 @@ class ResponsiveLayout {
       desktop: 64.0,
     );
   }
-
-
 }
 
 // Responsive container widget

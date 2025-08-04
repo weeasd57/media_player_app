@@ -16,17 +16,17 @@ class AppNavigationBar extends StatelessWidget {
         final currentApp = appProvider.currentApp;
         final isArabic = localeProvider.locale.languageCode == 'ar';
 
-        if (currentApp.pages.length <= 1) {
-          return const SizedBox.shrink();
-        }
-
         // Responsive height for navigation bar
         final navigationHeight = ResponsiveLayout.getValue(
           context,
-          mobile: ResponsiveLayout.isSmallMobile(context) ? 65.0 : 70.0,
-          tablet: 75.0,
+          mobile: 75.0, // Fixed height as per user request
+          tablet: 75.0, // Fixed height as per user request
           desktop: 80.0,
         );
+
+        if (currentApp.pages.length <= 1) {
+          return const SizedBox.shrink();
+        }
 
         return Container(
           width: double.infinity,
@@ -55,6 +55,7 @@ class AppNavigationBar extends StatelessWidget {
             themeProvider,
             isArabic,
             currentApp.uiKitType,
+            navigationHeight, // Pass navigationHeight
           ),
         );
       },
@@ -67,6 +68,7 @@ class AppNavigationBar extends StatelessWidget {
     ThemeProvider themeProvider,
     bool isArabic,
     String uiKitType,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     switch (uiKitType) {
       case 'modern':
@@ -75,6 +77,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Pass navigationHeight
         );
       case 'glassmorphic':
         return _buildGlassmorphicNavigation(
@@ -82,6 +85,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'neomorphic':
         return _buildNeomorphicNavigation(
@@ -89,6 +93,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'gradient':
         return _buildGradientNavigation(
@@ -96,6 +101,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'minimal':
         return _buildMinimalNavigation(
@@ -103,6 +109,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'cyber':
         return _buildCyberNavigation(
@@ -110,6 +117,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'nature':
         return _buildNatureNavigation(
@@ -117,6 +125,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'retro':
         return _buildRetroNavigation(
@@ -124,6 +133,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'ocean':
         return _buildOceanNavigation(
@@ -131,6 +141,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'sunset':
         return _buildSunsetNavigation(
@@ -138,6 +149,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'neon':
         return _buildNeonNavigation(
@@ -145,6 +157,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'material_you':
         return _buildMaterialYouNavigation(
@@ -152,6 +165,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'dark_matter':
         return _buildDarkMatterNavigation(
@@ -159,6 +173,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'holographic':
         return _buildHolographicNavigation(
@@ -166,6 +181,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'vintage':
         return _buildVintageNavigation(
@@ -173,6 +189,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'crystal':
         return _buildCrystalNavigation(
@@ -180,6 +197,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'synthwave':
         return _buildSynthwaveNavigation(
@@ -187,6 +205,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'nordic':
         return _buildNordicNavigation(
@@ -194,6 +213,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'cosmic':
         return _buildCosmicNavigation(
@@ -201,6 +221,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       case 'brutalist':
         return _buildBrutalistNavigation(
@@ -208,6 +229,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Add navigationHeight parameter
         );
       default:
         return _buildModernNavigation(
@@ -215,6 +237,7 @@ class AppNavigationBar extends StatelessWidget {
           appProvider,
           themeProvider,
           isArabic,
+          navigationHeight, // Fallback
         ); // Fallback
     }
   }
@@ -225,12 +248,13 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 6 : 12,
+        horizontal: 0, // Changed from isSmallScreen ? 4 : 12
         vertical: isSmallScreen ? 4 : 8,
       ),
       child: Row(
@@ -246,8 +270,8 @@ class AppNavigationBar extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
-                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 1 : 2),
-                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 6),
+                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 0 : 2),
+                padding: EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? appProvider.currentApp.primaryColor.withAlpha(
@@ -256,12 +280,15 @@ class AppNavigationBar extends StatelessWidget {
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                 ),
+                clipBehavior: Clip.hardEdge, // Added this line
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center the icon vertically
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: EdgeInsets.all(isSmallScreen ? 3 : 4),
+                      padding: EdgeInsets
+                          .zero, // Changed from EdgeInsets.all(isSmallScreen ? 3 : 4)
                       decoration: BoxDecoration(
                         color: isSelected
                             ? appProvider.currentApp.primaryColor
@@ -270,6 +297,7 @@ class AppNavigationBar extends StatelessWidget {
                       ),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
                         child: Icon(
                           page.icon,
                           color: isSelected
@@ -278,35 +306,6 @@ class AppNavigationBar extends StatelessWidget {
                                     .withAlpha((0.6 * 255).round()),
                           size: ResponsiveLayout.getNavigationIconSize(context),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: isSmallScreen ? 1 : 2),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        isArabic ? page.nameAr : page.name,
-                        style: themeProvider.currentTheme.textTheme.labelSmall
-                            ?.copyWith(
-                              color: isSelected
-                                  ? appProvider.currentApp.primaryColor
-                                  : themeProvider
-                                        .currentTheme
-                                        .colorScheme
-                                        .onSurface
-                                        .withAlpha((0.6 * 255).round()),
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              fontSize: ResponsiveLayout.getValue(
-                                context,
-                                mobile: isSmallScreen ? 7 : 8,
-                                tablet: 9,
-                                desktop: 10,
-                              ),
-                            ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -325,6 +324,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -356,6 +356,7 @@ class AppNavigationBar extends StatelessWidget {
               themeProvider,
               isArabic,
               'glassmorphic',
+              navigationHeight, // Pass navigationHeight
             ),
           ),
         ),
@@ -369,6 +370,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -398,6 +400,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'neomorphic',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -408,6 +411,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -439,6 +443,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'gradient',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -448,6 +453,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -464,6 +470,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'minimal',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -473,6 +480,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -498,6 +506,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'cyber',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -507,6 +516,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -529,6 +539,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'nature',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -538,6 +549,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -555,6 +567,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'retro',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -564,6 +577,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -586,6 +600,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'ocean',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -595,6 +610,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -627,6 +643,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'sunset',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -637,6 +654,7 @@ class AppNavigationBar extends StatelessWidget {
     ThemeProvider themeProvider,
     bool isArabic,
     String style,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
 
@@ -656,12 +674,14 @@ class AppNavigationBar extends StatelessWidget {
             child: GestureDetector(
               onTap: () => appProvider.selectPage(index),
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 6),
+                padding: EdgeInsets.zero,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center the icon vertically
                   children: [
                     FittedBox(
                       fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
                       child: Icon(
                         page.icon,
                         color: _getIconColor(
@@ -671,36 +691,6 @@ class AppNavigationBar extends StatelessWidget {
                           themeProvider,
                         ),
                         size: ResponsiveLayout.getNavigationIconSize(context),
-                      ),
-                    ),
-                    SizedBox(height: isSmallScreen ? 1 : 2),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        isArabic ? page.nameAr : page.name,
-                        style: themeProvider.currentTheme.textTheme.labelSmall
-                            ?.copyWith(
-                              color: _getTextColor(
-                                isSelected,
-                                style,
-                                appProvider,
-                                themeProvider,
-                              ),
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              fontSize: ResponsiveLayout.getValue(
-                                context,
-                                mobile: ResponsiveLayout.isSmallMobile(context)
-                                    ? 9
-                                    : 10,
-                                tablet: 11,
-                                desktop: 12,
-                              ),
-                            ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -729,28 +719,13 @@ class AppNavigationBar extends StatelessWidget {
           );
   }
 
-  Color _getTextColor(
-    bool isSelected,
-    String style,
-    AppProvider appProvider,
-    ThemeProvider themeProvider,
-  ) {
-    if (style == 'gradient' || style == 'sunset') {
-      return Colors.white;
-    }
-    return isSelected
-        ? appProvider.currentApp.primaryColor
-        : themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
-            (0.6 * 255).round(),
-          );
-  }
-
   // 11. Neon Navigation
   Widget _buildNeonNavigation(
     BuildContext context,
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -777,6 +752,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'neon',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -787,6 +763,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -804,6 +781,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'material_you',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -814,6 +792,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -835,6 +814,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'dark_matter',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -845,6 +825,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -872,6 +853,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'holographic',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -882,6 +864,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -906,6 +889,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'vintage',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -916,6 +900,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -944,6 +929,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'crystal',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -954,6 +940,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -987,6 +974,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'synthwave',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -997,6 +985,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -1018,6 +1007,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'nordic',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -1028,6 +1018,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -1060,6 +1051,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'cosmic',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }
@@ -1070,6 +1062,7 @@ class AppNavigationBar extends StatelessWidget {
     AppProvider appProvider,
     ThemeProvider themeProvider,
     bool isArabic,
+    double navigationHeight, // Add navigationHeight parameter
   ) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -1091,6 +1084,7 @@ class AppNavigationBar extends StatelessWidget {
         themeProvider,
         isArabic,
         'brutalist',
+        navigationHeight, // Pass navigationHeight
       ),
     );
   }

@@ -11,15 +11,24 @@ class EqualizerScreen extends StatefulWidget {
 class _EqualizerScreenState extends State<EqualizerScreen> {
   bool _isEnabled = true;
   String _selectedPreset = 'مخصص';
-  
+
   // Frequency bands (Hz)
   final List<String> _frequencies = [
-    '60', '170', '310', '600', '1K', '3K', '6K', '12K', '14K', '16K'
+    '60',
+    '170',
+    '310',
+    '600',
+    '1K',
+    '3K',
+    '6K',
+    '12K',
+    '14K',
+    '16K',
   ];
-  
+
   // Current values for each band (-12 to +12 dB)
   List<double> _bandValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  
+
   final List<String> _presets = [
     'مخصص',
     'موسيقى كلاسيكية',
@@ -68,9 +77,8 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                       children: [
                         Text(
                           'تفعيل الإكولايزر',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Switch(
                           value: _isEnabled,
@@ -85,9 +93,9 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'قم بتفعيل الإكولايزر لتحسين جودة الصوت',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -99,12 +107,12 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
             // Presets
             Text(
               'الإعدادات المسبقة',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            
+
             NeumorphicContainer(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -115,19 +123,18 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                     contentPadding: EdgeInsets.zero,
                   ),
                   items: _presets.map((preset) {
-                    return DropdownMenuItem(
-                      value: preset,
-                      child: Text(preset),
-                    );
+                    return DropdownMenuItem(value: preset, child: Text(preset));
                   }).toList(),
-                  onChanged: _isEnabled ? (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedPreset = value;
-                        _applyPreset(value);
-                      });
-                    }
-                  } : null,
+                  onChanged: _isEnabled
+                      ? (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedPreset = value;
+                              _applyPreset(value);
+                            });
+                          }
+                        }
+                      : null,
                 ),
               ),
             ),
@@ -137,12 +144,12 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
             // Frequency Bands
             Text(
               'النطاقات الترددية',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            
+
             NeumorphicContainer(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -157,78 +164,83 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                           int db = 12 - (index * 6);
                           return Text(
                             '${db > 0 ? '+' : ''}${db}dB',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.grey[600]),
                           );
                         }),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Frequency sliders
-                    SizedBox(
-                      height: 300,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(_frequencies.length, (index) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // Slider
-                              Expanded(
-                                child: RotatedBox(
-                                  quarterTurns: 3,
-                                  child: Slider(
-                                    value: _bandValues[index],
-                                    min: -12,
-                                    max: 12,
-                                    divisions: 24,
-                                    onChanged: _isEnabled ? (value) {
-                                      setState(() {
-                                        _bandValues[index] = value;
-                                        _selectedPreset = 'مخصص';
-                                      });
-                                    } : null,
-                                    activeColor: _isEnabled 
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey,
+                    SingleChildScrollView(
+                      // ADDED SingleChildScrollView
+                      scrollDirection: Axis.horizontal, // Horizontal scrolling
+                      child: SizedBox(
+                        // Retained SizedBox with a null height
+                        height: 300,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: List.generate(_frequencies.length, (index) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                // Slider
+                                Expanded(
+                                  child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Slider(
+                                      value: _bandValues[index],
+                                      min: -12,
+                                      max: 12,
+                                      divisions: 24,
+                                      onChanged: _isEnabled
+                                          ? (value) {
+                                              setState(() {
+                                                _bandValues[index] = value;
+                                                _selectedPreset = 'مخصص';
+                                              });
+                                            }
+                                          : null,
+                                      activeColor: _isEnabled
+                                          ? Theme.of(context).primaryColor
+                                          : Colors.grey,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              
-                              const SizedBox(height: 8),
-                              
-                              // Value indicator
-                              Container(
-                                width: 32,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '${_bandValues[index].round()}',
-                                    style: const TextStyle(fontSize: 10),
+
+                                const SizedBox(height: 8),
+
+                                // Value indicator
+                                Container(
+                                  width: 32,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${_bandValues[index].round()}',
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              
-                              const SizedBox(height: 4),
-                              
-                              // Frequency label
-                              Text(
-                                _frequencies[index],
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
+
+                                const SizedBox(height: 4),
+
+                                // Frequency label
+                                Text(
+                                  _frequencies[index],
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                              ),
-                            ],
-                          );
-                        }),
+                              ],
+                            );
+                          }),
+                        ),
                       ),
                     ),
                   ],
@@ -272,14 +284,11 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Bass
                     Row(
                       children: [
-                        const SizedBox(
-                          width: 60,
-                          child: Text('باس'),
-                        ),
+                        const SizedBox(width: 60, child: Text('باس')),
                         Expanded(
                           child: Slider(
                             value: 0,
@@ -289,20 +298,14 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                             onChanged: _isEnabled ? (value) {} : null,
                           ),
                         ),
-                        const SizedBox(
-                          width: 40,
-                          child: Text('0'),
-                        ),
+                        const SizedBox(width: 40, child: Text('0')),
                       ],
                     ),
-                    
+
                     // Treble
                     Row(
                       children: [
-                        const SizedBox(
-                          width: 60,
-                          child: Text('تريبل'),
-                        ),
+                        const SizedBox(width: 60, child: Text('تريبل')),
                         Expanded(
                           child: Slider(
                             value: 0,
@@ -312,10 +315,7 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                             onChanged: _isEnabled ? (value) {} : null,
                           ),
                         ),
-                        const SizedBox(
-                          width: 40,
-                          child: Text('0'),
-                        ),
+                        const SizedBox(width: 40, child: Text('0')),
                       ],
                     ),
                   ],

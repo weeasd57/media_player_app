@@ -28,15 +28,11 @@ class NeonTheme {
       cardTheme: CardThemeData(
         color: const Color(0xFFFFFFFF),
         elevation: 4,
-        shadowColor: _neonPink.withValues(
-          alpha: ((_neonPink.a * 0.2 * 255.0).round() & 0xff) as double?,
-        ),
+        shadowColor: _neonPink.withValues(alpha: (_neonPink.a * 0.2)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: _neonPink.withValues(
-              alpha: ((_neonPink.a * 0.3 * 255.0).round() & 0xff) as double?,
-            ),
+            color: _neonPink.withValues(alpha: (_neonPink.a * 0.3)),
             width: 1,
           ),
         ),
@@ -46,9 +42,7 @@ class NeonTheme {
           backgroundColor: _neonPink,
           foregroundColor: Colors.white,
           elevation: 8,
-          shadowColor: _neonPink.withValues(
-            alpha: ((_neonPink.a * 0.5 * 255.0).round() & 0xff) as double?,
-          ),
+          shadowColor: _neonPink.withValues(alpha: (_neonPink.a * 0.5)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -79,9 +73,7 @@ class NeonTheme {
       cardTheme: CardThemeData(
         color: const Color(0xFF1A1A1A),
         elevation: 8,
-        shadowColor: _neonPink.withValues(
-          alpha: ((_neonPink.a * 0.5 * 255.0).round() & 0xff) as double?,
-        ),
+        shadowColor: _neonPink.withValues(alpha: (_neonPink.a * 0.5)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: _neonPink, width: 2),
@@ -92,9 +84,7 @@ class NeonTheme {
           backgroundColor: _neonPink,
           foregroundColor: Colors.white,
           elevation: 12,
-          shadowColor: _neonPink.withValues(
-            alpha: ((_neonPink.a * 0.8 * 255.0).round() & 0xff) as double?,
-          ),
+          shadowColor: _neonPink.withValues(alpha: (_neonPink.a * 0.8)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

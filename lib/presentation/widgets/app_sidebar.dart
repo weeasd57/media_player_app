@@ -50,19 +50,7 @@ class AppSidebar extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   iconSize: ResponsiveLayout.getNavigationIconSize(context),
                   onPressed: () {
-                    debugPrint("DEBUG: Toggle sidebar button pressed");
-                    appProvider.toggleSidebar();
-                    // Show visual feedback to confirm click
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          appProvider.isSidebarHidden
-                              ? 'تم إخفاء القائمة'
-                              : 'تم إظهار القائمة',
-                        ),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    appProvider.showSidebar();
                   },
                   tooltip: appProvider.isSidebarHidden
                       ? 'فتح القائمة الجانبية'

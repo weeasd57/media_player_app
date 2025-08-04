@@ -12,7 +12,7 @@ class AppProvider extends ChangeNotifier {
   int _selectedAppIndex = 0;
   int _selectedPageIndex = 0;
   // استخدام حالة واحدة للشريط الجانبي: false = مفتوح، true = مخفي
-  bool _isSidebarHidden = false;
+  bool _isSidebarHidden = true;
 
   int get selectedAppIndex => _selectedAppIndex;
   int get selectedPageIndex => _selectedPageIndex;
@@ -1285,13 +1285,18 @@ class AppProvider extends ChangeNotifier {
   void toggleSidebar() {
     // تبديل حالة الشريط الجانبي بين مفتوح ومخفي فقط
     _isSidebarHidden = !_isSidebarHidden;
-    debugPrint("DEBUG: Sidebar ${_isSidebarHidden ? 'hidden' : 'visible'}");
     notifyListeners();
   }
 
   // دالة لفتح الشريط الجانبي من حالة الإخفاء
   void showSidebar() {
     _isSidebarHidden = false; // فتح
+    notifyListeners();
+  }
+
+  // دالة لإخفاء الشريط الجانبي
+  void hideSidebar() {
+    _isSidebarHidden = true; // إخفاء
     notifyListeners();
   }
 
