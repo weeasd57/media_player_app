@@ -252,13 +252,16 @@ class HomeScreen extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 600;
+        final isSmallMobile = constraints.maxWidth < 400;
+        
         return GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: isMobile ? 2 : 4,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: isMobile ? 1.2 : 1.5,
+          mainAxisSpacing: isSmallMobile ? 8 : 16,
+          crossAxisSpacing: isSmallMobile ? 8 : 16,
+          childAspectRatio: isSmallMobile ? 1.0 : (isMobile ? 1.2 : 1.5),
+          padding: EdgeInsets.all(isSmallMobile ? 8 : 16),
           children: [
             _buildStatCard(
               context,
@@ -311,31 +314,51 @@ class HomeScreen extends StatelessWidget {
     String value,
     String label,
   ) {
+    final isSmallMobile = MediaQuery.of(context).size.width < 400;
+    
     return ThemedCard(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 32, color: currentApp.primaryColor),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: themeProvider.currentTheme.textTheme.headlineSmall?.copyWith(
-              color: themeProvider.currentTheme.colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
+      child: Padding(
+        padding: EdgeInsets.all(isSmallMobile ? 8 : 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon, 
+              size: isSmallMobile ? 24 : 32, 
+              color: currentApp.primaryColor
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: themeProvider.currentTheme.textTheme.bodySmall?.copyWith(
-              color: themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
-                (0.6 * 255).round(),
+            SizedBox(height: isSmallMobile ? 8 : 12),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: themeProvider.currentTheme.textTheme.headlineSmall?.copyWith(
+                  color: themeProvider.currentTheme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w700,
+                  fontSize: isSmallMobile ? 16 : 20,
+                ),
               ),
-              fontWeight: FontWeight.w500,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            SizedBox(height: isSmallMobile ? 2 : 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: themeProvider.currentTheme.textTheme.bodySmall?.copyWith(
+                  color: themeProvider.currentTheme.colorScheme.onSurface.withAlpha(
+                    (0.6 * 255).round(),
+                  ),
+                  fontWeight: FontWeight.w500,
+                  fontSize: isSmallMobile ? 10 : 12,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

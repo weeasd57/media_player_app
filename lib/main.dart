@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'presentation/navigation/app_layout.dart';
 import 'presentation/providers/theme_provider.dart';
@@ -47,7 +48,15 @@ class UIKitCollectionApp extends StatelessWidget {
             locale: localeProvider.locale,
             home: const AppLayout(),
             debugShowCheckedModeBanner: false,
-            supportedLocales: const [Locale('en', 'US'), Locale('ar', 'SA')],
+            supportedLocales: const [
+              Locale('en', 'US'), 
+              Locale('ar', 'SA')
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             builder: (context, child) {
               return Directionality(
                 textDirection: localeProvider.locale.languageCode == 'ar'
