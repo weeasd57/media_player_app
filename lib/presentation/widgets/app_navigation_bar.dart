@@ -23,9 +23,9 @@ class AppNavigationBar extends StatelessWidget {
         // Responsive height for navigation bar
         final navigationHeight = ResponsiveLayout.getValue(
           context,
-          mobile: 70.0,
-          tablet: 80.0,
-          desktop: 90.0,
+          mobile: ResponsiveLayout.isSmallMobile(context) ? 65.0 : 70.0,
+          tablet: 75.0,
+          desktop: 80.0,
         );
 
         return Container(
@@ -230,8 +230,8 @@ class AppNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 8 : 24,
-        vertical: isSmallScreen ? 6 : 12,
+        horizontal: isSmallScreen ? 6 : 12,
+        vertical: isSmallScreen ? 4 : 8,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -246,27 +246,27 @@ class AppNavigationBar extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
-                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 1 : 4),
-                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 6 : 12),
+                margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 1 : 2),
+                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 6),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? appProvider.currentApp.primaryColor.withAlpha(
                           (0.15 * 255).round(),
                         )
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: EdgeInsets.all(isSmallScreen ? 4 : 8),
+                      padding: EdgeInsets.all(isSmallScreen ? 3 : 4),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? appProvider.currentApp.primaryColor
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -280,7 +280,7 @@ class AppNavigationBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: isSmallScreen ? 1 : 2),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
@@ -299,9 +299,9 @@ class AppNavigationBar extends StatelessWidget {
                                   : FontWeight.w400,
                               fontSize: ResponsiveLayout.getValue(
                                 context,
-                                mobile: isSmallScreen ? 8 : 10,
-                                tablet: 11,
-                                desktop: 12,
+                                mobile: isSmallScreen ? 7 : 8,
+                                tablet: 9,
+                                desktop: 10,
                               ),
                             ),
                         textAlign: TextAlign.center,
@@ -638,8 +638,13 @@ class AppNavigationBar extends StatelessWidget {
     bool isArabic,
     String style,
   ) {
+    final isSmallScreen = ResponsiveLayout.isSmallMobile(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 6 : 12,
+        vertical: isSmallScreen ? 4 : 8,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: appProvider.currentApp.pages.asMap().entries.map((entry) {
@@ -651,7 +656,7 @@ class AppNavigationBar extends StatelessWidget {
             child: GestureDetector(
               onTap: () => appProvider.selectPage(index),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 6),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -668,7 +673,7 @@ class AppNavigationBar extends StatelessWidget {
                         size: ResponsiveLayout.getNavigationIconSize(context),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: isSmallScreen ? 1 : 2),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(

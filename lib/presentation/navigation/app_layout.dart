@@ -34,7 +34,7 @@ class AppLayout extends StatelessWidget {
                   children: [
                     // App Header
                     Container(
-                      height: 70,
+                      height: ResponsiveLayout.isSmallMobile(context) ? 60 : 70,
                       decoration: BoxDecoration(
                         color: themeProvider.currentTheme.colorScheme.surface,
                         border: Border(
@@ -53,15 +53,17 @@ class AppLayout extends StatelessWidget {
                         ],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveLayout.isSmallMobile(context) ? 12 : 16
+                        ),
                         child: Row(
                           children: [
                             // Menu button (only visible when sidebar is hidden)
                             if (appProvider.isSidebarHidden)
                               Container(
-                                width: 40,
-                                height: 40,
-                                margin: const EdgeInsets.only(right: 8),
+                                width: 36,
+                                height: 36,
+                                margin: const EdgeInsets.only(right: 6),
                                 decoration: BoxDecoration(
                                   color: currentApp.primaryColor.withOpacity(
                                     0.1,
@@ -90,8 +92,8 @@ class AppLayout extends StatelessWidget {
 
                             // App Icon with Modern Design
                             Container(
-                              width: 40,
-                              height: 40,
+                              width: ResponsiveLayout.isSmallMobile(context) ? 32 : 40,
+                              height: ResponsiveLayout.isSmallMobile(context) ? 32 : 40,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
@@ -121,105 +123,124 @@ class AppLayout extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
 
                             // App Name and UI Kit Type
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isArabic
-                                      ? currentApp.nameAr
-                                      : currentApp.name,
-                                  style: themeProvider
-                                      .currentTheme
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: themeProvider
-                                            .currentTheme
-                                            .colorScheme
-                                            .onSurface,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
-                                      ),
-                                ),
-                                Text(
-                                  '${currentApp.uiKitType.toUpperCase()} UI KIT',
-                                  style: themeProvider
-                                      .currentTheme
-                                      .textTheme
-                                      .labelSmall
-                                      ?.copyWith(
-                                        color: themeProvider
-                                            .currentTheme
-                                            .colorScheme
-                                            .onSurface
-                                            .withAlpha((0.6 * 255).round()),
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: 0.8,
-                                      ),
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      isArabic
+                                          ? currentApp.nameAr
+                                          : currentApp.name,
+                                      style: themeProvider
+                                          .currentTheme
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 16 : 18,
+                                          ),
+                                    ),
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      '${currentApp.uiKitType.toUpperCase()} UI KIT',
+                                      style: themeProvider
+                                          .currentTheme
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha((0.6 * 255).round()),
+                                            fontWeight: FontWeight.w500,
+                                            letterSpacing: 0.8,
+                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 9 : 10,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
 
                             // Separator and Current Page
                             if (currentApp.pages.length > 1) ...[
-                              const SizedBox(width: 16),
+                              SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
                               Container(
                                 width: 1,
-                                height: 30,
+                                height: 24,
                                 color: themeProvider.currentTheme.dividerColor
                                     .withAlpha((0.2 * 255).round()),
                               ),
-                              const SizedBox(width: 16),
+                              SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 8 : 12),
 
                               // Current Page Info
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Current Page',
-                                    style: themeProvider
-                                        .currentTheme
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: themeProvider
-                                              .currentTheme
-                                              .colorScheme
-                                              .onSurface
-                                              .withAlpha((0.5 * 255).round()),
-                                          fontSize: 10,
-                                        ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'Current Page',
+                                      style: themeProvider
+                                          .currentTheme
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha((0.5 * 255).round()),
+                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 8 : 10,
+                                          ),
+                                    ),
                                   ),
-                                  Text(
-                                    isArabic
-                                        ? currentPage.nameAr
-                                        : currentPage.name,
-                                    style: themeProvider
-                                        .currentTheme
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: themeProvider
-                                              .currentTheme
-                                              .colorScheme
-                                              .onSurface
-                                              .withAlpha((0.8 * 255).round()),
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      isArabic
+                                          ? currentPage.nameAr
+                                          : currentPage.name,
+                                      style: themeProvider
+                                          .currentTheme
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha((0.8 * 255).round()),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: ResponsiveLayout.isSmallMobile(context) ? 10 : 12,
+                                          ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ],
 
-                            const Spacer(),
+                            SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 6 : 8),
 
                             // Action Buttons
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 // Theme Toggle with Modern Design
                                 Container(
@@ -241,7 +262,7 @@ class AppLayout extends StatelessWidget {
                                             ? Icons.light_mode_rounded
                                             : Icons.dark_mode_rounded,
                                         key: ValueKey(themeProvider.isDarkMode),
-                                        size: 22,
+                                        size: ResponsiveLayout.isSmallMobile(context) ? 20 : 22,
                                         color: themeProvider
                                             .currentTheme
                                             .colorScheme
@@ -257,10 +278,13 @@ class AppLayout extends StatelessWidget {
                                         : (themeProvider.isDarkMode
                                               ? 'Light Mode'
                                               : 'Dark Mode'),
+                                    padding: ResponsiveLayout.isSmallMobile(context) 
+                                        ? const EdgeInsets.all(4) 
+                                        : const EdgeInsets.all(8),
                                   ),
                                 ),
 
-                                const SizedBox(width: 8),
+                                SizedBox(width: ResponsiveLayout.isSmallMobile(context) ? 6 : 8),
 
                                 // Language Toggle
                                 Container(
@@ -273,9 +297,9 @@ class AppLayout extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.language_rounded,
-                                      size: 22,
+                                      size: ResponsiveLayout.isSmallMobile(context) ? 20 : 22,
                                     ),
                                     onPressed: () =>
                                         localeProvider.toggleLocale(),
@@ -284,6 +308,9 @@ class AppLayout extends StatelessWidget {
                                         .currentTheme
                                         .colorScheme
                                         .onSurface,
+                                    padding: ResponsiveLayout.isSmallMobile(context) 
+                                        ? const EdgeInsets.all(4) 
+                                        : const EdgeInsets.all(8),
                                   ),
                                 ),
                               ],
