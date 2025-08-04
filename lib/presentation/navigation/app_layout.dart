@@ -6,6 +6,8 @@ import '../providers/locale_provider.dart';
 import '../utils/responsive_layout.dart';
 import '../widgets/app_sidebar.dart';
 import '../widgets/app_navigation_bar.dart';
+import '../pages/favorites_screen.dart';
+import '../pages/settings_screen.dart';
 
 class AppLayout extends StatelessWidget {
   const AppLayout({super.key});
@@ -190,6 +192,94 @@ class AppLayout extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  // Favorites Button
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: themeProvider
+                                          .currentTheme
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                          .withAlpha((0.5 * 255).round()),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.favorite_rounded,
+                                        size:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                              ? 20
+                                              : 22,
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                      onPressed: () {
+                                        appProvider.navigateToFavorites();
+                                      },
+                                      tooltip: isArabic ? 'المفضلة' : 'Favorites',
+                                      padding:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                              ? const EdgeInsets.all(4)
+                                              : const EdgeInsets.all(8),
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                    width:
+                                        ResponsiveLayout.isSmallMobile(context)
+                                        ? 6
+                                        : 8,
+                                  ),
+
+                                  // Settings Button
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: themeProvider
+                                          .currentTheme
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                          .withAlpha((0.5 * 255).round()),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.settings_rounded,
+                                        size:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                              ? 20
+                                              : 22,
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                      onPressed: () {
+                                        appProvider.navigateToSettings();
+                                      },
+                                      tooltip: isArabic ? 'الإعدادات' : 'Settings',
+                                      padding:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                              ? const EdgeInsets.all(4)
+                                              : const EdgeInsets.all(8),
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                    width:
+                                        ResponsiveLayout.isSmallMobile(context)
+                                        ? 6
+                                        : 8,
+                                  ),
+
                                   // Theme Toggle with Modern Design
                                   Container(
                                     decoration: BoxDecoration(
@@ -237,8 +327,8 @@ class AppLayout extends StatelessWidget {
                                           ResponsiveLayout.isSmallMobile(
                                             context,
                                           )
-                                          ? const EdgeInsets.all(4)
-                                          : const EdgeInsets.all(8),
+                                              ? const EdgeInsets.all(4)
+                                              : const EdgeInsets.all(8),
                                     ),
                                   ),
 
@@ -266,8 +356,8 @@ class AppLayout extends StatelessWidget {
                                             ResponsiveLayout.isSmallMobile(
                                               context,
                                             )
-                                            ? 20
-                                            : 22,
+                                              ? 20
+                                              : 22,
                                       ),
                                       onPressed: () =>
                                           localeProvider.toggleLocale(),
@@ -280,8 +370,8 @@ class AppLayout extends StatelessWidget {
                                           ResponsiveLayout.isSmallMobile(
                                             context,
                                           )
-                                          ? const EdgeInsets.all(4)
-                                          : const EdgeInsets.all(8),
+                                              ? const EdgeInsets.all(4)
+                                              : const EdgeInsets.all(8),
                                     ),
                                   ),
                                 ],
@@ -315,7 +405,11 @@ class AppLayout extends StatelessWidget {
                           },
                           child: Container(
                             key: ValueKey('${currentApp.id}_${currentPage.id}'),
-                            child: currentPage.screen,
+                            child: appProvider.showFavorites
+                                ? const FavoritesScreen()
+                                : appProvider.showSettings
+                                    ? const SettingsScreen()
+                                    : currentPage.screen,
                           ),
                         ),
                       ),
