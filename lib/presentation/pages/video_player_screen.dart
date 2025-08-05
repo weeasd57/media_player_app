@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/locale_provider.dart'; // Corrected path
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -16,87 +18,102 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: _isFullscreen
-          ? null
-          : AppBar(
-              title: const Text('مشغل الفيديو'),
-              centerTitle: true,
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.folder_open),
-                  onPressed: () {
-                    _showFilePicker();
-                  },
-                ),
-              ],
-            ),
-      body: Stack(
-        children: [
-          // Video Player Area
-          Center(
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: _isFullscreen
-                      ? BorderRadius.zero
-                      : BorderRadius.circular(12),
-                ),
-                child: Stack(
-                  children: [
-                    // Video placeholder
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.video_library,
-                            size: 80,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'لم يتم تحديد فيديو',
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 18,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'اضغط على أيقونة المجلد لاختيار فيديو',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+    return Consumer<LocaleProvider>(
+      builder: (context, localeProvider, child) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          appBar: _isFullscreen
+              ? null
+              : AppBar(
+                  title: Text(
+                    localeProvider.getLocalizedText(
+                      'مشغل الفيديو',
+                      'Video Player',
                     ),
-
-                    // Controls overlay
-                    if (_showControls) _buildControlsOverlay(),
+                  ),
+                  centerTitle: true,
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.folder_open),
+                      onPressed: () {
+                        _showFilePicker(localeProvider);
+                      },
+                    ),
                   ],
                 ),
-              ),
-            ),
-          ),
+          body: Stack(
+            children: [
+              // Video Player Area
+              Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: _isFullscreen
+                          ? BorderRadius.zero
+                          : BorderRadius.circular(12),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Video placeholder
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.video_library,
+                                size: 80,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                localeProvider.getLocalizedText(
+                                  'لم يتم تحديد فيديو',
+                                  'No video selected',
+                                ),
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                localeProvider.getLocalizedText(
+                                  'اضغط على أيقونة المجلد لاختيار فيديو',
+                                  'Tap folder icon to select a video',
+                                ),
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-          // Bottom controls (when not fullscreen)
-          if (!_isFullscreen)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildBottomControls(),
-            ),
-        ],
-      ),
+                        // Controls overlay
+                        if (_showControls) _buildControlsOverlay(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom controls (when not fullscreen)
+              if (!_isFullscreen)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _buildBottomControls(localeProvider),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -247,7 +264,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
-  Widget _buildBottomControls() {
+  Widget _buildBottomControls(LocaleProvider localeProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -278,11 +295,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           const SizedBox(height: 16),
 
           // Video info
-          const ListTile(
-            leading: Icon(Icons.video_file),
-            title: Text('اسم الفيديو'),
-            subtitle: Text('لم يتم تحديد فيديو'),
-            trailing: Icon(Icons.info_outline),
+          ListTile(
+            leading: const Icon(Icons.video_file),
+            title: Text(
+              localeProvider.getLocalizedText('اسم الفيديو', 'Video Title'),
+            ),
+            subtitle: Text(
+              localeProvider.getLocalizedText(
+                'لم يتم تحديد فيديو',
+                'No video selected',
+              ),
+            ),
+            trailing: const Icon(Icons.info_outline),
           ),
 
           const SizedBox(height: 16),
@@ -292,14 +316,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton.icon(
-                onPressed: _showFilePicker,
+                onPressed: () => _showFilePicker(localeProvider),
                 icon: const Icon(Icons.folder_open),
-                label: const Text('اختيار فيديو'),
+                label: Text(
+                  localeProvider.getLocalizedText(
+                    'اختيار فيديو',
+                    'Choose Video',
+                  ),
+                ),
               ),
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.playlist_add),
-                label: const Text('إضافة لقائمة'),
+                label: Text(
+                  localeProvider.getLocalizedText(
+                    'إضافة لقائمة',
+                    'Add to Playlist',
+                  ),
+                ),
               ),
             ],
           ),
@@ -308,79 +342,124 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
-  void _showFilePicker() {
+  void _showFilePicker(LocaleProvider localeProvider) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'اختيار مصدر الفيديو',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.folder),
-              title: const Text('من الملفات'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera),
-              title: const Text('من الكاميرا'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.link),
-              title: const Text('من رابط'),
-              onTap: () {
-                Navigator.pop(context);
-                _showUrlDialog();
-              },
-            ),
-          ],
+      builder: (context) => Consumer<LocaleProvider>(
+        builder: (context, localeProvider, child) => Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                localeProvider.getLocalizedText(
+                  'اختيار مصدر الفيديو',
+                  'Choose Video Source',
+                ),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.folder),
+                title: Text(
+                  localeProvider.getLocalizedText('من الملفات', 'From Files'),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        localeProvider.getLocalizedText(
+                          'سيتم إضافة هذه الميزة قريباً',
+                          'This feature will be added soon',
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera),
+                title: Text(
+                  localeProvider.getLocalizedText('من الكاميرا', 'From Camera'),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        localeProvider.getLocalizedText(
+                          'سيتم إضافة هذه الميزة قريباً',
+                          'This feature will be added soon',
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.link),
+                title: Text(
+                  localeProvider.getLocalizedText('من رابط', 'From URL'),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showUrlDialog(localeProvider);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _showUrlDialog() {
+  void _showUrlDialog(LocaleProvider localeProvider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('إدخال رابط الفيديو'),
-        content: const TextField(
-          decoration: InputDecoration(
-            hintText: 'أدخل رابط الفيديو هنا...',
-            border: OutlineInputBorder(),
+      builder: (context) => Consumer<LocaleProvider>(
+        builder: (context, localeProvider, child) => AlertDialog(
+          title: Text(
+            localeProvider.getLocalizedText(
+              'إدخال رابط الفيديو',
+              'Enter Video URL',
+            ),
           ),
+          content: TextField(
+            decoration: InputDecoration(
+              hintText: localeProvider.getLocalizedText(
+                'أدخل رابط الفيديو هنا...',
+                'Enter video URL here...',
+              ),
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(localeProvider.getLocalizedText('إلغاء', 'Cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      localeProvider.getLocalizedText(
+                        'سيتم إضافة هذه الميزة قريباً',
+                        'This feature will be added soon',
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: Text(localeProvider.getLocalizedText('تحميل', 'Download')),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('سيتم إضافة هذه الميزة قريباً')),
-              );
-            },
-            child: const Text('تحميل'),
-          ),
-        ],
       ),
     );
   }

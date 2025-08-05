@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../widgets/neumorphic_components.dart';
+import 'package:provider/provider.dart';
+import '../providers/locale_provider.dart'; // Corrected path
+import '../providers/app_provider.dart'; // Added import for AppProvider
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -8,7 +11,8 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProviderStateMixin {
+class _FavoritesScreenState extends State<FavoritesScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -25,72 +29,93 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('المفضلة'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'clear_all',
-                child: Row(
-                  children: [
-                    Icon(Icons.clear_all, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('مسح الكل'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'sort',
-                child: Row(
-                  children: [
-                    Icon(Icons.sort),
-                    SizedBox(width: 8),
-                    Text('ترتيب'),
-                  ],
-                ),
+    return Consumer2<LocaleProvider, AppProvider>(
+      builder: (context, localeProvider, appProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(localeProvider.favorites),
+            centerTitle: true,
+            actions: [
+              IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'clear_all',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.clear_all, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text(
+                          localeProvider.getLocalizedText(
+                            'مسح الكل',
+                            'Clear All',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'sort',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.sort),
+                        const SizedBox(width: 8),
+                        Text(localeProvider.getLocalizedText('ترتيب', 'Sort')),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: [
+                Tab(
+                  text: localeProvider.getLocalizedText('الأغاني', 'Songs'),
+                  icon: const Icon(Icons.music_note),
+                ),
+                Tab(
+                  text: localeProvider.getLocalizedText('الفيديوهات', 'Videos'),
+                  icon: const Icon(Icons.video_library),
+                ),
+              ],
+            ),
           ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'الأغاني', icon: Icon(Icons.music_note)),
-            Tab(text: 'الفيديوهات', icon: Icon(Icons.video_library)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildFavoriteSongs(),
-          _buildFavoriteVideos(),
-        ],
-      ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildFavoriteSongs(localeProvider, appProvider),
+              _buildFavoriteVideos(localeProvider),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildFavoriteSongs() {
+  Widget _buildFavoriteSongs(
+    LocaleProvider localeProvider,
+    AppProvider appProvider,
+  ) {
+    if (appProvider.favoriteSongs.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.favorite,
+        title: localeProvider.getLocalizedText(
+          'لا توجد أغاني مفضلة',
+          'No favorite songs',
+        ),
+        subtitle: localeProvider.getLocalizedText(
+          'أضف أغانيك المفضلة هنا',
+          'Add your favorite songs here',
+        ),
+        localeProvider: localeProvider,
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Empty state or content
-        _buildEmptyState(
-          icon: Icons.favorite,
-          title: 'لا توجد أغاني مفضلة',
-          subtitle: 'أضف أغانيك المفضلة هنا',
-        ),
-        
-        // Uncomment this section to show favorite songs
-        /*
-        ...List.generate(8, (index) {
+        ...appProvider.favoriteSongs.map((song) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: NeumorphicContainer(
@@ -98,18 +123,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
                 leading: NeumorphicContainer(
                   width: 50,
                   height: 50,
-                  child: const Icon(Icons.music_note),
+                  child: Image.network(
+                    song.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.music_note),
+                  ),
                 ),
-                title: Text('أغنية مفضلة ${index + 1}'),
+                title: Text(song.title),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('فنان ${index + 1}'),
+                    Text(song.artist),
                     Text(
-                      'أضيف منذ ${index + 1} أيام',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                      '${localeProvider.getLocalizedText('المدة: ', 'Duration: ')}${song.duration.inMinutes}:${(song.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -117,36 +147,43 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     NeumorphicButton(
-                      onPressed: () {},
-                      child: const Icon(Icons.favorite, color: Colors.red, size: 20),
+                      icon: Icons.favorite,
+                      iconColor: Colors.red,
+                      onTap: () {
+                        appProvider.toggleFavoriteSong(song);
+                      },
+                      size: 20,
                     ),
                     const SizedBox(width: 8),
-                    NeumorphicButton(
-                      onPressed: () {},
-                      child: const Icon(Icons.play_arrow),
-                    ),
+                    NeumorphicButton(icon: Icons.play_arrow, onTap: () {}),
                   ],
                 ),
               ),
             ),
           );
         }),
-        */
       ],
     );
   }
 
-  Widget _buildFavoriteVideos() {  
+  Widget _buildFavoriteVideos(LocaleProvider localeProvider) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         // Empty state or content
         _buildEmptyState(
           icon: Icons.video_library,
-          title: 'لا توجد فيديوهات مفضلة',
-          subtitle: 'أضف فيديوهاتك المفضلة هنا',
+          title: localeProvider.getLocalizedText(
+            'لا توجد فيديوهات مفضلة',
+            'No favorite videos',
+          ),
+          subtitle: localeProvider.getLocalizedText(
+            'أضف فيديوهاتك المفضلة هنا',
+            'Add your favorite videos here',
+          ),
+          localeProvider: localeProvider,
         ),
-        
+
         // Uncomment this section to show favorite videos
         /*
         GridView.builder(
@@ -195,13 +232,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'فيديو مفضل ${index + 1}',
+                          localeProvider.getLocalizedText('فيديو مفضل ${index + 1}', 'Favorite Video ${index + 1}'),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          'أضيف منذ ${index + 1} أيام',
+                          localeProvider.getLocalizedText('أضيف منذ ${index + 1} أيام', 'Added ${index + 1} days ago'),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey,
                           ),
@@ -223,6 +260,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
     required IconData icon,
     required String title,
     required String subtitle,
+    required LocaleProvider localeProvider, // Add this parameter
   }) {
     return Center(
       child: Padding(
@@ -233,11 +271,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
             NeumorphicContainer(
               width: 120,
               height: 120,
-              child: Icon(
-                icon,
-                size: 60,
-                color: Colors.grey[400],
-              ),
+              child: Icon(icon, size: 60, color: Colors.grey[400]),
             ),
             const SizedBox(height: 24),
             Text(
@@ -251,9 +285,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -261,14 +295,22 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
               onPressed: () {
                 // Navigate to library or add favorites
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add),
-                    SizedBox(width: 8),
-                    Text('استكشاف المكتبة'),
+                    const Icon(Icons.add),
+                    const SizedBox(width: 8),
+                    Text(
+                      localeProvider.getLocalizedText(
+                        'استكشاف المكتبة',
+                        'Explore Library',
+                      ),
+                    ),
                   ],
                 ),
               ),

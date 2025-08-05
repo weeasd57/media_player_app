@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../core/models/app_item.dart';
+import '../../core/models/song.dart'; // Import Song model
 import '../pages/home_screen.dart';
 import '../pages/library_screen.dart';
 import '../pages/audio_player_screen.dart';
 import '../pages/video_player_screen.dart';
-import '../pages/settings_screen.dart';
 import '../pages/equalizer_screen.dart';
-import '../pages/favorites_screen.dart';
 
 class AppProvider extends ChangeNotifier {
   int _selectedAppIndex = 0;
@@ -17,6 +16,8 @@ class AppProvider extends ChangeNotifier {
   bool _showFavorites = false;
   bool _showSettings = false;
 
+  final List<Song> _favoriteSongs = []; // List to store favorite songs
+
   int get selectedAppIndex => _selectedAppIndex;
   int get selectedPageIndex => _selectedPageIndex;
   // نحتفظ بهذا للتوافق مع الكود السابق، لكن دائمًا يكون false
@@ -24,6 +25,9 @@ class AppProvider extends ChangeNotifier {
   bool get isSidebarHidden => _isSidebarHidden;
   bool get showFavorites => _showFavorites;
   bool get showSettings => _showSettings;
+
+  // Getters
+  List<Song> get favoriteSongs => _favoriteSongs;
 
   AppItem get currentApp => apps[_selectedAppIndex];
   AppPage get currentPage => currentApp.pages[_selectedPageIndex];
@@ -995,6 +999,8 @@ class AppProvider extends ChangeNotifier {
     if (appIndex != _selectedAppIndex) {
       _selectedAppIndex = appIndex;
       _selectedPageIndex = 0;
+      _showFavorites = false; // Add this line
+      _showSettings = false; // Add this line
       notifyListeners();
     }
   }
@@ -1003,6 +1009,8 @@ class AppProvider extends ChangeNotifier {
     if (pageIndex != _selectedPageIndex &&
         pageIndex < currentApp.pages.length) {
       _selectedPageIndex = pageIndex;
+      _showFavorites = false; // Add this line
+      _showSettings = false; // Add this line
       notifyListeners();
     }
   }
@@ -1050,5 +1058,18 @@ class AppProvider extends ChangeNotifier {
     _showFavorites = false;
     _showSettings = false;
     notifyListeners();
+  }
+
+  void toggleFavoriteSong(Song song) {
+    if (_favoriteSongs.contains(song)) {
+      _favoriteSongs.remove(song);
+    } else {
+      _favoriteSongs.add(song);
+    }
+    notifyListeners();
+  }
+
+  bool isSongFavorite(Song song) {
+    return _favoriteSongs.contains(song);
   }
 }

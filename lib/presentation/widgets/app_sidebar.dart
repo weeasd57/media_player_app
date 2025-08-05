@@ -50,7 +50,7 @@ class AppSidebar extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   iconSize: ResponsiveLayout.getNavigationIconSize(context),
                   onPressed: () {
-                    appProvider.showSidebar();
+                    appProvider.toggleSidebar();
                   },
                   tooltip: appProvider.isSidebarHidden
                       ? 'فتح القائمة الجانبية'

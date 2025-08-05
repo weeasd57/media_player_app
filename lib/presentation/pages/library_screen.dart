@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../widgets/neumorphic_components.dart';
+import 'package:provider/provider.dart';
+import '../providers/locale_provider.dart';
+import '../../core/models/song.dart'; // Import Song model
+import '../providers/app_provider.dart'; // Import AppProvider
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -8,7 +12,8 @@ class LibraryScreen extends StatefulWidget {
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
+class _LibraryScreenState extends State<LibraryScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -25,37 +30,74 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('المكتبة'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
+    return Consumer2<LocaleProvider, AppProvider>(
+      builder: (context, localeProvider, appProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(localeProvider.getLocalizedText('المكتبة', 'Library')),
+            centerTitle: true,
+            actions: [
+              IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: [
+                Tab(
+                  text: localeProvider.getLocalizedText('الأغاني', 'Songs'),
+                  icon: const Icon(Icons.music_note),
+                ),
+                Tab(
+                  text: localeProvider.getLocalizedText('الفيديوهات', 'Videos'),
+                  icon: const Icon(Icons.video_library),
+                ),
+                Tab(
+                  text: localeProvider.getLocalizedText(
+                    'قوائم التشغيل',
+                    'Playlists',
+                  ),
+                  icon: const Icon(Icons.playlist_play),
+                ),
+              ],
+            ),
           ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'الأغاني', icon: Icon(Icons.music_note)),
-            Tab(text: 'الفيديوهات', icon: Icon(Icons.video_library)),
-            Tab(text: 'قوائم التشغيل', icon: Icon(Icons.playlist_play)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildSongsTab(),
-          _buildVideosTab(),
-          _buildPlaylistsTab(),
-        ],
-      ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildSongsTab(localeProvider, appProvider),
+              _buildVideosTab(localeProvider),
+              _buildPlaylistsTab(localeProvider),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildSongsTab() {
+  Widget _buildSongsTab(
+    LocaleProvider localeProvider,
+    AppProvider appProvider,
+  ) {
+    final List<Song> dummySongs = List.generate(
+      10,
+      (index) => Song(
+        id: 'song_${index + 1}',
+        title: localeProvider.getLocalizedText(
+          'أغنية ${index + 1}',
+          'Song ${index + 1}',
+        ),
+        artist: localeProvider.getLocalizedText(
+          'فنان ${index + 1}',
+          'Artist ${index + 1}',
+        ),
+        album: localeProvider.getLocalizedText(
+          'ألبوم ${index + 1}',
+          'Album ${index + 1}',
+        ),
+        duration: Duration(minutes: 3, seconds: (index + 1) * 5),
+        imageUrl: 'https://via.placeholder.com/150',
+      ),
+    );
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -64,28 +106,29 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           children: [
             Expanded(
               child: NeumorphicContainer(
-                child: const TextField(
+                child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'البحث في الأغاني...',
-                    prefixIcon: Icon(Icons.search),
+                    hintText: localeProvider.getLocalizedText(
+                      'البحث في الأغاني...',
+                      'Search in Songs...',
+                    ),
+                    prefixIcon: const Icon(Icons.search),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(16),
+                    contentPadding: const EdgeInsets.all(16),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            NeumorphicButton(
-              icon: Icons.filter_list,
-              onTap: () {},
-            ),
+            NeumorphicButton(icon: Icons.filter_list, onTap: () {}),
           ],
         ),
 
         const SizedBox(height: 20),
 
         // Songs List
-        ...List.generate(10, (index) {
+        ...dummySongs.map((song) {
+          final isFavorite = appProvider.isSongFavorite(song);
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: NeumorphicContainer(
@@ -93,18 +136,23 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                 leading: NeumorphicContainer(
                   width: 50,
                   height: 50,
-                  child: const Icon(Icons.music_note),
+                  child: Image.network(
+                    song.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.music_note),
+                  ),
                 ),
-                title: Text('أغنية ${index + 1}'),
+                title: Text(song.title),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('فنان ${index + 1}'),
+                    Text(song.artist),
                     Text(
-                      '3:${(index + 1).toString().padLeft(2, '0')}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                      '${song.duration.inMinutes}:${(song.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -112,15 +160,15 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     NeumorphicButton(
-                      icon: Icons.favorite_border,
-                      onTap: () {},
+                      icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                      iconColor: isFavorite ? Colors.red : null,
+                      onTap: () {
+                        appProvider.toggleFavoriteSong(song);
+                      },
                       size: 35,
                     ),
                     const SizedBox(width: 8),
-                    NeumorphicButton(
-                      icon: Icons.play_arrow,
-                      onTap: () {},
-                    ),
+                    NeumorphicButton(icon: Icons.play_arrow, onTap: () {}),
                   ],
                 ),
               ),
@@ -131,7 +179,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildVideosTab() {
+  Widget _buildVideosTab(LocaleProvider localeProvider) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -140,21 +188,21 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           children: [
             Expanded(
               child: NeumorphicContainer(
-                child: const TextField(
+                child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'البحث في الفيديوهات...',
-                    prefixIcon: Icon(Icons.search),
+                    hintText: localeProvider.getLocalizedText(
+                      'البحث في الفيديوهات...',
+                      'Search in Videos...',
+                    ),
+                    prefixIcon: const Icon(Icons.search),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(16),
+                    contentPadding: const EdgeInsets.all(16),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            NeumorphicButton(
-              icon: Icons.filter_list,
-              onTap: () {},
-            ),
+            NeumorphicButton(icon: Icons.filter_list, onTap: () {}),
           ],
         ),
 
@@ -191,16 +239,19 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'فيديو ${index + 1}',
+                          localeProvider.getLocalizedText(
+                            'فيديو ${index + 1}',
+                            'Video ${index + 1}',
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           '${(index + 5).toString().padLeft(2, '0')}:00',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                          ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -214,21 +265,26 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildPlaylistsTab() {
+  Widget _buildPlaylistsTab(LocaleProvider localeProvider) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         // Create Playlist Button
         NeumorphicCustomButton(
           onPressed: () {},
-          child: const Padding(
-            padding: EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add),
-                SizedBox(width: 8),
-                Text('إنشاء قائمة تشغيل جديدة'),
+                const Icon(Icons.add),
+                const SizedBox(width: 8),
+                Text(
+                  localeProvider.getLocalizedText(
+                    'إنشاء قائمة تشغيل جديدة',
+                    'Create New Playlist',
+                  ),
+                ),
               ],
             ),
           ),
@@ -244,8 +300,12 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
               height: 50,
               child: const Icon(Icons.favorite, color: Colors.red),
             ),
-            title: const Text('المفضلة'),
-            subtitle: const Text('0 عنصر'),
+            title: Text(
+              localeProvider.getLocalizedText('المفضلة', 'Favorites'),
+            ),
+            subtitle: Text(
+              localeProvider.getLocalizedText('0 عنصر', '0 items'),
+            ),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {},
           ),
@@ -260,8 +320,15 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
               height: 50,
               child: const Icon(Icons.access_time, color: Colors.blue),
             ),
-            title: const Text('المشغل مؤخراً'),
-            subtitle: const Text('0 عنصر'),
+            title: Text(
+              localeProvider.getLocalizedText(
+                'المشغل مؤخراً',
+                'Recently Played',
+              ),
+            ),
+            subtitle: Text(
+              localeProvider.getLocalizedText('0 عنصر', '0 items'),
+            ),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {},
           ),
@@ -271,10 +338,13 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
 
         // Custom Playlists
         Text(
-          'قوائم التشغيل المخصصة',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+          localeProvider.getLocalizedText(
+            'قوائم التشغيل المخصصة',
+            'Custom Playlists',
           ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
 
         const SizedBox(height: 16),
@@ -289,27 +359,41 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                   height: 50,
                   child: const Icon(Icons.queue_music),
                 ),
-                title: Text('قائمة التشغيل ${index + 1}'),
-                subtitle: Text('${(index + 1) * 3} عنصر'),
+                title: Text(
+                  localeProvider.getLocalizedText(
+                    'قائمة التشغيل ${index + 1}',
+                    'Playlist ${index + 1}',
+                  ),
+                ),
+                subtitle: Text(
+                  localeProvider.getLocalizedText(
+                    '${(index + 1) * 3} عنصر',
+                    '${(index + 1) * 3} items',
+                  ),
+                ),
                 trailing: PopupMenuButton(
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit),
-                          SizedBox(width: 8),
-                          Text('تعديل'),
+                          const Icon(Icons.edit),
+                          const SizedBox(width: 8),
+                          Text(
+                            localeProvider.getLocalizedText('تعديل', 'Edit'),
+                          ),
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
                       child: Row(
                         children: [
-                          Icon(Icons.delete, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('حذف'),
+                          const Icon(Icons.delete, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Text(
+                            localeProvider.getLocalizedText('حذف', 'Delete'),
+                          ),
                         ],
                       ),
                     ),
