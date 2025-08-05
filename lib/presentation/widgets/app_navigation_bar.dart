@@ -271,7 +271,9 @@ class AppNavigationBar extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
                 margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 0 : 2),
-                padding: EdgeInsets.zero,
+                padding: isSmallScreen
+                    ? const EdgeInsets.all(4)
+                    : EdgeInsets.zero, // Adjusted padding
                 decoration: BoxDecoration(
                   color: isSelected
                       ? appProvider.currentApp.primaryColor.withAlpha(
@@ -660,8 +662,8 @@ class AppNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 6 : 12,
-        vertical: isSmallScreen ? 4 : 8,
+        horizontal: isSmallScreen ? 4 : 12, // Adjusted horizontal padding
+        vertical: isSmallScreen ? 2 : 8, // Reduced vertical padding
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -8,6 +8,7 @@ import '../pages/settings_screen.dart';
 import '../pages/equalizer_screen.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../utils/responsive_layout.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -79,42 +80,50 @@ class _MainNavigationState extends State<MainNavigation> {
                 .onSurface
                 .withAlpha((0.6 * 255).round()),
             backgroundColor: themeProvider.primaryBackgroundColor,
+            showSelectedLabels: false, // Hide selected labels
+            showUnselectedLabels: false, // Hide unselected labels
             items: [
               BottomNavigationBarItem(
-                icon: const Icon(Icons.home),
-                label: localeProvider.home,
-              ),
-              BottomNavigationBarItem(
-                icon: const Icon(Icons.library_music),
-                label: localeProvider.getLocalizedText(
-                  'مكتبتك',
-                  'Your Library',
+                icon: Icon(
+                  Icons.home,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
                 ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: const Icon(Icons.music_note),
-                label: localeProvider.getLocalizedText(
-                  'ملفات صوتية',
-                  'Audio Files',
+                icon: Icon(
+                  Icons.library_music,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
                 ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: const Icon(Icons.video_library),
-                label: localeProvider.getLocalizedText(
-                  'ملفات فيديو',
-                  'Video Files',
+                icon: Icon(
+                  Icons.music_note,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
                 ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: const Icon(Icons.equalizer),
-                label: localeProvider.getLocalizedText(
-                  'معادل الصوت',
-                  'Equalizer',
+                icon: Icon(
+                  Icons.video_library,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
                 ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: const Icon(Icons.settings),
-                label: localeProvider.settings,
+                icon: Icon(
+                  Icons.equalizer,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.settings,
+                  size: ResponsiveLayout.getNavigationIconSize(context),
+                ),
+                label: '',
               ),
             ],
           ),

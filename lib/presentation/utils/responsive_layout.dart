@@ -73,9 +73,9 @@ class ResponsiveLayout {
   static double getNavigationIconSize(BuildContext context) {
     return getValue(
       context,
-      mobile: isSmallMobile(context) ? 10 : 20,
-      tablet: 20,
-      desktop: 20,
+      mobile: isSmallMobile(context) ? 24 : 20, // Increased icon size
+      tablet: 20, // Increased icon size
+      desktop: 20, // Increased icon size
     );
   }
 

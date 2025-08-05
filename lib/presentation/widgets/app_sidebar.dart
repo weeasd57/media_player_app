@@ -41,25 +41,66 @@ class AppSidebar extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Toggle button - وضع حجم محدد للزر
+              // Toggle button - تحسين تصميم زر الإخفاء
               Container(
                 width: 48,
                 height: 48,
-                alignment: Alignment.center,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: ResponsiveLayout.getNavigationIconSize(context),
-                  onPressed: () {
-                    appProvider.toggleSidebar();
-                  },
-                  tooltip: appProvider.isSidebarHidden
-                      ? 'فتح القائمة الجانبية'
-                      : 'إخفاء القائمة الجانبية',
-                  icon: Icon(
-                    appProvider.isSidebarHidden
-                        ? (isArabic ? Icons.chevron_left : Icons.chevron_right)
-                        : (isArabic ? Icons.chevron_right : Icons.chevron_left),
-                    color: themeProvider.currentTheme.colorScheme.primary,
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: themeProvider
+                      .currentTheme
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withAlpha((0.8 * 255).round()),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: themeProvider.currentTheme.colorScheme.outline
+                        .withAlpha((0.2 * 255).round()),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha((0.1 * 255).round()),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      appProvider.toggleSidebar(); // Use toggleSidebar
+                    },
+                    child: Tooltip(
+                      message: appProvider.isSidebarHidden
+                          ? localeProvider.getLocalizedText(
+                              'فتح القائمة الجانبية',
+                              'Open Sidebar',
+                            )
+                          : localeProvider.getLocalizedText(
+                              'إخفاء القائمة الجانبية',
+                              'Hide Sidebar',
+                            ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: AnimatedRotation(
+                          turns: appProvider.isSidebarHidden
+                              ? (isArabic ? 0.5 : 0)
+                              : (isArabic ? 0 : 0.5),
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.chevron_left,
+                            color:
+                                themeProvider.currentTheme.colorScheme.primary,
+                            size: ResponsiveLayout.getNavigationIconSize(
+                              context,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),

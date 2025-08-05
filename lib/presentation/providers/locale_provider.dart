@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleProvider extends ChangeNotifier {
-  Locale _locale = const Locale('ar', 'SA'); // Arabic as default
+  Locale _locale = const Locale('en', 'US'); // English as default
   static const String _localeKey = 'selected_locale';
-  
+
   Locale get locale => _locale;
-  
+
   bool get isArabic => _locale.languageCode == 'ar';
-  
+
   LocaleProvider() {
     _loadLocale();
   }
-  
+
   Future<void> _loadLocale() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final localeCode = prefs.getString(_localeKey) ?? 'ar';
-      _locale = localeCode == 'ar' 
-        ? const Locale('ar', 'SA') 
-        : const Locale('en', 'US');
+      final localeCode = prefs.getString(_localeKey) ?? 'en';
+      _locale = localeCode == 'en'
+          ? const Locale('en', 'US')
+          : const Locale('ar', 'SA');
       notifyListeners();
     } catch (e) {
-      // If SharedPreferences fails, keep default Arabic locale
-      _locale = const Locale('ar', 'SA');
+      // If SharedPreferences fails, keep default English locale
+      _locale = const Locale('en', 'US');
     }
   }
-  
+
   Future<void> setLocale(Locale locale) async {
     if (_locale == locale) return;
-    
+
     _locale = locale;
     notifyListeners();
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_localeKey, locale.languageCode);
@@ -41,19 +41,19 @@ class LocaleProvider extends ChangeNotifier {
       debugPrint('Error saving locale: $e');
     }
   }
-  
+
   Future<void> toggleLocale() async {
-    final newLocale = _locale.languageCode == 'ar' 
-      ? const Locale('en', 'US')
-      : const Locale('ar', 'SA');
+    final newLocale = _locale.languageCode == 'en'
+        ? const Locale('ar', 'SA')
+        : const Locale('en', 'US');
     await setLocale(newLocale);
   }
-  
+
   // Get localized text based on current locale
   String getLocalizedText(String arabicText, String englishText) {
     return isArabic ? arabicText : englishText;
   }
-  
+
   // Common UI texts
   String get appTitle => isArabic ? 'مشغل الوسائط' : 'Media Player';
   String get settings => isArabic ? 'الإعدادات' : 'Settings';
@@ -76,10 +76,14 @@ class LocaleProvider extends ChangeNotifier {
   String get nowPlaying => isArabic ? 'قيد التشغيل الآن' : 'Now Playing';
   String get queue => isArabic ? 'قائمة الانتظار' : 'Queue';
   String get search => isArabic ? 'بحث' : 'Search';
-  String get addToPlaylist => isArabic ? 'إضافة إلى قائمة التشغيل' : 'Add to Playlist';
-  String get createPlaylist => isArabic ? 'إنشاء قائمة تشغيل' : 'Create Playlist';
-  String get deletePlaylist => isArabic ? 'حذف قائمة التشغيل' : 'Delete Playlist';
-  String get noMediaFound => isArabic ? 'لم يتم العثور على وسائط' : 'No Media Found';
+  String get addToPlaylist =>
+      isArabic ? 'إضافة إلى قائمة التشغيل' : 'Add to Playlist';
+  String get createPlaylist =>
+      isArabic ? 'إنشاء قائمة تشغيل' : 'Create Playlist';
+  String get deletePlaylist =>
+      isArabic ? 'حذف قائمة التشغيل' : 'Delete Playlist';
+  String get noMediaFound =>
+      isArabic ? 'لم يتم العثور على وسائط' : 'No Media Found';
   String get loading => isArabic ? 'جاري التحميل...' : 'Loading...';
   String get error => isArabic ? 'خطأ' : 'Error';
   String get retry => isArabic ? 'إعادة المحاولة' : 'Retry';

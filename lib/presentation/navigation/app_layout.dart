@@ -109,273 +109,217 @@ class AppLayout extends StatelessWidget {
                                   ),
                                 ),
 
-                              // App Icon with Modern Design
-                              Container(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 32
-                                    : 40,
-                                height: ResponsiveLayout.isSmallMobile(context)
-                                    ? 32
-                                    : 40,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      currentApp.primaryColor,
-                                      currentApp.secondaryColor,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: currentApp.primaryColor.withAlpha(
-                                        ((currentApp.primaryColor.a *
-                                                    0.3 *
-                                                    255.0)
-                                                .round() &
-                                            0xff),
-                                      ),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Icon(
-                                    currentApp.icon,
-                                    color: Colors.white,
-                                    size: ResponsiveLayout.getSmallIconSize(
-                                      context,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 8
-                                    : 12,
-                              ),
-
-                              // Removed App Name and UI Kit Type
-
-                              // Separator and Current Page
-                              if (currentApp.pages.length > 1) ...[
-                                SizedBox(
-                                  width: ResponsiveLayout.isSmallMobile(context)
-                                      ? 8
-                                      : 12,
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 24,
-                                  color: themeProvider.currentTheme.dividerColor
-                                      .withAlpha((0.2 * 255).round()),
-                                ),
-                                SizedBox(
-                                  width: ResponsiveLayout.isSmallMobile(context)
-                                      ? 8
-                                      : 12,
-                                ),
-
-                                // Removed Current Page Info
-                              ],
-
-                              SizedBox(
-                                width: ResponsiveLayout.isSmallMobile(context)
-                                    ? 6
-                                    : 8,
-                              ),
-
                               // Action Buttons
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Favorites Button
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withAlpha((0.5 * 255).round()),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.favorite_rounded,
-                                        size:
-                                            ResponsiveLayout.isSmallMobile(
-                                              context,
-                                            )
-                                              ? 20
-                                              : 22,
+                              Expanded(
+                                // Wrap with Expanded
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Favorites Button
+                                    Container(
+                                      decoration: BoxDecoration(
                                         color: themeProvider
                                             .currentTheme
                                             .colorScheme
-                                            .onSurface,
+                                            .surfaceContainerHighest
+                                            .withAlpha((0.5 * 255).round()),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      onPressed: () {
-                                        appProvider.navigateToFavorites();
-                                      },
-                                      tooltip: isArabic ? 'المفضلة' : 'Favorites',
-                                      padding:
-                                          ResponsiveLayout.isSmallMobile(
-                                            context,
-                                          )
-                                              ? const EdgeInsets.all(4)
-                                              : const EdgeInsets.all(8),
-                                    ),
-                                  ),
-
-                                  SizedBox(
-                                    width:
-                                        ResponsiveLayout.isSmallMobile(context)
-                                        ? 6
-                                        : 8,
-                                  ),
-
-                                  // Settings Button
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withAlpha((0.5 * 255).round()),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.settings_rounded,
-                                        size:
-                                            ResponsiveLayout.isSmallMobile(
-                                              context,
-                                            )
-                                              ? 20
-                                              : 22,
-                                        color: themeProvider
-                                            .currentTheme
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                      onPressed: () {
-                                        appProvider.navigateToSettings();
-                                      },
-                                      tooltip: isArabic ? 'الإعدادات' : 'Settings',
-                                      padding:
-                                          ResponsiveLayout.isSmallMobile(
-                                            context,
-                                          )
-                                              ? const EdgeInsets.all(4)
-                                              : const EdgeInsets.all(8),
-                                    ),
-                                  ),
-
-                                  SizedBox(
-                                    width:
-                                        ResponsiveLayout.isSmallMobile(context)
-                                        ? 6
-                                        : 8,
-                                  ),
-
-                                  // Theme Toggle with Modern Design
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withAlpha((0.5 * 255).round()),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      icon: AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        child: Icon(
-                                          themeProvider.isDarkMode
-                                              ? Icons.light_mode_rounded
-                                              : Icons.dark_mode_rounded,
-                                          key: ValueKey(
-                                            themeProvider.isDarkMode,
-                                          ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.favorite_rounded,
                                           size:
                                               ResponsiveLayout.isSmallMobile(
                                                 context,
                                               )
-                                              ? 20
+                                              ? 18 // Reduced icon size
                                               : 22,
                                           color: themeProvider
                                               .currentTheme
                                               .colorScheme
                                               .onSurface,
                                         ),
-                                      ),
-                                      onPressed: () =>
-                                          themeProvider.toggleTheme(),
-                                      tooltip: isArabic
-                                          ? (themeProvider.isDarkMode
-                                                ? 'الوضع الفاتح'
-                                                : 'الوضع الداكن')
-                                          : (themeProvider.isDarkMode
-                                                ? 'Light Mode'
-                                                : 'Dark Mode'),
-                                      padding:
-                                          ResponsiveLayout.isSmallMobile(
-                                            context,
-                                          )
-                                              ? const EdgeInsets.all(4)
-                                              : const EdgeInsets.all(8),
-                                    ),
-                                  ),
-
-                                  SizedBox(
-                                    width:
-                                        ResponsiveLayout.isSmallMobile(context)
-                                        ? 6
-                                        : 8,
-                                  ),
-
-                                  // Language Toggle
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withAlpha((0.5 * 255).round()),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.language_rounded,
-                                        size:
+                                        onPressed: () {
+                                          appProvider.navigateToFavorites();
+                                        },
+                                        tooltip: isArabic
+                                            ? 'المفضلة'
+                                            : 'Favorites',
+                                        padding:
                                             ResponsiveLayout.isSmallMobile(
                                               context,
                                             )
-                                              ? 20
-                                              : 22,
+                                            ? const EdgeInsets.all(
+                                                2,
+                                              ) // Reduced padding
+                                            : const EdgeInsets.all(8),
                                       ),
-                                      onPressed: () =>
-                                          localeProvider.toggleLocale(),
-                                      tooltip: isArabic ? 'English' : 'العربية',
-                                      color: themeProvider
-                                          .currentTheme
-                                          .colorScheme
-                                          .onSurface,
-                                      padding:
+                                    ),
+
+                                    SizedBox(
+                                      width:
                                           ResponsiveLayout.isSmallMobile(
                                             context,
                                           )
-                                              ? const EdgeInsets.all(4)
-                                              : const EdgeInsets.all(8),
+                                          ? 6
+                                          : 8,
                                     ),
-                                  ),
-                                ],
-                              ),
+
+                                    // Settings Button
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                            .withAlpha((0.5 * 255).round()),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.settings_rounded,
+                                          size:
+                                              ResponsiveLayout.isSmallMobile(
+                                                context,
+                                              )
+                                              ? 18 // Reduced icon size
+                                              : 22,
+                                          color: themeProvider
+                                              .currentTheme
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                        onPressed: () {
+                                          appProvider.navigateToSettings();
+                                        },
+                                        tooltip: isArabic
+                                            ? 'الإعدادات'
+                                            : 'Settings',
+                                        padding:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                            ? const EdgeInsets.all(
+                                                2,
+                                              ) // Reduced padding
+                                            : const EdgeInsets.all(8),
+                                      ),
+                                    ),
+
+                                    SizedBox(
+                                      width:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                          ? 6
+                                          : 8,
+                                    ),
+
+                                    // Theme Toggle with Modern Design
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                            .withAlpha((0.5 * 255).round()),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: AnimatedSwitcher(
+                                          duration: const Duration(
+                                            milliseconds: 300,
+                                          ),
+                                          child: Icon(
+                                            themeProvider.isDarkMode
+                                                ? Icons.light_mode_rounded
+                                                : Icons.dark_mode_rounded,
+                                            key: ValueKey(
+                                              themeProvider.isDarkMode,
+                                            ),
+                                            size:
+                                                ResponsiveLayout.isSmallMobile(
+                                                  context,
+                                                )
+                                                ? 18 // Reduced icon size
+                                                : 22,
+                                            color: themeProvider
+                                                .currentTheme
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            themeProvider.toggleTheme(),
+                                        tooltip: isArabic
+                                            ? (themeProvider.isDarkMode
+                                                  ? 'الوضع الفاتح'
+                                                  : 'الوضع الداكن')
+                                            : (themeProvider.isDarkMode
+                                                  ? 'Light Mode'
+                                                  : 'Dark Mode'),
+                                        padding:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                            ? const EdgeInsets.all(
+                                                2,
+                                              ) // Reduced padding
+                                            : const EdgeInsets.all(8),
+                                      ),
+                                    ),
+
+                                    SizedBox(
+                                      width:
+                                          ResponsiveLayout.isSmallMobile(
+                                            context,
+                                          )
+                                          ? 6
+                                          : 8,
+                                    ),
+
+                                    // Language Toggle
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                            .withAlpha((0.5 * 255).round()),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.language_rounded,
+                                          size:
+                                              ResponsiveLayout.isSmallMobile(
+                                                context,
+                                              )
+                                              ? 18 // Reduced icon size
+                                              : 22,
+                                        ),
+                                        onPressed: () =>
+                                            localeProvider.toggleLocale(),
+                                        tooltip: isArabic
+                                            ? 'English'
+                                            : 'العربية',
+                                        color: themeProvider
+                                            .currentTheme
+                                            .colorScheme
+                                            .onSurface,
+                                        padding:
+                                            ResponsiveLayout.isSmallMobile(
+                                              context,
+                                            )
+                                            ? const EdgeInsets.all(
+                                                2,
+                                              ) // Reduced padding
+                                            : const EdgeInsets.all(8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ), // End Expanded
                             ],
                           ),
                         ),
@@ -408,8 +352,8 @@ class AppLayout extends StatelessWidget {
                             child: appProvider.showFavorites
                                 ? const FavoritesScreen()
                                 : appProvider.showSettings
-                                    ? const SettingsScreen()
-                                    : currentPage.screen,
+                                ? const SettingsScreen()
+                                : currentPage.screen,
                           ),
                         ),
                       ),

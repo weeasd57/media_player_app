@@ -130,34 +130,43 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                         const Icon(Icons.music_note),
                   ),
                 ),
-                title: Text(song.title),
+                title: Flexible(
+                  child: Text(song.title),
+                ), // Use Flexible instead of Expanded
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(song.artist),
+                    Flexible(
+                      child: Text(song.artist),
+                    ), // Use Flexible instead of Expanded
                     Text(
-                      '${localeProvider.getLocalizedText('المدة: ', 'Duration: ')}${song.duration.inMinutes}:${(song.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                      localeProvider.getLocalizedText('المدة: ', 'Duration: ') +
+                          '${song.duration.inMinutes}:${(song.duration.inSeconds % 60).toString().padLeft(2, '0')}',
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    NeumorphicButton(
-                      icon: Icons.favorite,
-                      iconColor: Colors.red,
-                      onTap: () {
-                        appProvider.toggleFavoriteSong(song);
-                      },
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    NeumorphicButton(icon: Icons.play_arrow, onTap: () {}),
-                  ],
-                ),
+                trailing: FittedBox(
+                  // Wrap with FittedBox
+                  fit: BoxFit.scaleDown, // Add fit property
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      NeumorphicButton(
+                        onTap: () {
+                          appProvider.toggleFavoriteSong(song);
+                        },
+                        icon: Icons.favorite,
+                        iconColor: Colors.red,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      NeumorphicButton(onTap: () {}, icon: Icons.play_arrow),
+                    ],
+                  ),
+                ), // End FittedBox
               ),
             ),
           );
@@ -265,57 +274,64 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            NeumorphicContainer(
-              width: 120,
-              height: 120,
-              child: Icon(icon, size: 60, color: Colors.grey[400]),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[600],
+        child: SingleChildScrollView(
+          // Add SingleChildScrollView
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              NeumorphicContainer(
+                width: 120,
+                height: 120,
+                child: Icon(icon, size: 60, color: Colors.grey[400]),
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            NeumorphicCustomButton(
-              onPressed: () {
-                // Navigate to library or add favorites
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[600],
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.add),
-                    const SizedBox(width: 8),
-                    Text(
-                      localeProvider.getLocalizedText(
-                        'استكشاف المكتبة',
-                        'Explore Library',
-                      ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                // Wrap with SizedBox to control width
+                width: double.infinity, // Take full width
+                child: NeumorphicCustomButton(
+                  onPressed: () {
+                    // Navigate to library or add favorites
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
-                  ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.add),
+                        const SizedBox(width: 8),
+                        Text(
+                          localeProvider.getLocalizedText(
+                            'استكشاف المكتبة',
+                            'Explore Library',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ), // End SizedBox
+            ],
+          ),
         ),
       ),
     );
