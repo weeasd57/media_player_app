@@ -130,15 +130,20 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                         const Icon(Icons.music_note),
                   ),
                 ),
-                title: Flexible(
-                  child: Text(song.title),
-                ), // Use Flexible instead of Expanded
+                title: Text(
+                  song.title,
+                  maxLines: 1, // Ensure text does not overflow
+                  overflow: TextOverflow.ellipsis, // Add ellipsis for overflow
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      child: Text(song.artist),
-                    ), // Use Flexible instead of Expanded
+                    Text(
+                      song.artist,
+                      maxLines: 1, // Ensure text does not overflow
+                      overflow:
+                          TextOverflow.ellipsis, // Add ellipsis for overflow
+                    ),
                     Text(
                       localeProvider.getLocalizedText('المدة: ', 'Duration: ') +
                           '${song.duration.inMinutes}:${(song.duration.inSeconds % 60).toString().padLeft(2, '0')}',

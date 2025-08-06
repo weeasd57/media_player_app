@@ -4,7 +4,6 @@ import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/app_provider.dart';
 import '../widgets/themed_card.dart';
-import '../widgets/themed_button.dart';
 
 class HomeScreen extends StatelessWidget {
   final Function(int)? onNavigateToTab;
