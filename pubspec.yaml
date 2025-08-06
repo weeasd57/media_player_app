@@ -1,5 +1,5 @@
-name: media_player_app
-description: "تطبيق مشغل وسائط متعددة مع دعم الفيديو والصوت"
+name: KIT_PLAYER
+description: "A multimedia player application with video and audio support"
 version: 1.0.0+1
 publish_to: 'none'
 

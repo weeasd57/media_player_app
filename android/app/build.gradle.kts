@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.media_player_app"
+    namespace = "com.example.KIT_PLAYER"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.media_player_app"
+        applicationId = "com.example.KIT_PLAYER"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -36,6 +36,14 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    applicationVariants.configureEach { // `this` refers to ApplicationVariant
+        if (buildType.name == "release") {
+            outputs.configureEach { // `this` refers to BaseVariantOutput
+                (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName = "kit-player.apk"
+            }
         }
     }
 }

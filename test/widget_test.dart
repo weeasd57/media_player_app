@@ -7,7 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:media_player_app/main.dart';
+import 'package:KIT_PLAYER/main.dart';
 
 void main() {
   testWidgets('App renders without crashing', (WidgetTester tester) async {

@@ -1,6 +1,6 @@
 {
-    "name": "media_player_app",
-    "short_name": "media_player_app",
+    "name": "KIT_PLAYER",
+    "short_name": "KIT_PLAYER",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",
